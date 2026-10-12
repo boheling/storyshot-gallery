@@ -1,0 +1,71 @@
+1
+00:00:00,150 --> 00:00:12,363
+In this lesson you'll see why a regular expression matches some text and not other text. We'll use three building blocks, literal characters, the digit class, and quantifiers, and test each one live.
+
+2
+00:00:13,163 --> 00:00:29,600
+A plain letter in a pattern is called a literal. The engine slides the pattern along the text, and at every position it compares one character at a time. If every character is equal, that's a match. If one differs, it gives up there and moves one step to the right.
+
+3
+00:00:30,500 --> 00:00:39,642
+This is regex101. The big box holds our test text, three short lines with some words, a room number, a phone number and a zip code.
+
+4
+00:00:41,392 --> 00:00:46,985
+The box at the top holds the pattern. Let's start with three plain letters, c, a, t.
+
+5
+00:00:48,735 --> 00:00:59,486
+Two matches. The cat in line one, and the middle of Concatenate. A regex doesn't know about words, it only sees characters, so cat inside a longer word still counts.
+
+6
+00:01:01,236 --> 00:01:17,308
+But Cats on line two is not matched. Its first character is an uppercase C, and the pattern asks for a lowercase c. One mismatched character is enough to fail. regex101 even says so on the right, the literal text cat, case sensitive.
+
+7
+00:01:21,458 --> 00:01:30,107
+Now let's replace the pattern with backslash d. Backslash d is a character class. It means, any single digit, from zero to nine.
+
+8
+00:01:31,857 --> 00:01:47,692
+Thirteen matches, one for every digit in the text. Look closely, each match is a single character. A class accepts many different characters, but it still fills only one position. So five five five is three separate matches, not one.
+
+9
+00:01:51,842 --> 00:01:58,416
+To match a whole number, we add a quantifier after the class. Plus means, one or more of the thing just before it.
+
+10
+00:02:00,166 --> 00:02:16,259
+Now there are four matches. Seven, five five five, zero one nine nine, and nine four one one zero. Plus is greedy. It keeps taking digits for as long as it can, and stops at the first character that isn't a digit, like the dash or the comma.
+
+11
+00:02:18,009 --> 00:02:29,143
+Next we'll change the plus to curly brace three, which means exactly three digits. Before we run it, how many matches will it find in this line, and which ones? Pause and think.
+
+12
+00:02:35,043 --> 00:02:38,707
+Let's check. Delete the plus and type the three in curly braces.
+
+13
+00:02:42,026 --> 00:02:56,134
+Three matches. Five five five. Then zero one nine. Then nine four one. Did you expect zero one nine nine, or nine four one one zero? A quantifier with a fixed count takes exactly three, no more.
+
+14
+00:02:57,884 --> 00:03:16,571
+Here's why. Seven alone is too short, so it never matches. In zero one nine nine, the engine takes zero one nine, and the search continues right after it. The single nine that's left over is not three digits. The same thing happens in the zip code, where one zero is left over.
+
+15
+00:03:17,471 --> 00:03:27,972
+The explanation panel on the right reads the pattern back to you. A digit, repeated exactly three times. Reading it is a good habit whenever a match surprises you.
+
+16
+00:03:29,722 --> 00:03:35,159
+Finally, combine all three ideas. Three digits, a literal dash, then four digits.
+
+17
+00:03:36,909 --> 00:03:44,378
+One match, the phone number. The zip code has digits too, but no dash after three of them, so the literal dash fails there.
+
+18
+00:03:46,028 --> 00:04:04,653
+To recap. A literal matches exactly that character. Backslash d matches one digit in one position. Plus takes as many as it can, curly three takes exactly three. And matches go left to right, never overlapping. Try your own patterns at regex101 dot com.

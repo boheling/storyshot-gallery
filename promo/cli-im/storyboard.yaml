@@ -1,0 +1,66 @@
+name: cli-promo
+url: https://cli.im/url
+purpose: pitch
+out: cli-promo.mp4
+voice: { provider: say, voice: Tingting }
+theme: { accent: "#1fb35c" }
+music: { bpm: 112, volume: 0.8 }
+
+intro:
+  title: "草料二维码"
+  subtitle: "输入网址，**马上生成**二维码"
+  say: "草料二维码，网址一输，二维码马上就有。"
+
+setup:
+  - hide: '.cli-kefu, [class*="assistant"], [class*="float"]'
+
+steps:
+  - caption: "粘贴你的**网址**"
+    say: "打开网址生成器，输入你的链接。"
+    duration: 3
+    zoom: { target: { x: 614, y: 300 }, scale: 1.35, start: 0.0, ramp: [0.5, 0.4] }
+    actions:
+      - type: { target: { role: "textbox", name: "http://", exact: true }, text: "https://example.com", delay: 70 }
+
+  - caption: "一键**生成二维码**"
+    say: "点击生成，二维码立刻出现。"
+    duration: 3
+    zoom: { target: { x: 1000, y: 330 }, scale: 1.3, start: 0.8, ramp: [0.6, 0.4] }
+    actions:
+      - click: { role: "button", name: "生成二维码", exact: true }
+      - networkIdle: true
+      - pause: 800
+
+  - caption: "还能**美化样式**"
+    say: "想更好看？一键进入二维码美化。"
+    duration: 3
+    zoom: { target: { role: "button", name: "二维码美化", exact: true }, scale: 1.3, start: 0.4 }
+    actions:
+      - move: { role: "button", name: "二维码美化", exact: true, highlight: true }
+      - pause: 600
+
+  - hidden: true
+    actions:
+      - goto: https://mh.cli.im/
+      - networkIdle: true
+      - type: { target: { role: "textbox", name: "请输入二维码编码内容", exact: true }, text: "https://example.com", delay: 0 }
+      - click: { role: "button", name: "生成二维码", exact: true }
+      - networkIdle: true
+      - pause: 1000
+
+  - caption: "一键换上**渐变样式**"
+    say: "选一个样式，码点和颜色立刻变漂亮。"
+    duration: 3.5
+    zoom: { target: { x: 1204, y: 450 }, scale: 1.3, start: 1.2 }
+    actions:
+      - click: { alt: "简约渐变", exact: true }
+      - pause: 400
+      - waitFor: { text: "当前样式", timeout: 30000 }
+      - move: { x: 1450, y: 600, ms: 800 }
+      - pause: 1200
+
+end_card:
+  title: "草料二维码"
+  subtitle: "免费生成，**一键美化**"
+  cta: "立即访问 cli.im"
+  say: "草料二维码，免费生成，一键美化。"

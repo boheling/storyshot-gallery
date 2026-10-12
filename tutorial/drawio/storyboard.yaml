@@ -1,0 +1,260 @@
+# Storyshot storyboard (tutorial): draw.io for complete beginners
+name: app-tutorial-flowchart
+url: https://app.diagrams.net/
+purpose: tutorial
+out: app-tutorial-flowchart.mp4
+voice: { provider: kokoro, pronounce: { draw.io: draw dot I O, PNG: P N G, app.diagrams.net: app dot diagrams dot net } }
+subtitles: true
+chapters: true
+
+intro:
+  title: Your first diagram in draw.io
+  subtitle: From **blank page** to PNG in five steps
+  bullets:
+    - Start a blank diagram
+    - Add flowchart shapes
+    - Connect them with arrows
+    - Label shapes and arrows
+    - Export the result as a PNG
+  say: In this video you'll make your first diagram in draw.io. You'll start a blank diagram, add a few flowchart shapes, connect them, label them, and export the result as a PNG image. All you need is a web browser.
+
+setup:
+  - pause: 1500
+
+steps:
+  # ── Part 1: start a blank diagram ──
+  - card: { kicker: Part 1, title: Start a blank diagram }
+    caption: draw.io runs in your **browser**
+    say: Open app dot diagrams dot net in your browser. There is nothing to install and no account to create. Shapes are on the left, the canvas is in the middle, and settings for whatever you select appear on the right.
+    actions:
+      - move: { x: 0.5, y: 0.45, ms: 1200 }
+      - note: { target: { text: "General", exact: true }, text: "Shapes live here" }
+      - note: { target: { text: "Diagram", exact: true }, text: "Settings panel" }
+
+  - caption: Open the **File** menu
+    say: To start a fresh diagram, open the File menu.
+    actions:
+      - click: { text: "File", exact: true }
+
+  - caption: Choose **New...**
+    say: Choose New.
+    actions:
+      - move: { x: 84, y: 76, ms: 500 }   # straight down into the menu; a diagonal path crosses "Edit" and switches menus
+      - click: { text: "New...", exact: true }
+
+  - caption: Give the diagram a **name**
+    say: A dialog opens with templates. First, type a name for your diagram at the top, so you can find it again later.
+    actions:
+      - type: My first flowchart
+
+  - caption: Pick **Blank Diagram**
+    say: Then pick Blank Diagram. The templates are handy later, but starting empty is the best way to learn.
+    actions:
+      - click: { text: "Blank Diagram", exact: true }
+
+  - caption: Click **Create**
+    say: Click Create. You now have an empty page, with your diagram's name at the top.
+    actions:
+      - click: { role: button, name: Create, exact: true }
+      - pause: 800
+
+  # ── Part 2: add shapes ──
+  - card: { kicker: Part 2, title: Add flowchart shapes }
+    caption: Drag an **oval** onto the canvas
+    say: To add a shape, drag it from the left panel onto the canvas. In a flowchart, an oval marks where the process starts.
+    actions:
+      - drag: { from: { x: 188, y: 290 }, to: { x: 736, y: 150 } }
+
+  - caption: A **rectangle** is one step
+    say: A rectangle stands for one step of the process. Drag a rounded rectangle below the oval.
+    actions:
+      - drag: { from: { x: 74, y: 290 }, to: { x: 736, y: 290 } }
+
+  - caption: Another oval for the **end**
+    say: And one more oval at the bottom, for where the process ends. The blue guide lines help you line shapes up.
+    actions:
+      - drag: { from: { x: 188, y: 290 }, to: { x: 736, y: 420 } }
+      - click: { x: 1040, y: 700 }
+
+  # ── Part 3: connect ──
+  - card: { kicker: Part 3, title: Connect the shapes }
+    caption: Hover to see the **blue arrows**
+    say: Now connect the shapes. Hover over the top oval, and four light blue arrows appear around it.
+    actions:
+      - move: { x: 796, y: 190 }
+      - waitFor: { css: "img[title^='Click to connect']", nth: 0 }
+      - pause: 1200
+
+  - caption: Drag an arrow onto the **next shape**
+    say: Drag the bottom arrow onto the rectangle and let go. draw.io draws a connector, and it stays attached when you move the shapes later.
+    actions:
+      - drag: { from: { x: 796, y: 252 }, to: { x: 796, y: 322 } }
+
+  - caption: Same move for the **next link**
+    captionPosition: top
+    say: Do the same from the rectangle to the bottom oval. Hover, then drag the arrow.
+    actions:
+      - click: { x: 1040, y: 700 }
+      - move: { x: 796, y: 322 }
+      - waitFor: { css: "img[title^='Click to connect']", nth: 0 }
+      - pause: 600
+      - drag: { from: { x: 796, y: 372 }, to: { x: 796, y: 462 } }
+
+  # ── Part 4: label ──
+  - card: { kicker: Part 4, title: Label the shapes }
+    caption: Select a shape, then **type**
+    say: To label a shape, click it once to select it, and simply start typing. Here, type Start.
+    actions:
+      - click: { x: 796, y: 190 }
+      - type: Start
+
+  - caption: Label the **step**
+    say: Click the rectangle and type what happens in this step, for example, Write the report.
+    actions:
+      - click: { x: 796, y: 322 }
+      - type: Write the report
+
+  - caption: Label the **end**
+    say: Label the last oval End. Then click an empty spot on the canvas to finish editing.
+    actions:
+      - click: { x: 796, y: 462 }
+      - type: End
+      - click: { x: 1040, y: 700 }
+      - pause: 800
+
+  - caption: Your first **flowchart**
+    say: And that's a complete flowchart. Three shapes, two connectors, and a label on each shape.
+    follow: false
+    zoom: { target: { x: 796, y: 326 }, scale: 1.6, start: 0.2 }
+    actions:
+      - move: { x: 1040, y: 720, ms: 600 }
+      - pause: 1500
+
+  # ── Part 5: export ──
+  - card: { kicker: Part 5, title: Export as PNG }
+    caption: File, then **Export as**
+    say: Your flowchart is done. To share it as an image, open the File menu and point to Export as.
+    actions:
+      - click: { text: "File", exact: true }
+      - click: { text: "Export as", exact: true }
+
+  - caption: Choose **PNG...**
+    say: Choose P N G. That's a normal picture file that works in email, slides and chat.
+    actions:
+      - click: { text: "PNG...", exact: true }
+
+  - caption: The defaults are **fine**
+    say: An options window opens. The defaults are fine. Zoom 100 percent sets the image size, and include a copy of my diagram lets you open the P N G in draw.io again later to keep editing.
+    actions:
+      - pause: 400
+      - mark: "Include a copy of my diagram"
+
+  - caption: Click **Export**
+    say: Click Export.
+    actions:
+      - click: { role: button, name: Export, exact: true }
+
+  - caption: Name the file, then **Save**
+    say: Type a file name, keep Device as the place to save, and click Save. The P N G lands in your Downloads folder. Its name ends in dot drawio dot png, a reminder that it can be opened and edited again.
+    actions:
+      - type: my-first-flowchart
+      - click: { role: button, name: Save, exact: true }
+      - pause: 1000
+
+  # ── Part 6: second example ──
+  - card: { kicker: Part 6, title: A second example, subtitle: "A **decision** with yes and no" }
+    caption: Add a **new page**
+    say: The same steps work for any diagram. Let's build a decision. Click the plus button at the bottom left to add a fresh page to the same file.
+    actions:
+      - click: { x: 30, y: 885 }
+      - pause: 600
+
+  - caption: A **diamond** means a decision
+    say: In a flowchart, a diamond is a question with more than one answer. Drag the diamond onto the canvas.
+    actions:
+      - drag: { from: { x: 150, y: 329 }, to: { x: 700, y: 200 } }
+
+  - caption: Add one shape per **answer**
+    captionPosition: top
+    say: Add two rectangles, one for each answer. One to the right, one below.
+    actions:
+      - drag: { from: { x: 74, y: 290 }, to: { x: 900, y: 210 } }
+      - drag: { from: { x: 74, y: 290 }, to: { x: 680, y: 380 } }
+      - click: { x: 1040, y: 700 }
+
+  - caption: Label the **question**
+    say: Click the diamond and type the question. Tests pass?
+    actions:
+      - click: { x: 740, y: 240 }
+      - type: Tests pass?
+      - click: { x: 1040, y: 700 }
+
+  - caption: Connect, then type **Yes**
+    say: Hover over the diamond and drag its right arrow onto the right rectangle. The new arrow is still selected, so just type Yes to label it.
+    actions:
+      - move: { x: 740, y: 240 }
+      - waitFor: { css: "img[title^='Click to connect']", nth: 0 }
+      - pause: 600
+      - drag: { from: { x: 800, y: 240 }, to: { x: 960, y: 240 } }
+      - type: "Yes"
+      - click: { x: 1040, y: 700 }
+
+  - caption: Connect, then type **No**
+    say: Do the same with the bottom arrow, and type No.
+    actions:
+      - move: { x: 740, y: 240 }
+      - waitFor: { css: "img[title^='Click to connect']", nth: 0 }
+      - pause: 600
+      - drag: { from: { x: 740, y: 300 }, to: { x: 740, y: 410 } }
+      - type: "No"
+      - click: { x: 1040, y: 700 }
+
+  - caption: Label the **Yes** outcome
+    say: Now label what happens for each answer. If the tests pass, we Deploy.
+    actions:
+      - click: { x: 960, y: 240 }
+      - type: Deploy
+
+  - caption: Label the **No** outcome
+    say: If they don't, we Fix the bug. Click an empty spot to finish.
+    actions:
+      - click: { x: 740, y: 410 }
+      - type: Fix the bug
+      - click: { x: 1040, y: 700 }
+      - pause: 800
+
+  - caption: A decision with **two branches**
+    say: Here is the finished decision. One question, and a labeled arrow for each answer.
+    follow: false
+    zoom: { target: { x: 850, y: 320 }, scale: 1.6, start: 0.2 }
+    actions:
+      - pause: 1500
+
+  - caption: Export it **the same way**
+    say: Export works exactly as before. File, then Export as, then P N G.
+    actions:
+      - click: { text: "File", exact: true }
+      - click: { text: "Export as", exact: true }
+      - click: { text: "PNG...", exact: true }
+
+  - caption: Click **Export**
+    say: Click Export. Only the page you are looking at goes into the image.
+    actions:
+      - click: { role: button, name: Export, exact: true }
+
+  - caption: Name it and **Save**
+    say: Name the file decision, and click Save.
+    actions:
+      - type: decision
+      - click: { role: button, name: Save, exact: true }
+      - pause: 1200
+
+end_card:
+  title: You can now draw any diagram
+  bullets:
+    - "File, New..., Blank Diagram, Create"
+    - Drag shapes in from the left panel
+    - Hover, then drag a blue arrow to connect
+    - Select anything and type to label it
+    - "File, Export as, PNG..., Export, Save"
+  say: To recap. Start with File, New, Blank Diagram. Drag shapes in from the left. Hover and drag a blue arrow to connect them. Select anything and type to label it. And export with File, Export as, P N G. These five moves work for every diagram you'll make.

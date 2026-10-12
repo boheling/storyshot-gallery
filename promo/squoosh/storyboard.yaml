@@ -1,0 +1,62 @@
+name: squoosh-promo
+url: https://squoosh.app/
+purpose: pitch
+out: squoosh-promo.mp4
+
+intro:
+  title: "Squoosh"
+  subtitle: Shrink images **right in your browser**
+
+setup:
+  - dismiss: { role: "button", name: "DISMISS" }
+
+steps:
+  - caption: Drop in any image, or **try a demo**
+    captionPosition: top
+    duration: 2.4
+    zoom: { target: { x: 800, y: 700 }, scale: 1.3, start: 0.6, end: 2.6, ramp: [0.6, 0.3] }
+    actions:
+      - move: { x: 0.5, y: 0.42, ms: 700 }
+      - pause: 300
+      - click: { alt: "Large photo", exact: true, ms: 800 }
+
+  - hidden: true
+    actions:
+      - waitFor: { text: "862", timeout: 30000 }
+      - pause: 800
+
+  - caption: Drag to compare **before / after**
+    duration: 2.8
+    actions:
+      - drag: { from: { x: 800, y: 450 }, by: [{ x: -380 }, { x: 560 }, { x: -180 }] }
+
+  - caption: Pick a modern codec
+    duration: 2.2
+    actions:
+      - select: { target: { css: "select._builtin-select_1onzk_5._large_1onzk_29", nth: 1 }, option: "WebP" }
+      - pause: 1500
+
+  - caption: Dial the quality down
+    duration: 2.4
+    actions:
+      - drag: { from: { x: 1516, y: 722 }, by: [{ x: -140 }] }
+      - pause: 1500
+
+  - caption: 2.79 MB → **228 kB, 92% smaller**
+    captionPosition: top
+    duration: 2.2
+    zoom: { target: { x: 1420, y: 852 }, scale: 1.5, start: 0.1, ramp: [0.5, 0.4] }
+    actions:
+      - move: { x: 1250, y: 780, ms: 800 }
+      - pause: 1200
+
+  - caption: Still sharp. **Way smaller.**
+    duration: 2.6
+    zoom: { target: { x: 700, y: 280 }, scale: 1.3, start: 0.2 }
+    actions:
+      - drag: { from: { x: 800, y: 450 }, by: [{ x: -250 }, { x: 300 }] }
+
+end_card:
+  title: "Squoosh"
+  subtitle: Free, private, **no upload needed**
+  cta: "Try it at squoosh.app"

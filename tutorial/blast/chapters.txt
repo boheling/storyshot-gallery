@@ -1,0 +1,5 @@
+0:00 Introduction
+0:26 Part 1 · Set up the search
+1:12 Part 2 · Read the hits table
+2:38 Part 3 · Open one alignment
+3:25 Part 4 · Now a second example

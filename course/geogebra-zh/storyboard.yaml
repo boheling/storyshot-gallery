@@ -1,0 +1,188 @@
+name: geogebra-lesson-vertex-form
+url: https://www.geogebra.org/graphing?lang=zh_CN
+purpose: course
+out: geogebra-lesson-vertex-form.mp4
+voice: { provider: say, voice: Tingting }
+subtitles: burn
+chapters: true
+follow: false
+viewport: { width: 1280, height: 720 }
+output: { width: 1920, height: 1080, fps: 30 }
+theme: { accent: "#e8590c" }
+
+intro:
+  kicker: 初中数学 · 微课
+  title: 二次函数的顶点式
+  subtitle: "y = a(x − h)² + k"
+  bullets:
+    - a 决定开口方向和胖瘦
+    - h 让图像左右平移
+    - k 让图像上下平移
+    - 顶点坐标就是 (h, k)
+  say: 同学们好！这节课我们用 GeoGebra 现场演示，看看二次函数顶点式里的 a、h、k，分别怎样改变图像，以及为什么会这样。
+
+setup:
+  - dismiss: { role: "button", name: "关闭", exact: true }
+  - click: { role: "textbox", name: "在此处输入方程或代数式.", exact: true }
+  - type: a=Slider(-3,3,0.5)
+  - press: Enter
+  - type: h=Slider(-4,4,1)
+  - press: Enter
+  - type: k=Slider(-4,4,1)
+  - press: Enter
+  - type: SetValue(a,1)
+  - press: Enter
+  - type: SetVisibleInView(a,1,false)
+  - press: Enter
+  - type: SetVisibleInView(h,1,false)
+  - press: Enter
+  - type: SetVisibleInView(k,1,false)
+  - press: Enter
+  - type: p(x)=x^2
+  - press: Enter
+  - type: SetColor(p,0.6,0.6,0.6)
+  - press: Enter
+  - type: SetLineStyle(p,1)
+  - press: Enter
+  - pause: 800
+
+steps:
+  - card: { kicker: 第一部分, title: 准备图像, subtitle: "三个滑动条：a、h、k" }
+    caption: 输入顶点式
+    say: 我已经在左边准备好了三个滑动条 a、h、k。现在在输入框里输入函数：y 等于 a 乘以 x 减 h 的平方，再加 k。
+    actions:
+      - click: { role: "textbox", name: "在此处输入方程或代数式.", exact: true }
+      - type: f(x)=a*(x-h)^2
+      - press: ArrowRight
+      - type: +k
+      - press: Enter
+  - caption: 标出顶点 V(h, k)
+    say: 再输入点 V 等于括号 h 逗号 k。待会儿我们看看，这个点是不是一直待在抛物线的顶点上。
+    actions:
+      - type: V=(h,k)
+      - press: Enter
+  - hidden: true
+    actions:
+      - type: SetLabelMode(V,1)
+      - press: Enter
+      - type: SetPointSize(V,6)
+      - press: Enter
+      - pause: 500
+  - caption: 起点：y = x²
+    say: 现在 a 等于 1，h 和 k 都等于 0，所以图像就是最基本的 y 等于 x 的平方，顶点在原点。灰色虚线也是 y 等于 x 平方，留着做对比。
+    zoom: { target: { x: 838, y: 330 }, scale: 1.3, start: 0.5 }
+    actions:
+      - move: { x: 780, y: 470, ms: 1200 }
+      - pause: 1500
+
+  - card: { kicker: 第二部分, title: a 的作用, subtitle: 开口方向与胖瘦 }
+    caption: a 变大：图像变**瘦**
+    say: 先拖动 a。把 a 从 1 拖到 3，看，抛物线变瘦了，开口变小了。
+    actions:
+      - drag: { from: { x: 257, y: 119 }, to: { x: 295, y: 119 }, dragMs: 2500 }
+      - pause: 1000
+  - caption: a 变小：图像变**胖**
+    say: 再把 a 拖到 0.5，抛物线变胖了，开口变大了。
+    actions:
+      - drag: { from: { x: 295, y: 119 }, to: { x: 247, y: 119 }, dragMs: 2500 }
+      - pause: 1000
+  - caption: a 为负：开口**向下**
+    captionPosition: top
+    say: 继续拖到 a 等于负 1，开口一下子翻转，朝下了。
+    actions:
+      - drag: { from: { x: 247, y: 119 }, to: { x: 219, y: 119 }, dragMs: 2000 }
+      - pause: 1000
+  - card:
+      kicker: 为什么？
+      title: a 管开口
+      image: a-diagram.svg
+      bullets:
+        - (x − h)² ≥ 0，a > 0 时 y ≥ k，开口向上
+        - a < 0 时 y ≤ k，开口向下
+        - "|a| 越大，y 变化越快，图像越瘦"
+      say: 为什么呢？因为 x 减 h 的平方永远大于或等于 0。a 是正数，乘出来还是非负，y 不会比 k 小，所以开口向上；a 是负数，乘出来非正，y 不会比 k 大，所以开口向下。a 的绝对值越大，x 一变，y 就变得越快，图像就越瘦。
+    caption: 把 a 调回 1
+    say: 好，先把 a 调回 1。
+    actions:
+      - drag: { from: { x: 219, y: 119 }, to: { x: 257, y: 119 }, dragMs: 1500 }
+
+  - card: { kicker: 第三部分, title: k 的作用, subtitle: 上下平移 }
+    caption: k = 3：向**上**移 3
+    say: 接下来拖动 k。把 k 拖到 3，整条抛物线向上平移了 3 个单位，顶点 V 变成了 0 逗号 3。
+    actions:
+      - drag: { from: { x: 238, y: 265 }, to: { x: 281, y: 265 }, dragMs: 2500 }
+      - pause: 1000
+  - caption: k = −2：向**下**移 2
+    say: 把 k 拖到负 2，抛物线向下平移了 2 个单位。原因很简单：k 是最后加上的常数，每个点的 y 坐标都加上 k，所以整个图像上下移动 k 个单位。
+    actions:
+      - drag: { from: { x: 281, y: 265 }, to: { x: 209, y: 265 }, dragMs: 2500 }
+      - pause: 1000
+  - caption: 把 k 调回 0
+    say: 再把 k 调回 0。
+    actions:
+      - drag: { from: { x: 209, y: 265 }, to: { x: 238, y: 265 }, dragMs: 1500 }
+
+  - card:
+      kicker: 小测验
+      title: h 从 0 变成 2，图像往哪边移？
+      subtitle: "y = (x − 2)²：向左，还是向右？"
+      think: 5
+      say: 先来个小测验。如果把 h 从 0 调到 2，式子变成 y 等于 x 减 2 的平方。图像会向左移，还是向右移？先想一想，再看答案。
+    caption: 答案：向**右**移 2
+    say: 我们拖动 h 到 2。答案是：向右移动 2 个单位！顶点 V 跑到了 2 逗号 0。
+    actions:
+      - drag: { from: { x: 238, y: 192 }, to: { x: 266, y: 192 }, dragMs: 2500 }
+      - pause: 1000
+  - card:
+      kicker: 为什么？
+      title: 顶点在 x = h 处
+      image: h-diagram.svg
+      bullets:
+        - (x − h)² 在 x = h 时最小，等于 0
+        - 所以顶点横坐标是 h
+        - 括号里"减"向右移，"加"向左移
+      say: 为什么减号反而向右？因为 x 减 h 的平方，只有在 x 等于 h 的时候才等于 0，这时 y 最小，就是顶点。y 等于 x 减 2 的平方，要 x 等于 2 才取到最小，所以顶点在 x 等于 2，图像向右移。
+    caption: h = −3：向**左**移 3
+    say: 反过来，把 h 拖到负 3，式子变成 x 加 3 的平方，图像向左移动 3 个单位。
+    actions:
+      - drag: { from: { x: 266, y: 192 }, to: { x: 195, y: 192 }, dragMs: 2500 }
+      - pause: 1000
+
+  - card:
+      kicker: 综合练习
+      title: "y = 2(x + 1)² − 3"
+      subtitle: 开口方向？顶点坐标？
+      think: 5
+      say: 最后综合练习一下。y 等于 2 乘 x 加 1 的平方，再减 3。它的开口朝哪边？顶点在哪里？先想一想。
+    caption: h = −1
+    say: x 加 1 就是 x 减负 1，所以 h 等于负 1。
+    actions:
+      - drag: { from: { x: 195, y: 192 }, to: { x: 224, y: 192 }, dragMs: 1800 }
+      - pause: 600
+  - caption: k = −3
+    say: 减 3，所以 k 等于负 3。
+    actions:
+      - drag: { from: { x: 238, y: 265 }, to: { x: 195, y: 265 }, dragMs: 1800 }
+      - pause: 600
+  - caption: a = 2
+    say: a 等于 2，是正数。
+    actions:
+      - drag: { from: { x: 257, y: 119 }, to: { x: 276, y: 119 }, dragMs: 1800 }
+      - pause: 600
+  - caption: 开口向上，顶点 (−1, −3)
+    say: 所以开口向上，比 y 等于 x 平方瘦一些，顶点在负 1 逗号负 3。你答对了吗？
+    zoom: { target: { x: 788, y: 520 }, scale: 1.4, start: 0.3 }
+    actions:
+      - move: { x: 880, y: 620, ms: 1200 }
+      - pause: 2000
+
+end_card:
+  kicker: 总结
+  title: "y = a(x − h)² + k"
+  bullets:
+    - a > 0 开口向上，a < 0 开口向下
+    - "|a| 越大越瘦，越小越胖"
+    - h 左右平移：括号里减 h 向右
+    - k 上下平移：加 k 向上
+    - 顶点坐标 (h, k)
+  say: 我们来总结一下。a 决定开口方向和胖瘦：a 大于 0 开口向上，小于 0 开口向下，绝对值越大越瘦。h 决定左右平移，顶点横坐标就是 h。k 决定上下平移。顶点坐标就是 h 逗号 k。下课！

@@ -1,0 +1,72 @@
+name: jsoncrack-promo
+url: https://jsoncrack.com/editor
+purpose: pitch
+out: jsoncrack-promo.mp4
+music: { bpm: 120 }
+
+intro:
+  title: "JSON Crack"
+  subtitle: Paste JSON. **See the graph.**
+
+setup:
+  - waitFor: { css: ".monaco-editor .view-lines", timeout: 30000 }
+
+steps:
+  - hidden: true
+    actions:
+      - click: { css: ".monaco-editor .view-lines" }
+      - press: Meta+A
+      - press: Backspace
+      - type: "{}"
+      - pause: 1200
+
+  - caption: Paste in **any JSON**
+    captionPosition: top
+    duration: 2.9
+    zoom: { target: { x: 0.18, y: 0.15 }, scale: 1.6, start: 0, end: 2.9, ramp: [0.4, 0.4] }
+    actions:
+      - click: { css: ".monaco-editor .view-lines" }
+      - press: Meta+A
+      - press: Backspace
+      - type:
+          delay: 18
+          text: '{"project":"Atlas","version":"2.1","owner":{"name":"Ada","role":"lead"},"tags":["api","graph","viz"],"tasks":[{"id":1,"title":"Parse","done":true},{"id":2,"title":"Render","done":false}]}'
+      - press: Shift+Alt+F
+
+  - caption: It becomes a **live graph**
+    duration: 2.5
+    actions:
+      - move: { x: 0.62, y: 0.45, ms: 900 }
+      - pause: 1200
+
+  - caption: Collapse branches **in one click**
+    duration: 2.5
+    zoom: { target: { x: 0.45, y: 0.47 }, scale: 1.25, start: 0.1 }
+    actions:
+      - click: { css: '[data-collapse-path="[\"tasks\"]"]' }
+      - pause: 900
+      - click: { role: "button", name: "Expand", exact: true }
+      - pause: 500
+
+  - caption: Click any node for its **JSON path**
+    duration: 3
+    zoom: { target: { x: 0.5, y: 0.5 }, scale: 1.3, start: 0.8 }
+    actions:
+      - click: { css: "rect._rect_1b6xi_1", nth: 0 }
+      - pause: 1500
+
+  - caption: Flip the layout **instantly**
+    captionPosition: top
+    duration: 3
+    actions:
+      - press: Escape
+      - pause: 300
+      - click: { role: "button", name: "rotate layout", exact: true }
+      - pause: 700
+      - click: { role: "button", name: "fit to center", exact: true }
+      - pause: 900
+
+end_card:
+  title: "JSON Crack"
+  subtitle: Your JSON, **as a graph**
+  cta: "Try it at jsoncrack.com/editor"

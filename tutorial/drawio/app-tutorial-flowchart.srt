@@ -1,0 +1,139 @@
+1
+00:00:00,150 --> 00:00:14,604
+In this video you'll make your first diagram in draw.io. You'll start a blank diagram, add a few flowchart shapes, connect them, label them, and export the result as a PNG image. All you need is a web browser.
+
+2
+00:00:17,804 --> 00:00:31,121
+Open app dot diagrams dot net in your browser. There is nothing to install and no account to create. Shapes are on the left, the canvas is in the middle, and settings for whatever you select appear on the right.
+
+3
+00:00:32,871 --> 00:00:35,701
+To start a fresh diagram, open the File menu.
+
+4
+00:00:37,451 --> 00:00:38,251
+Choose New.
+
+5
+00:00:42,590 --> 00:00:49,784
+A dialog opens with templates. First, type a name for your diagram at the top, so you can find it again later.
+
+6
+00:00:51,534 --> 00:00:57,697
+Then pick Blank Diagram. The templates are handy later, but starting empty is the best way to learn.
+
+7
+00:00:59,447 --> 00:01:03,987
+Click Create. You now have an empty page, with your diagram's name at the top.
+
+8
+00:01:08,419 --> 00:01:15,537
+To add a shape, drag it from the left panel onto the canvas. In a flowchart, an oval marks where the process starts.
+
+9
+00:01:17,287 --> 00:01:22,744
+A rectangle stands for one step of the process. Drag a rounded rectangle below the oval.
+
+10
+00:01:24,494 --> 00:01:30,826
+And one more oval at the bottom, for where the process ends. The blue guide lines help you line shapes up.
+
+11
+00:01:34,976 --> 00:01:40,656
+Now connect the shapes. Hover over the top oval, and four light blue arrows appear around it.
+
+12
+00:01:42,406 --> 00:01:51,165
+Drag the bottom arrow onto the rectangle and let go. draw.io draws a connector, and it stays attached when you move the shapes later.
+
+13
+00:01:52,915 --> 00:01:57,615
+Do the same from the rectangle to the bottom oval. Hover, then drag the arrow.
+
+14
+00:02:05,534 --> 00:02:10,975
+To label a shape, click it once to select it, and simply start typing. Here, type Start.
+
+15
+00:02:12,725 --> 00:02:17,648
+Click the rectangle and type what happens in this step, for example, Write the report.
+
+16
+00:02:19,398 --> 00:02:24,703
+Label the last oval End. Then click an empty spot on the canvas to finish editing.
+
+17
+00:02:26,905 --> 00:02:31,793
+And that's a complete flowchart. Three shapes, two connectors, and a label on each shape.
+
+18
+00:02:35,943 --> 00:02:41,957
+Your flowchart is done. To share it as an image, open the File menu and point to Export as.
+
+19
+00:02:44,626 --> 00:02:50,161
+Choose P N G. That's a normal picture file that works in email, slides and chat.
+
+20
+00:02:51,911 --> 00:03:05,816
+An options window opens. The defaults are fine. Zoom 100 percent sets the image size, and include a copy of my diagram lets you open the P N G in draw.io again later to keep editing.
+
+21
+00:03:07,566 --> 00:03:08,453
+Click Export.
+
+22
+00:03:13,320 --> 00:03:28,158
+Type a file name, keep Device as the place to save, and click Save. The P N G lands in your Downloads folder. Its name ends in dot drawio dot png, a reminder that it can be opened and edited again.
+
+23
+00:03:32,308 --> 00:03:40,804
+The same steps work for any diagram. Let's build a decision. Click the plus button at the bottom left to add a fresh page to the same file.
+
+24
+00:03:42,554 --> 00:03:48,904
+In a flowchart, a diamond is a question with more than one answer. Drag the diamond onto the canvas.
+
+25
+00:03:50,654 --> 00:03:54,845
+Add two rectangles, one for each answer. One to the right, one below.
+
+26
+00:04:01,175 --> 00:04:04,326
+Click the diamond and type the question. Tests pass?
+
+27
+00:04:08,818 --> 00:04:17,342
+Hover over the diamond and drag its right arrow onto the right rectangle. The new arrow is still selected, so just type Yes to label it.
+
+28
+00:04:19,092 --> 00:04:21,545
+Do the same with the bottom arrow, and type No.
+
+29
+00:04:28,806 --> 00:04:33,088
+Now label what happens for each answer. If the tests pass, we Deploy.
+
+30
+00:04:34,838 --> 00:04:38,452
+If they don't, we Fix the bug. Click an empty spot to finish.
+
+31
+00:04:43,073 --> 00:04:48,036
+Here is the finished decision. One question, and a labeled arrow for each answer.
+
+32
+00:04:49,786 --> 00:04:54,850
+Export works exactly as before. File, then Export as, then P N G.
+
+33
+00:05:01,282 --> 00:05:05,056
+Click Export. Only the page you are looking at goes into the image.
+
+34
+00:05:06,806 --> 00:05:09,023
+Name the file decision, and click Save.
+
+35
+00:05:13,224 --> 00:05:30,988
+To recap. Start with File, New, Blank Diagram. Drag shapes in from the left. Hover and drag a blue arrow to connect them. Select anything and type to label it. And export with File, Export as, P N G. These five moves work for every diagram you'll make.

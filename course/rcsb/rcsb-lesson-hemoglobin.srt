@@ -1,0 +1,55 @@
+1
+00:00:00,150 --> 00:00:08,417
+In this lesson we open hemoglobin, entry 4HHB in the Protein Data Bank, and ask why it is built the way it is.
+
+2
+00:00:11,617 --> 00:00:24,781
+This is the entry page for 4HHB, the crystal structure of human hemoglobin. Its classification is oxygen transport. It picks up oxygen in the lungs and drops it off in the tissues.
+
+3
+00:00:26,531 --> 00:00:36,060
+Under the picture, Global Stoichiometry reads hetero four-mer, A two B two. That means four protein chains of two different kinds, two of each.
+
+4
+00:00:37,810 --> 00:00:46,059
+Scroll down to Macromolecules. The first entity is hemoglobin subunit alpha. It appears twice, as chains A and C.
+
+5
+00:00:47,809 --> 00:00:56,343
+The second entity is hemoglobin subunit beta, as chains B and D. So A two B two means two alpha and two beta chains.
+
+6
+00:00:58,093 --> 00:01:09,663
+Now the Small Molecules table. H E M is heme, a ring with an iron atom at its center. It is listed four times, once for each of chains A, B, C and D.
+
+7
+00:01:11,413 --> 00:01:35,015
+Here is the why. The iron in each heme binds one oxygen molecule, so four chains carry up to four oxygens. And because the chains touch, oxygen binding to one chain makes the others grab oxygen more easily. This teamwork, called cooperativity, lets hemoglobin load fully in the lungs and unload readily in the tissues. A single chain could not do that.
+
+8
+00:01:35,915 --> 00:01:40,059
+Now let's see it in three D. Scroll back up and click the Structure tab.
+
+9
+00:01:49,604 --> 00:02:02,241
+This is the three D viewer. Each color is one protein chain, folded mostly into helices. Notice how the four chains pack into one compact unit. On your own screen you can drag to turn it.
+
+10
+00:02:03,991 --> 00:02:10,346
+The red dots are water from the crystal. In the Components panel, click the eye next to Water to hide them.
+
+11
+00:02:19,208 --> 00:02:25,632
+Quick check. How many oxygen molecules can one hemoglobin molecule carry at most? Pause and think.
+
+12
+00:02:30,532 --> 00:02:45,406
+Let's check. Hide the protein by clicking the eye next to Polymer, then Reset Zoom. What is left are four heme groups, each in the color of its chain, held by a histidine. Four hemes means at most four oxygen molecules.
+
+13
+00:02:47,156 --> 00:02:52,823
+Show the protein again. Each heme sits in a pocket of its own chain, tucked between helices.
+
+14
+00:02:59,705 --> 00:03:13,873
+To recap. Hemoglobin has four chains, two alpha and two beta. Each holds one heme whose iron binds one oxygen. And the chains work together, so oxygen loads in the lungs and unloads where it is needed.

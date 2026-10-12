@@ -1,0 +1,88 @@
+name: excalidraw-promo
+url: https://excalidraw.com/
+purpose: pitch
+out: excalidraw-promo.mp4
+theme: { accent: "#a5a1ff", font: Inter }
+music: { bpm: 112, volume: 1 }
+voice: { provider: kokoro, voice: af_heart }
+
+intro:
+  logo: { css: ".welcome-screen-center__logo" }
+  subtitle: Sketch an idea in **seconds**
+  say: Got an idea? Sketch it in seconds.
+
+setup:
+  - hide: '.welcome-screen-decor-hint, a[href*="end-to-end-encryption"]'
+  - click: { role: "button", name: "Zoom in", exact: true }
+  - click: { role: "button", name: "Zoom in", exact: true }
+  - click: { role: "button", name: "Zoom in", exact: true }
+  - click: { role: "button", name: "Zoom in", exact: true }
+
+steps:
+  - caption: A whiteboard, right in your browser
+    duration: 2.4
+    zoom: { target: { x: 0.5, y: 0.33 }, scale: 1.25, start: 0.2 }
+    actions:
+      - pause: 400
+      - move: { x: 0.3, y: 0.45, ms: 1200 }
+
+  - caption: Draw a box, **pick a color**
+    say: Draw a box, pick a color.
+    duration: 3.0
+    actions:
+      - press: { key: r, show: true }
+      - drag: { from: { x: 250, y: 360 }, to: { x: 610, y: 570 }, dragMs: 900 }
+      - click: { role: "button", name: "#a5d8ff", exact: true }
+      - pause: 300
+
+  - caption: Label it
+    say: Give it a label.
+    duration: 1.9
+    zoom: { target: { x: 430, y: 465 }, scale: 1.35, start: 0.2 }
+    actions:
+      - press: Enter
+      - type: { text: "Idea", delay: 90 }
+      - press: Escape
+      - pause: 200
+
+  - caption: Add another shape
+    say: Add another shape,
+    duration: 3.2
+    actions:
+      - press: { key: o, show: true }
+      - drag: { from: { x: 990, y: 360 }, to: { x: 1350, y: 570 }, dragMs: 900 }
+      - click: { role: "button", name: "#b2f2bb", exact: true }
+      - press: Enter
+      - type: { text: "Launch", delay: 80 }
+      - press: Escape
+
+  - caption: Connect them with an **arrow**
+    say: and connect them with an arrow.
+    duration: 2.6
+    actions:
+      - press: { key: a, show: true }
+      - drag: { from: { x: 625, y: 465 }, to: { x: 975, y: 465 }, dragMs: 900 }
+      - press: Escape
+
+  - caption: Jot a note anywhere
+    duration: 2.8
+    actions:
+      - press: { key: t, show: true }
+      - click: { x: 712, y: 270 }
+      - type: { text: "v1 by Friday!", delay: 70 }
+      - press: Escape
+      - press: Escape
+
+  - caption: Hand-drawn diagram, **done**
+    say: Done. Hand-drawn, and ready to share.
+    duration: 2.6
+    zoom: { target: { x: 800, y: 440 }, scale: 1.3, start: 0.2 }
+    actions:
+      - move: { x: 0.8, y: 0.75, ms: 1000 }
+      - pause: 800
+
+end_card:
+  logo: { css: ".welcome-screen-center__logo" }
+  subtitle: Free, open source, **no sign-up**
+  cta: excalidraw.com
+  say: Try Excalidraw free at excalidraw dot com.

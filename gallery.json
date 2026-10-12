@@ -1,0 +1,212 @@
+[
+ {
+  "id": "promo",
+  "label": "Promos",
+  "blurb": "Short and tightly cut: one message, a browser frame on a backdrop, music.",
+  "items": [
+   {
+    "id": "promo/cli-im",
+    "title": "输入网址，马上生成二维码",
+    "site": "草料二维码 cli.im",
+    "lang": "zh",
+    "url": "https://cli.im/url",
+    "request": "给草料二维码（https://cli.im/）做一个简短的中文宣传视频：输入一个网址，马上生成二维码，还可以美化一下样式。用于官网首页和社交媒体。中文字幕和中文配音。",
+    "seconds": 20.9,
+    "video": "promo/cli-im/video.mp4",
+    "poster": "promo/cli-im/poster.jpg",
+    "storyboard": "promo/cli-im/storyboard.yaml",
+    "notes": "promo/cli-im/notes.md",
+    "article": null
+   },
+   {
+    "id": "promo/excalidraw",
+    "title": "Sketch a diagram in seconds",
+    "site": "Excalidraw",
+    "lang": "en",
+    "url": "https://excalidraw.com/",
+    "request": "Make a short promo video of Excalidraw (https://excalidraw.com), the hand-drawn style whiteboard — show how quickly you can sketch a little diagram (a couple of shapes, an arrow, some text). For a landing page / social post.",
+    "seconds": 24.666016,
+    "video": "promo/excalidraw/video.mp4",
+    "poster": "promo/excalidraw/poster.jpg",
+    "storyboard": "promo/excalidraw/storyboard.yaml",
+    "notes": "promo/excalidraw/notes.md",
+    "article": null
+   },
+   {
+    "id": "promo/jsoncrack",
+    "title": "Paste JSON, explore it as a graph",
+    "site": "JSON Crack",
+    "lang": "en",
+    "url": "https://jsoncrack.com/editor",
+    "request": "Make a short promo video of JSON Crack's editor (https://jsoncrack.com/editor): paste a bit of JSON and watch it turn into an interactive graph you can explore. For a landing page / social post.",
+    "seconds": 17.1,
+    "video": "promo/jsoncrack/video.mp4",
+    "poster": "promo/jsoncrack/poster.jpg",
+    "storyboard": "promo/jsoncrack/storyboard.yaml",
+    "notes": "promo/jsoncrack/notes.md",
+    "article": null
+   },
+   {
+    "id": "promo/squoosh",
+    "title": "Shrink an image, compare before and after",
+    "site": "Squoosh",
+    "lang": "en",
+    "url": "https://squoosh.app/",
+    "request": "Make a short promo video of Squoosh (https://squoosh.app), Google's in-browser image compressor — show how it shrinks an image while you compare before/after. For a landing page / social post.",
+    "seconds": 17.8,
+    "video": "promo/squoosh/video.mp4",
+    "poster": "promo/squoosh/poster.jpg",
+    "storyboard": "promo/squoosh/storyboard.yaml",
+    "notes": "promo/squoosh/notes.md",
+    "article": null
+   }
+  ]
+ },
+ {
+  "id": "tutorial",
+  "label": "Tutorials",
+  "blurb": "Paced to follow along: one narrated action per step, the camera following each click, a second example, a recap.",
+  "items": [
+   {
+    "id": "tutorial/blast",
+    "title": "Run a protein BLAST search and read the results",
+    "site": "NCBI BLAST",
+    "lang": "en",
+    "url": "https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&PAGE_TYPE=BlastSearch",
+    "request": "Make a tutorial video for new lab members on how to use NCBI protein BLAST (blastp): paste a query sequence, choose the database, run it, and read the results (hits table, what E-value / identity mean, opening one alignment). Use human hemoglobin beta as the main example, then show a second example with human insulin so they see how results differ.",
+    "seconds": 304.633333,
+    "video": "tutorial/blast/video.mp4",
+    "poster": "tutorial/blast/poster.jpg",
+    "storyboard": "tutorial/blast/storyboard.yaml",
+    "notes": "tutorial/blast/notes.md",
+    "article": null
+   },
+   {
+    "id": "tutorial/desmos",
+    "title": "Plot a function, add a slider, read off points",
+    "site": "Desmos",
+    "lang": "en",
+    "url": "https://www.desmos.com/calculator",
+    "request": "Make a tutorial video for students who have never used Desmos (https://www.desmos.com/calculator): how to plot a function, add a slider to change a parameter, and read off points like intercepts. Use y = a·sin(x) as the example, then a second example like a parabola so they see the same steps work for any function.",
+    "seconds": 282.966667,
+    "video": "tutorial/desmos/video.mp4",
+    "poster": "tutorial/desmos/poster.jpg",
+    "storyboard": "tutorial/desmos/storyboard.yaml",
+    "notes": "tutorial/desmos/notes.md",
+    "article": null
+   },
+   {
+    "id": "tutorial/drawio",
+    "title": "Draw a flowchart, connect, label and export",
+    "site": "diagrams.net",
+    "lang": "en",
+    "url": "https://app.diagrams.net/",
+    "request": "Make a tutorial video for new hires who've never used diagrams.net (https://app.diagrams.net): how to start a blank diagram, add a few flowchart shapes, connect them, label them, and export the result as PNG. Then a second quick example (e.g. a decision diamond with yes/no branches) so they see the same steps work for any diagram.",
+    "seconds": 331.533333,
+    "video": "tutorial/drawio/video.mp4",
+    "poster": "tutorial/drawio/poster.jpg",
+    "storyboard": "tutorial/drawio/storyboard.yaml",
+    "notes": "tutorial/drawio/notes.md",
+    "article": null
+   }
+  ]
+ },
+ {
+  "id": "course",
+  "label": "Lessons",
+  "blurb": "Explain the why: concept cards, the idea shown live, a question to check understanding.",
+  "items": [
+   {
+    "id": "course/geogebra-zh",
+    "title": "二次函数顶点式：a、h、k 怎样改变图像",
+    "site": "GeoGebra 中文版",
+    "lang": "zh",
+    "url": "https://www.geogebra.org/graphing?lang=zh_CN",
+    "request": "用 GeoGebra 中文版（https://www.geogebra.org/graphing?lang=zh_CN）做一节中文微课：讲清楚二次函数顶点式 y = a(x−h)² + k 里 a、h、k 分别怎么影响图像，为什么。要现场演示（拖动滑动条看变化），中间加一个小测验题让学生先想一想，最后总结。中文字幕和中文配音。",
+    "seconds": 283.366667,
+    "video": "course/geogebra-zh/video.mp4",
+    "poster": "course/geogebra-zh/poster.jpg",
+    "storyboard": "course/geogebra-zh/storyboard.yaml",
+    "notes": "course/geogebra-zh/notes.md",
+    "article": null
+   },
+   {
+    "id": "course/rcsb",
+    "title": "Why hemoglobin has four chains and four hemes",
+    "site": "RCSB PDB",
+    "lang": "en",
+    "url": "https://www.rcsb.org/structure/4HHB",
+    "request": "Make a short lesson video on protein structure using hemoglobin (PDB 4HHB) on RCSB PDB (start at https://www.rcsb.org/structure/4HHB, and use its 3D viewer). Explain WHY hemoglobin is built the way it is: four chains (two alpha, two beta), each holding a heme group that binds oxygen. Show where to find this on the entry page and in the 3D view. Include a quick check-your-understanding question.",
+    "seconds": 194.433008,
+    "video": "course/rcsb/video.mp4",
+    "poster": "course/rcsb/poster.jpg",
+    "storyboard": "course/rcsb/storyboard.yaml",
+    "notes": "course/rcsb/notes.md",
+    "article": null
+   },
+   {
+    "id": "course/regex101",
+    "title": "How regular expressions match: literals, \\d, + and {3}",
+    "site": "regex101",
+    "lang": "en",
+    "url": "https://regex101.com/",
+    "request": "Make a short lesson video that explains how regular expressions match text, using regex101 (https://regex101.com) to show it live: literal characters, character classes like \\d, and quantifiers like + and {3}. I want students to understand WHY a pattern matches or not, not just click buttons. A quick check-your-understanding question would be great.",
+    "seconds": 245.2,
+    "video": "course/regex101/video.mp4",
+    "poster": "course/regex101/poster.jpg",
+    "storyboard": "course/regex101/storyboard.yaml",
+    "notes": "course/regex101/notes.md",
+    "article": null
+   }
+  ]
+ },
+ {
+  "id": "docs",
+  "label": "Help-center docs",
+  "blurb": "Per-step GIFs and screenshots cropped to the action, plus a ready-to-paste article.",
+  "items": [
+   {
+    "id": "docs/datasette",
+    "title": "Filter a table, add a facet, export CSV",
+    "site": "Datasette (local copy of the public demo)",
+    "lang": "en",
+    "url": "https://global-power-plants.datasettes.com/global-power-plants/global-power-plants",
+    "request": "We need help-center GIFs and a short article for Datasette: how to filter a table, use a facet, and export the filtered rows as CSV. Use the public demo at https://global-power-plants.datasettes.com/global-power-plants/global-power-plants (e.g. show only solar plants in one country).",
+    "seconds": 43.666016,
+    "video": "docs/datasette/video.mp4",
+    "poster": "docs/datasette/poster.jpg",
+    "storyboard": "docs/datasette/storyboard.yaml",
+    "notes": "docs/datasette/notes.md",
+    "article": "docs/datasette/steps/README.md"
+   },
+   {
+    "id": "docs/excalidraw",
+    "title": "Export a drawing as PNG (transparent or white)",
+    "site": "Excalidraw",
+    "lang": "en",
+    "url": "https://excalidraw.com/",
+    "request": "We need help-center GIFs and a short article for Excalidraw (https://excalidraw.com): how to export your drawing as a PNG image — including choosing a transparent or white background — and how to copy it to the clipboard. Draw something tiny first so there's something to export.",
+    "seconds": 47.4,
+    "video": "docs/excalidraw/video.mp4",
+    "poster": "docs/excalidraw/poster.jpg",
+    "storyboard": "docs/excalidraw/storyboard.yaml",
+    "notes": "docs/excalidraw/notes.md",
+    "article": "docs/excalidraw/steps/README.md"
+   },
+   {
+    "id": "docs/mermaid",
+    "title": "Start a flowchart, add a node, export SVG or PNG",
+    "site": "Mermaid Live Editor",
+    "lang": "en",
+    "url": "https://mermaid.live/edit",
+    "request": "We need help-center GIFs and a short article for Mermaid Live Editor (https://mermaid.live): how to start a flowchart from the sample, edit the text to add a node, and export the diagram as an SVG or PNG.",
+    "seconds": 47.233008,
+    "video": "docs/mermaid/video.mp4",
+    "poster": "docs/mermaid/poster.jpg",
+    "storyboard": "docs/mermaid/storyboard.yaml",
+    "notes": "docs/mermaid/notes.md",
+    "article": "docs/mermaid/steps/README.md"
+   }
+  ]
+ }
+]

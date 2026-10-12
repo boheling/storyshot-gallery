@@ -1,0 +1,6 @@
+0:00 Introduction
+0:13 Part 1 · Literal characters
+1:18 Part 2 · Character classes: \d
+1:49 Part 3 · Quantifiers
+2:17 Check your understanding · How many matches will \d{3} find?
+2:57 Why · Matches never overlap

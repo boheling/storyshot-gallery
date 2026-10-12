@@ -1,0 +1,199 @@
+# Storyshot storyboard (tutorial): Desmos for first-time users
+name: desmos-tutorial-plot-functions
+url: https://www.desmos.com/calculator
+purpose: tutorial
+out: desmos-tutorial-plot-functions.mp4
+voice: { provider: kokoro, pronounce: { Desmos: Dezmos } }
+subtitles: true
+chapters: true
+
+intro:
+  title: Graphing in Desmos
+  subtitle: Plot, slide, and **read the graph**
+  bullets:
+    - Type a function to plot it
+    - Add a slider to change a parameter
+    - Click the graph to read off points
+  say: In this video you'll learn three things in Desmos, a free online graphing calculator. How to plot a function, how to add a slider to change a number in it, and how to read off important points like intercepts. All you need is a web browser.
+
+setup:
+  - dismiss: { role: "button", name: "Close Message", exact: true }
+
+steps:
+  - card: { kicker: Part 1, title: Plot a function }
+    caption: The Desmos calculator
+    say: Open desmos dot com slash calculator. On the left is the expression list, where you type math. On the right is the graph paper, where Desmos draws it.
+    actions:
+      - pause: 400
+      - note: { target: { css: ".dcg-expressionitem .dcg-mq-editable-field", nth: 0 }, text: "Expression list: type math here", side: bottom }
+      - pause: 1200
+      - move: { x: 1300, y: 300, ms: 1400, highlight: false }
+      - pause: 1500
+
+  - caption: Click the first empty line
+    say: Click the first line of the expression list. A blinking cursor means it's ready for you to type.
+    actions:
+      - click: { css: ".dcg-expressionitem .dcg-mq-editable-field", nth: 0 }
+      - pause: 600
+
+  - caption: Type **y = sin(x)**
+    say: Type y equals sine of x. Desmos turns the letters s i n into the sine function, and closes the bracket for you.
+    actions:
+      - type: "y=sin(x"
+      - pause: 800
+
+  - caption: The graph appears **instantly**
+    say: There's no enter key or graph button. As soon as the expression makes sense, the curve is drawn. This is the sine wave, going up and down between one and minus one.
+    follow: false
+    actions:
+      - move: { x: 1128, y: 420, ms: 1200, highlight: false }
+      - pause: 1200
+
+  - card: { kicker: Part 2, title: Add a slider }
+    caption: Select the whole line
+    say: Now let's put a parameter in front of sine. Click the line, then select everything on it with control A, or command A on a Mac.
+    actions:
+      - click: { css: ".dcg-expressionitem .dcg-mq-editable-field", nth: 0 }
+      - press: { key: Meta+A, show: true }
+      - pause: 600
+
+  - caption: Type **y = a·sin(x)**
+    say: Type y equals a, star, sine of x. The star means multiply, and shows up as a small dot.
+    actions:
+      - type: "y=a*sin(x"
+      - pause: 600
+
+  - caption: Click **add slider**
+    say: Desmos doesn't know what a is yet, so the curve disappears and it offers a button called add slider. Click the a button.
+    actions:
+      - note: { target: { css: "button.dcg-btn-slider.dcg-btn-blue" }, text: "Turns a into a slider" }
+      - click: { css: "button.dcg-btn-slider.dcg-btn-blue" }
+      - pause: 800
+
+  - caption: A slider for **a**, starting at 1
+    follow: false
+    say: A new line appears, a equals one, with a slider underneath that runs from minus ten to ten. The sine wave is back, because a is now a number.
+    actions:
+      - mark: { role: "slider", name: "\"a\"", exact: true }
+      - pause: 1200
+
+  - caption: Drag the slider and **watch**
+    follow: false
+    say: Drag the slider dot. As a gets bigger, the wave gets taller. When a is negative, the wave flips upside down. So a controls the height, called the amplitude.
+    actions:
+      - drag: { from: { role: "slider", name: "\"a\"", exact: true }, by: [{ x: 60 }, { x: -120 }, { x: -40 }, { x: 80 }], dragMs: 1600 }
+      - pause: 800
+
+  - caption: Or type an **exact value**
+    say: For an exact value, click on the a equals line and select it with control A.
+    actions:
+      - click: { x: 200, y: 180 }
+      - press: { key: Meta+A, show: true }
+      - pause: 500
+
+  - caption: Type **a = 2**
+    say: Then type a equals two. The wave is now exactly twice as tall as before.
+    actions:
+      - type: "a=2"
+      - pause: 1000
+
+  - card: { kicker: Part 3, title: Read off points }
+    caption: Click the curve
+    say: Now let's read points from the graph. Click anywhere on the curve. Grey dots appear on it. They mark the special points, like where the curve crosses the axes, and its highest and lowest points.
+    actions:
+      - click: { x: 1180, y: 405 }
+      - pause: 1500
+
+  - caption: Click a grey dot on the x-axis
+    say: Click the grey dot where the curve crosses the x axis. A label pops up with its coordinates, pi comma zero. That's an x intercept, where y equals zero. Desmos even writes it as pi, not three point one four.
+    actions:
+      - click: { x: 1216, y: 472 }
+      - pause: 2500
+
+  - caption: The maximum point
+    say: Now click the grey dot at the top of a hump, to see the highest point of the wave.
+    actions:
+      - click: { x: 1128, y: 360 }
+      - pause: 1500
+
+  - caption: Height equals **a**
+    say: It reads pi over two, comma two. The height is two, exactly the value of a. Changing a changed the height, but the x intercepts stayed in the same place.
+    actions:
+      - pause: 2500
+
+  - card: { kicker: Part 4, title: "Same steps: a parabola" }
+    caption: Hide the sine wave
+    say: Now a second example, to show the same steps work for any function. First, click the coloured circle next to the sine wave to hide it, so the graph is less crowded.
+    actions:
+      - click: { role: "button", name: "Hide: Expression 1", exact: true }
+      - pause: 800
+
+  - caption: Click the next empty line
+    say: Click the next empty line in the expression list.
+    actions:
+      - click: { x: 240, y: 257 }
+      - pause: 500
+
+  - caption: Type **y = x^2**
+    say: Type y equals x, caret, two. The caret key, shift six, makes a power, so the two becomes a small exponent.
+    actions:
+      - type: "y=x^2"
+      - pause: 600
+
+  - caption: Right arrow, then **− k**
+    say: Press the right arrow to step out of the exponent, then type minus k.
+    actions:
+      - press: { key: ArrowRight, show: true }
+      - type: "-k"
+      - pause: 600
+
+  - caption: Add a slider for **k**
+    say: Just like before, Desmos offers a slider for the new letter. Click k.
+    actions:
+      - click: { css: "button.dcg-btn-slider.dcg-btn-blue" }
+      - pause: 800
+
+  - caption: Drag k and **watch the parabola**
+    follow: false
+    say: Drag the k slider. The parabola slides down when k grows, and up when k shrinks. The x intercepts move apart or together.
+    actions:
+      - drag: { from: { role: "slider", name: "\"k\"", exact: true }, by: [{ x: 60 }, { x: -70 }, { x: 40 }], dragMs: 1600 }
+      - pause: 600
+
+  - caption: Set **k = 4**
+    say: Set an exact value again. Click the k equals line, select it, and type k equals four.
+    actions:
+      - click: { x: 200, y: 319 }
+      - press: { key: Meta+A, show: true }
+      - type: "k=4"
+      - pause: 1000
+
+  - caption: Click the curve to show its **points**
+    say: Same as before. Click the parabola once, and grey dots appear at its special points.
+    actions:
+      - click: { x: 1096, y: 640 }
+      - pause: 1500
+
+  - caption: The x-intercept at **(2, 0)**
+    say: Click the grey dot where it crosses the x axis on the right. The label says two comma zero.
+    actions:
+      - click: { x: 1152, y: 472 }
+      - pause: 1800
+
+  - caption: The other intercept, and the vertex
+    say: Click the other crossing, at minus two comma zero. And the bottom of the parabola, the vertex, is at zero comma minus four, which is also where it crosses the y axis.
+    actions:
+      - click: { x: 928, y: 472 }
+      - pause: 1500
+      - click: { x: 1040, y: 696 }
+      - pause: 1800
+
+end_card:
+  title: Graphing in Desmos
+  bullets:
+    - Type y = … to plot a function
+    - New letter? Click add slider
+    - Drag, or type an exact value
+    - Click the curve to read points
+  cta: desmos.com/calculator
+  say: To recap. Type y equals your function to plot it. When you use a new letter, click add slider, then drag it or type an exact value. And click the curve to read off intercepts and other key points. These steps work for any function you want to explore.
