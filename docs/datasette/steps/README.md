@@ -1,4 +1,6 @@
-# global-power-plants-docs-filter-facet-export
+# Filter a table, add a facet and export CSV in Datasette
+
+Narrow a large table down to the rows you need, then download exactly those rows as a CSV file.
 
 1. **Pick the column to filter on**
 

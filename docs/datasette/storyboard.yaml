@@ -4,6 +4,9 @@
 name: global-power-plants-docs-filter-facet-export
 url: http://127.0.0.1:8765/global-power-plants/global-power-plants
 purpose: docs
+article:
+  title: Filter a table, add a facet and export CSV in Datasette
+  intro: Narrow a large table down to the rows you need, then download exactly those rows as a CSV file.
 out: global-power-plants-docs-filter-facet-export.mp4
 
 steps:
