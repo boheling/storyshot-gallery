@@ -5,20 +5,6 @@
   "blurb": "Short and tightly cut: one message, a browser frame on a backdrop, music.",
   "items": [
    {
-    "id": "promo/cli-im",
-    "title": "草料二维码：网址一贴，马上出码",
-    "site": "草料二维码 cli.im",
-    "lang": "zh",
-    "url": "https://cli.im/url",
-    "request": "给草料二维码（https://cli.im/）做一个简短的中文宣传视频：输入一个网址，马上生成二维码，还可以美化一下样式。用于官网首页和社交媒体。中文字幕和中文配音。",
-    "seconds": 19.366667,
-    "video": "promo/cli-im/video.mp4",
-    "poster": "promo/cli-im/poster.jpg",
-    "storyboard": "promo/cli-im/storyboard.yaml",
-    "notes": "promo/cli-im/notes.md",
-    "article": null
-   },
-   {
     "id": "promo/excalidraw",
     "title": "Sketch a diagram in seconds",
     "site": "Excalidraw",
