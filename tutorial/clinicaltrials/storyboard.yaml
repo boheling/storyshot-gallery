@@ -1,0 +1,246 @@
+# Storyshot storyboard (tutorial): finding a clinical trial on ClinicalTrials.gov
+name: clinicaltrials-tutorial-find-a-trial
+url: https://clinicaltrials.gov/
+purpose: tutorial
+out: clinicaltrials-tutorial-find-a-trial.mp4
+viewport: { width: 1600, height: 900 }
+voice:
+  provider: kokoro
+  voice: af_heart
+  pronounce:
+    ClinicalTrials.gov: Clinical Trials dot gov
+    clinicaltrials.gov: Clinical Trials dot gov
+    Elecoglipron: elle co glip ron
+    elecoglipron: elle co glip ron
+    Dapagliflozin: dapa gli flo zin
+    dapagliflozin: dapa gli flo zin
+subtitles: true
+chapters: true
+
+intro:
+  kicker: For patients and caregivers
+  title: Find a clinical trial
+  subtitle: on **ClinicalTrials.gov**
+  bullets:
+    - Search for a condition near you
+    - Keep only studies that are recruiting
+    - Read a study page, step by step
+  say: Learn how to find a clinical trial near you, and how to read a study page. No account needed.
+
+setup:
+  - hide: '.QSIFeedbackButton, [id^="QSI"], [class*="QSI"]'
+
+steps:
+  # ── Part 1: search ────────────────────────────────────────────────
+  - card: { kicker: Part 1, title: Search near you }
+    caption: The home page
+    say: This is ClinicalTrials.gov, a free public list of medical research studies, run by the U.S. National Library of Medicine.
+    actions:
+      - pause: 400
+      - mark: "Focus Your Search"
+
+  - caption: Type the **condition**
+    say: In the first box, Condition or disease, type the health condition you want to learn about. We'll type type 2 diabetes.
+    actions:
+      - type: { target: { label: "Condition/disease", exact: true }, text: "type 2 diabetes" }
+      - pause: 800
+      - press: { key: Escape, show: false }
+
+  - caption: Type your **city**
+    say: Next, in the Location box, start typing the city where you live. We'll use Boston.
+    actions:
+      - scroll: 350
+      - type: { target: { role: "combobox", name: "In country, state, or city", exact: true }, text: "Boston" }
+
+  - caption: Pick it from the list
+    say: A list of places appears. Choose Boston, Massachusetts, so the site knows exactly which place you mean.
+    actions:
+      - click: { role: option, name: "Boston, MA", exact: true }
+
+  - caption: Press **Search**
+    say: Now press the blue Search button.
+    actions:
+      - click: { role: "button", name: "Search", exact: true }
+      - waitFor: { text: "Search Details" }
+
+  # ── Part 2: keep only recruiting studies ──────────────────────────
+  - card: { kicker: Part 2, title: Keep only recruiting studies }
+    caption: How many studies matched
+    say: The site found 298 studies about type 2 diabetes with a location in Boston. But many of them are already finished.
+    actions:
+      - mark: "Search Details:"
+
+  - caption: Some are **already finished**
+    captionPosition: top
+    say: For example, this first study says Completed, no longer looking for participants. You can't join a study like this.
+    actions:
+      - mark: { css: ".pns-panel", nth: 0 }
+
+  - caption: The **Study Status** filter
+    captionPosition: top
+    say: "On the left, find Study Status. Recruiting means the study is looking for volunteers right now."
+    actions:
+      - scrollTo: { css: "#adv-check-status" }
+      - mark: { css: "#adv-check-status" }
+
+  - caption: Tick **Recruiting**
+    say: Tick the box next to Recruiting.
+    actions:
+      - click: { css: 'label[for="adv-check0-status1"]' }
+
+  - caption: Press **Apply Filters**
+    captionPosition: top
+    say: Then press Apply Filters at the bottom of the panel.
+    actions:
+      - click: { role: button, name: "Apply Filters", exact: true }
+
+  - hidden: true
+    actions:
+      - waitFor: { text: "Recruiting studies" }
+      - networkIdle: true
+
+  - caption: Only **recruiting** studies left
+    say: Now the list shows 28 studies, and every one is marked Recruiting, in green.
+    actions:
+      - mark: "Recruiting studies"
+
+  # ── Part 3: read one study ─────────────────────────────────────────
+  - card: { kicker: Part 3, title: Read a study page }
+    caption: Open a study
+    say: Let's open one. Click the study title to see its full page.
+    actions:
+      - click: { css: 'a[href*="/study/NCT07662109"]:not([href*="#"])' }
+
+  - hidden: true
+    actions:
+      - waitFor: { css: "#participation-criteria" }
+      - networkIdle: true
+      - scrollTo: { css: "body" }
+
+  - caption: Title and status
+    say: At the top you see the study's title, and on the right, its status. This one is Recruiting.
+    actions:
+      - mark: { css: ".pns-panel", nth: 0 }
+
+  - caption: What's **being tested**
+    say: "Scroll down to Study Overview. Intervention or Treatment tells you what is being tested. Here it's two diabetes pills, elecoglipron and dapagliflozin, alone and together."
+    actions:
+      - scrollTo: { css: "#study-overview" }
+      - mark: "Intervention/Treatment"
+
+  - caption: What a **placebo** is
+    say: Some groups get a placebo. A placebo looks like the real medicine, but has no medicine in it, so researchers can compare fairly.
+    actions:
+      - mark: "Drug: Elecoglipron-matched placebo"
+
+  - caption: What **phase** means
+    say: Phase tells you how far along the testing is. Phase 3 means the treatment has already been tested in smaller groups, and is now being compared in many more people.
+    actions:
+      - mark: "Phase 3"
+
+  - caption: Who **can join**
+    say: "Next, Participation Criteria. Eligibility criteria are the rules for who can join a study, such as age and health history."
+    actions:
+      - scrollTo: { css: "#participation-criteria" }
+      - mark: "Eligibility Criteria"
+
+  - caption: Inclusion criteria
+    say: Inclusion criteria are things you must have. For example, a type 2 diabetes diagnosis for at least 90 days.
+    actions:
+      - mark: "Diagnosed with Type 2 Diabetes Mellitus (T2DM) for at least 90 days prior to screening"
+
+  - caption: Exclusion criteria
+    say: Exclusion criteria are things that would keep you out. For example, people with type 1 diabetes can't join this study.
+    actions:
+      - mark: "Exclusion Criteria:"
+
+  - caption: Age and sex
+    say: Below the list, you can see the ages that can join, here 18 years and older, and that all sexes are welcome.
+    actions:
+      - mark: "18 Years and older"
+
+  - caption: Who **to contact**
+    say: "To ask about joining, go to Contacts and Locations. This study lists a contact phone number and email for questions."
+    actions:
+      - scrollTo: { css: "#contacts-and-locations" }
+      - mark: "Study Contact"
+
+  - caption: Where it **runs**
+    say: Below that is every place the study runs. Find your state. Here, the two Boston sites say Not yet recruiting, so call the contact to ask when they will open.
+    actions:
+      - mark: "Massachusetts Locations"
+
+  - caption: Not medical advice
+    say: One important note. A listing here is not medical advice, and the government does not review every study. Before you join any study, talk with your doctor.
+    actions:
+      - scrollTo: { css: "body" }
+      - mark: "does not review or approve the safety and science of all studies"
+
+  # ── Part 4: second example ─────────────────────────────────────────
+  - hidden: true
+    actions:
+      - goto: /
+      - waitFor: { label: "Condition/disease", exact: true }
+
+  - card: { kicker: Part 4, title: "Same steps, another example" }
+    caption: A second condition
+    say: Let's try the same steps once more, for high blood pressure.
+    actions:
+      - type: { target: { label: "Condition/disease", exact: true }, text: "high blood pressure" }
+      - pause: 800
+      - press: { key: Escape, show: false }
+
+  - caption: Another city
+    say: This time, type Chicago in the Location box.
+    actions:
+      - scroll: 350
+      - type: { target: { role: "combobox", name: "In country, state, or city", exact: true }, text: "Chicago" }
+
+  - caption: Pick it from the list
+    say: Choose Chicago, Illinois from the list.
+    actions:
+      - click: { role: option, name: "Chicago, IL", exact: true }
+
+  - caption: Press **Search**
+    say: And press Search.
+    actions:
+      - click: { role: "button", name: "Search", exact: true }
+      - waitFor: { text: "Search Details" }
+
+  - caption: Many studies at first
+    say: There are 348 studies, but again, many are already finished.
+    actions:
+      - mark: "Search Details:"
+
+  - caption: Tick **Recruiting**
+    say: So tick Recruiting again,
+    actions:
+      - click: { css: 'label[for="adv-check0-status1"]' }
+
+  - caption: Press **Apply Filters**
+    captionPosition: top
+    say: and apply the filter.
+    actions:
+      - click: { role: button, name: "Apply Filters", exact: true }
+
+  - hidden: true
+    actions:
+      - waitFor: { text: "Recruiting studies" }
+      - networkIdle: true
+
+  - caption: The ones you **can join**
+    say: Now 33 studies are left, all looking for volunteers. From here, open any title and read it the same way.
+    actions:
+      - mark: "Recruiting studies"
+
+end_card:
+  title: Recap
+  bullets:
+    - Type a condition and pick your city
+    - Tick Recruiting, then Apply Filters
+    - "Open a study: what's tested, phase"
+    - "Eligibility: who can join"
+    - Locations and contact
+    - Talk with your doctor first
+  cta: clinicaltrials.gov
+  say: To recap. Search for a condition near you. Keep only recruiting studies. Open a study to see what's being tested, who can join, where it runs, and who to contact. And always talk with your doctor before joining.

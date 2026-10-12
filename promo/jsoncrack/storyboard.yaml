@@ -12,59 +12,66 @@ setup:
   - waitFor: { css: ".monaco-editor .view-lines", timeout: 30000 }
 
 steps:
+  # Puts the JSON on the real clipboard (paste action), then resets the editor to `{}` so
+  # the canvas is empty. Storyshot's paste falls back to insertText on Monaco's EditContext
+  # (it can't see the change), which would duplicate the text; the visible step therefore
+  # pastes with a real Cmd+V from the clipboard filled here.
   - hidden: true
     actions:
       - click: { css: ".monaco-editor .view-lines" }
       - press: Meta+A
-      - press: Backspace
-      - type: "{}"
-      - pause: 1200
-
-  - caption: Paste in **any JSON**
-    captionPosition: top
-    duration: 2.9
-    zoom: { target: { x: 0.18, y: 0.15 }, scale: 1.6, start: 0, end: 2.9, ramp: [0.4, 0.4] }
-    actions:
-      - click: { css: ".monaco-editor .view-lines" }
+      - paste: |
+          {
+            "project": "Atlas",
+            "version": "2.1",
+            "owner": { "name": "Ada", "role": "lead" },
+            "tags": ["api", "graph", "viz"],
+            "tasks": [
+              { "id": 1, "title": "Parse", "done": true },
+              { "id": 2, "title": "Render", "done": false },
+              { "id": 3, "title": "Ship", "done": false }
+            ]
+          }
       - press: Meta+A
       - press: Backspace
-      - type:
-          delay: 18
-          text: '{"project":"Atlas","version":"2.1","owner":{"name":"Ada","role":"lead"},"tags":["api","graph","viz"],"tasks":[{"id":1,"title":"Parse","done":true},{"id":2,"title":"Render","done":false}]}'
-      - press: Shift+Alt+F
+      - type: "{}"
+      - pause: 1500
+      - press: Meta+A
 
-  - caption: It becomes a **live graph**
-    duration: 2.5
+  - caption: Paste **any JSON**
+    duration: 2.8
     actions:
-      - move: { x: 0.62, y: 0.45, ms: 900 }
-      - pause: 1200
+      - press: { key: Meta+V, show: true }
+      - pause: 1700
 
   - caption: Collapse branches **in one click**
-    duration: 2.5
-    zoom: { target: { x: 0.45, y: 0.47 }, scale: 1.25, start: 0.1 }
+    duration: 3
+    zoom: { target: { x: 950, y: 520 }, scale: 1.4, start: 0, ramp: [0.5, 0.4] }
     actions:
       - click: { css: '[data-collapse-path="[\"tasks\"]"]' }
-      - pause: 900
+      - pause: 1100
       - click: { role: "button", name: "Expand", exact: true }
-      - pause: 500
+      - pause: 700
 
-  - caption: Click any node for its **JSON path**
+  - caption: Click a node for its **JSON path**
     duration: 3
-    zoom: { target: { x: 0.5, y: 0.5 }, scale: 1.3, start: 0.8 }
+    zoom: { target: { x: 900, y: 480 }, scale: 1.6, start: 0.7, ramp: [0.5, 0.4] }
     actions:
-      - click: { css: "rect._rect_1b6xi_1", nth: 0 }
-      - pause: 1500
+      - click: { x: 1299, y: 655 }
+      - pause: 1600
 
   - caption: Flip the layout **instantly**
     captionPosition: top
-    duration: 3
+    duration: 3.6
     actions:
       - press: Escape
       - pause: 300
       - click: { role: "button", name: "rotate layout", exact: true }
-      - pause: 700
+      - pause: 600
       - click: { role: "button", name: "fit to center", exact: true }
-      - pause: 900
+      - pause: 400
+      - click: { role: "button", name: "zoom out", exact: true }
+      - pause: 1800
 
 end_card:
   title: "JSON Crack"

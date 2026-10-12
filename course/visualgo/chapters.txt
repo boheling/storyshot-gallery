@@ -1,0 +1,5 @@
+0:00 Introduction
+0:07 Concept · Relax an edge
+0:39 Part 1 · Watch Dijkstra run
+1:58 Question · Which vertex is finalized next?
+2:23 Part 2 · Finish the run

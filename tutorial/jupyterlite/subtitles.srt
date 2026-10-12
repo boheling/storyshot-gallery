@@ -1,0 +1,83 @@
+1
+00:00:00,150 --> 00:00:05,812
+In this video you'll do your first data analysis in Jupyter. You need nothing but a web browser.
+
+2
+00:00:09,012 --> 00:00:21,495
+This is JupyterLite, the full Jupyter environment running inside your web browser, so there is nothing to install. Under Notebook, the Python Pyodide tile creates a new Python notebook.
+
+3
+00:00:23,245 --> 00:00:28,684
+Click it. A new, empty notebook opens, and Python starts up inside this browser tab.
+
+4
+00:00:30,434 --> 00:00:36,559
+A notebook is made of cells. You type code into a cell, run it, and the result appears right underneath.
+
+5
+00:00:40,709 --> 00:00:51,848
+Click into the cell and type two import lines. pandas works with tables of data, and matplotlib draws charts. pd and plt are their usual short nicknames.
+
+6
+00:00:53,598 --> 00:01:04,778
+Press Shift and Enter to run the cell. The first import takes a moment, because Python is loading these libraries into your browser. A star in the brackets means it is still working.
+
+7
+00:01:06,528 --> 00:01:12,111
+When the star turns into the number one, the cell is done, and a new empty cell is waiting below.
+
+8
+00:01:13,861 --> 00:01:27,240
+Now the data. Paste a tiny CSV table, one week of temperatures and ice cream sales. read_csv turns the text into a table named df, and df on the last line displays it.
+
+9
+00:01:28,990 --> 00:01:30,688
+Run the cell with Shift and Enter.
+
+10
+00:01:32,438 --> 00:01:46,634
+This table is called a DataFrame. It has seven rows, one per day, and three columns, the day, the temperature in Celsius, and the number of ice creams sold. The numbers on the left are the row index, which starts at zero.
+
+11
+00:01:50,784 --> 00:01:56,153
+Next, a summary. In the new cell, type df dot describe, with empty brackets.
+
+12
+00:01:57,903 --> 00:02:02,101
+Run it. describe calculates statistics for every column of numbers.
+
+13
+00:02:03,851 --> 00:02:15,051
+The mean row is the average. Across the week, the average temperature was about 26 point 3 degrees, and the average day sold about 171 ice creams.
+
+14
+00:02:16,801 --> 00:02:26,120
+Min and max show the range. Temperatures went from 19 to 33 degrees, and sales from 95 to 260 ice creams a day.
+
+15
+00:02:30,270 --> 00:02:43,389
+Now a chart. df dot plot dot bar draws one bar per row, with the day on the x axis and ice creams on the y axis. The semicolon at the end just hides a line of technical text.
+
+16
+00:02:45,139 --> 00:02:48,055
+Run the cell. The chart appears right below the code.
+
+17
+00:02:49,805 --> 00:02:58,042
+Each bar is one day. Saturday has the tallest bar, at 260 ice creams, and Wednesday the shortest, at 95.
+
+18
+00:03:02,192 --> 00:03:13,126
+One more chart, this time comparing two columns. df dot plot dot scatter puts temperature on the x axis and ice creams on the y axis, one dot per day.
+
+19
+00:03:14,876 --> 00:03:15,676
+Run it.
+
+20
+00:03:17,202 --> 00:03:32,674
+The dots climb from left to right. The coolest day, at 19 degrees, sold the fewest ice creams, and the hottest, at 33 degrees, sold the most. A bar chart compares categories, while a scatter plot shows how two numbers move together.
+
+21
+00:03:34,324 --> 00:03:49,021
+To recap. Open a Python notebook from the Launcher. Type code in a cell and run it with Shift and Enter. read_csv loads a table, describe summarizes it, and plot draws charts. Now try it with your own data.

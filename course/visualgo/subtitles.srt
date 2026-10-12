@@ -1,0 +1,79 @@
+1
+00:00:00,150 --> 00:00:07,249
+In this lesson we watch Dijkstra's algorithm find the shortest paths in a small graph, and you will predict its next move.
+
+2
+00:00:08,049 --> 00:00:26,628
+Every vertex keeps a tentative distance, its best distance found so far. The source starts at zero, everything else at infinity. Relaxing an edge from u to v asks one question. Is going through u shorter than what v already has? If so, v gets the new, smaller distance.
+
+3
+00:00:27,528 --> 00:00:37,981
+Here is a small directed graph on VisuAlgo. The numbers on the arrows are edge weights. We want the shortest distance from vertex zero to every other vertex.
+
+4
+00:00:42,131 --> 00:00:48,284
+In the menu, Dijkstra's algorithm is open, and the source s is already zero, which is what we want.
+
+5
+00:00:50,034 --> 00:00:55,190
+We start the original version, and rewind to the first frame so we can step through it slowly.
+
+6
+00:00:59,255 --> 00:01:06,943
+Vertex zero, the source, has distance zero. Every other vertex shows Inf, infinity, because we have not reached it yet.
+
+7
+00:01:08,693 --> 00:01:17,485
+Vertex zero has the smallest distance, so we explore it first. The edge to vertex one has weight nine, so d of one becomes nine.
+
+8
+00:01:19,235 --> 00:01:27,866
+The edge to vertex two gives it seventy five. Vertex zero has no more outgoing edges, so its distance, zero, is now final.
+
+9
+00:01:29,616 --> 00:01:39,058
+The priority queue now holds vertex one at nine and vertex two at seventy five. Dijkstra always takes the smallest, so vertex one is next.
+
+10
+00:01:40,808 --> 00:01:49,177
+The edge from one to two would give nine plus ninety five, one hundred and four. That is worse than seventy five, so nothing changes.
+
+11
+00:01:50,927 --> 00:01:56,830
+The edge from one to four gives nine plus forty two, fifty one. Vertex one is now final.
+
+12
+00:01:58,580 --> 00:02:08,027
+Vertex two has been waiting at seventy five since the very first step. Vertex four just got fifty one. Which one does Dijkstra finalize next?
+
+13
+00:02:13,927 --> 00:02:21,520
+Vertex four, at fifty one. Dijkstra does not care which vertex it found first, only which one is closest right now.
+
+14
+00:02:25,670 --> 00:02:33,686
+From four, the edge of weight thirty one reaches vertex three. Fifty one plus thirty one is eighty two. Vertex four is final.
+
+15
+00:02:35,436 --> 00:02:39,657
+Next comes vertex two, at seventy five, the smallest distance left.
+
+16
+00:02:41,407 --> 00:02:49,880
+Its edge to three would give one hundred and twenty six, worse than eighty two, so vertex three keeps its distance. Vertex two is final.
+
+17
+00:02:51,630 --> 00:02:56,150
+Last is vertex three. Its edge back to vertex one cannot beat nine.
+
+18
+00:02:59,083 --> 00:03:04,741
+Every vertex is now final, and the red edges form the shortest path tree from vertex zero.
+
+19
+00:03:06,981 --> 00:03:19,591
+The final distances are zero, nine, seventy five, eighty two and fifty one. Notice that the best route to three uses three edges, through one and four, not the two edge route through two.
+
+20
+00:03:21,241 --> 00:03:33,823
+To recap. Keep a tentative distance for every vertex. Always finalize the closest unvisited vertex, then relax its edges. This works as long as no edge weight is negative.

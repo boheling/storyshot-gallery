@@ -1,0 +1,55 @@
+1
+00:00:00,150 --> 00:00:04,812
+Let's learn what m and b mean in y equals m x plus b, with Desmos.
+
+2
+00:00:09,212 --> 00:00:15,990
+Every straight line can be written as y equals m x plus b. Let's type it into the first line in Desmos.
+
+3
+00:00:17,740 --> 00:00:23,183
+Desmos doesn't know m and b yet, so it offers sliders. Click all to add one for each.
+
+4
+00:00:24,933 --> 00:00:29,047
+Both sliders start at one, so the line is y equals x plus one.
+
+5
+00:00:35,347 --> 00:00:42,507
+Now drag the b slider to the right, up to three. The whole line moves up, and it now crosses the y-axis at three.
+
+6
+00:00:46,407 --> 00:00:54,321
+Drag it left, to minus two. Now the line crosses below the origin, at minus two. Notice that the steepness never changed.
+
+7
+00:01:00,621 --> 00:01:09,386
+Now drag m up to two. The line gets steeper. From the y-intercept, one step to the right takes you two steps up. That is rise over run.
+
+8
+00:01:13,286 --> 00:01:18,146
+Drag m below zero, to minus one. Now the line falls from left to right.
+
+9
+00:01:22,046 --> 00:01:26,594
+Now drag m to zero. The line is flat. It just stays at the height b.
+
+10
+00:01:28,344 --> 00:01:36,507
+Here is a question. For y equals minus two x plus four, where does the line cross the y-axis, and does it rise or fall?
+
+11
+00:01:42,407 --> 00:01:44,425
+Let's check. Set m to minus two.
+
+12
+00:01:46,175 --> 00:01:47,369
+And set b to four.
+
+13
+00:01:49,171 --> 00:01:58,538
+The answer. b is four, so the line crosses the y-axis at four. m is minus two, so it falls, two steps down for every step to the right.
+
+14
+00:02:00,188 --> 00:02:11,465
+To recap. b is where the line crosses the y-axis. m is the slope, rise over run. A positive m rises, a negative m falls, and zero is flat.

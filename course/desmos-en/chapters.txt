@@ -1,0 +1,5 @@
+0:00 Introduction
+0:05 Concept · y = mx + b
+0:30 Part 1 · b: the y-intercept
+0:55 Part 2 · m: the slope
+1:28 Question · y = −2x + 4

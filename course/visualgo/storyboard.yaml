@@ -1,0 +1,176 @@
+# Storyshot storyboard (course): how Dijkstra's algorithm finds shortest paths, on VisuAlgo.
+name: visualgo-lesson-dijkstra
+url: https://visualgo.net/en/sssp
+purpose: course
+out: visualgo-lesson-dijkstra.mp4
+viewport: { width: 1280, height: 720 }
+output: { width: 1920, height: 1080, fps: 30 }
+frame: false
+follow: false
+subtitles: true
+chapters: true
+voice: { provider: kokoro, voice: af_heart, pronounce: { VisuAlgo: Vizu Algo } }
+
+intro:
+  title: How Dijkstra finds shortest paths
+  subtitle: Watch it run, step by step, on **VisuAlgo**
+  bullets:
+    - What a tentative distance is
+    - The one rule Dijkstra follows
+    - Predict which vertex comes next
+  say: In this lesson we watch Dijkstra's algorithm find the shortest paths in a small graph, and you will predict its next move.
+
+setup:
+  - dismiss: { text: "✘", exact: true }
+  - pause: 600
+  - click: { css: "#examples" }
+  - click: { text: "Weighted", exact: true }
+  - click: { text: "CP4 4.14 D/W", exact: true }
+  - pause: 1200
+  - click: { text: "Dijkstra(s)", exact: true }
+  - pause: 600
+
+steps:
+  - card:
+      kicker: Concept
+      title: Relax an edge
+      image: relax.svg
+      bullets:
+        - Every vertex keeps a tentative distance d
+        - Start from 0 at the source, Inf everywhere else
+        - "Relax edge u to v: keep d[u] + w if it is smaller"
+      say: Every vertex keeps a tentative distance, its best distance found so far. The source starts at zero, everything else at infinity. Relaxing an edge from u to v asks one question. Is going through u shorter than what v already has? If so, v gets the new, smaller distance.
+    caption: A directed, weighted graph
+    say: Here is a small directed graph on VisuAlgo. The numbers on the arrows are edge weights. We want the shortest distance from vertex zero to every other vertex.
+    zoom: { target: { x: 0.55, y: 0.48 }, scale: 1.3, start: 0.4 }
+    captionPosition: top
+    actions:
+      - pause: 600
+      - move: { x: 0.5, y: 0.55, ms: 1200 }
+
+  - card: { kicker: Part 1, title: Watch Dijkstra run }
+    caption: Dijkstra from source s = 0
+    say: In the menu, Dijkstra's algorithm is open, and the source s is already zero, which is what we want.
+    actions:
+      - note: { target: { css: "#dijkstra-v" }, text: "source vertex s", side: top }
+
+  - caption: Step through it **slowly**
+    say: We start the original version, and rewind to the first frame so we can step through it slowly.
+    actions:
+      - click: { text: "Original", exact: true }
+      - click: { alt: "go to beginning", exact: true }
+
+  - caption: Start at 0, everything else Inf
+    say: Vertex zero, the source, has distance zero. Every other vertex shows Inf, infinity, because we have not reached it yet.
+    actions:
+      - mark: { css: "#status" }
+
+  - caption: Explore 0, relax its edges
+    highlight: false
+    say: Vertex zero has the smallest distance, so we explore it first. The edge to vertex one has weight nine, so d of one becomes nine.
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - pause: 500
+      - click: { alt: "next frame", exact: true }
+
+  - caption: Vertex 0 is final
+    highlight: false
+    say: The edge to vertex two gives it seventy five. Vertex zero has no more outgoing edges, so its distance, zero, is now final.
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - pause: 500
+      - click: { alt: "next frame", exact: true }
+
+  - caption: Always take the **smallest** distance
+    highlight: false
+    say: The priority queue now holds vertex one at nine and vertex two at seventy five. Dijkstra always takes the smallest, so vertex one is next.
+    zoom: { target: { x: 0.62, y: 0.47 }, scale: 1.3, start: 1.8 }
+    captionPosition: top
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - mark: { css: "#status" }
+
+  - caption: 9 + 95 is not better than 75
+    highlight: false
+    say: The edge from one to two would give nine plus ninety five, one hundred and four. That is worse than seventy five, so nothing changes.
+    actions:
+      - click: { alt: "next frame", exact: true }
+
+  - caption: Vertex 4 gets 51
+    highlight: false
+    say: The edge from one to four gives nine plus forty two, fifty one. Vertex one is now final.
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - pause: 500
+      - click: { alt: "next frame", exact: true }
+
+  - card:
+      kicker: Question
+      title: Which vertex is finalized next?
+      subtitle: Vertex 2 has waited at **75** since the start. Vertex 4 just got **51**.
+      think: 5
+      say: Vertex two has been waiting at seventy five since the very first step. Vertex four just got fifty one. Which one does Dijkstra finalize next?
+    caption: Vertex **4**, the smallest distance
+    highlight: false
+    say: Vertex four, at fifty one. Dijkstra does not care which vertex it found first, only which one is closest right now.
+    zoom: { target: { x: 0.62, y: 0.47 }, scale: 1.3, start: 1.8 }
+    captionPosition: top
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - mark: { css: "#status" }
+
+  - card: { kicker: Part 2, title: Finish the run }
+    caption: Vertex 3 gets 82
+    highlight: false
+    say: From four, the edge of weight thirty one reaches vertex three. Fifty one plus thirty one is eighty two. Vertex four is final.
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - pause: 500
+      - click: { alt: "next frame", exact: true }
+
+  - caption: Next, vertex 2 at 75
+    highlight: false
+    say: Next comes vertex two, at seventy five, the smallest distance left.
+    actions:
+      - click: { alt: "next frame", exact: true }
+
+  - caption: 75 + 51 is not better than 82
+    highlight: false
+    say: Its edge to three would give one hundred and twenty six, worse than eighty two, so vertex three keeps its distance. Vertex two is final.
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - pause: 500
+      - click: { alt: "next frame", exact: true }
+
+  - caption: Last, vertex 3 at 82
+    highlight: false
+    say: Last is vertex three. Its edge back to vertex one cannot beat nine.
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - pause: 500
+      - click: { alt: "next frame", exact: true }
+
+  - caption: The shortest-path tree
+    highlight: false
+    say: Every vertex is now final, and the red edges form the shortest path tree from vertex zero.
+    actions:
+      - click: { alt: "next frame", exact: true }
+      - pause: 500
+      - click: { alt: "next frame", exact: true }
+
+  - caption: Final distances from 0
+    say: The final distances are zero, nine, seventy five, eighty two and fifty one. Notice that the best route to three uses three edges, through one and four, not the two edge route through two.
+    zoom: { target: { x: 0.62, y: 0.47 }, scale: 1.3, start: 0.3 }
+    captionPosition: top
+    actions:
+      - move: { x: 0.5, y: 0.55, ms: 1000 }
+
+end_card:
+  title: Recap
+  bullets:
+    - Keep a tentative distance for every vertex
+    - Finalize the unvisited vertex with the smallest distance
+    - Relax its edges, keep any shorter distance
+    - Needs non-negative edge weights
+  cta: Try it at visualgo.net/en/sssp
+  say: To recap. Keep a tentative distance for every vertex. Always finalize the closest unvisited vertex, then relax its edges. This works as long as no edge weight is negative.

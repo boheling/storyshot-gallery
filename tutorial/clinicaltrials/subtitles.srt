@@ -1,0 +1,131 @@
+1
+00:00:00,150 --> 00:00:05,677
+Learn how to find a clinical trial near you, and how to read a study page. No account needed.
+
+2
+00:00:08,877 --> 00:00:17,649
+This is ClinicalTrials.gov, a free public list of medical research studies, run by the U.S. National Library of Medicine.
+
+3
+00:00:19,399 --> 00:00:26,763
+In the first box, Condition or disease, type the health condition you want to learn about. We'll type type 2 diabetes.
+
+4
+00:00:28,513 --> 00:00:33,631
+Next, in the Location box, start typing the city where you live. We'll use Boston.
+
+5
+00:00:35,381 --> 00:00:41,833
+A list of places appears. Choose Boston, Massachusetts, so the site knows exactly which place you mean.
+
+6
+00:00:43,583 --> 00:00:45,263
+Now press the blue Search button.
+
+7
+00:00:50,907 --> 00:00:59,504
+The site found 298 studies about type 2 diabetes with a location in Boston. But many of them are already finished.
+
+8
+00:01:01,254 --> 00:01:08,268
+For example, this first study says Completed, no longer looking for participants. You can't join a study like this.
+
+9
+00:01:10,018 --> 00:01:15,874
+On the left, find Study Status. Recruiting means the study is looking for volunteers right now.
+
+10
+00:01:17,624 --> 00:01:19,233
+Tick the box next to Recruiting.
+
+11
+00:01:22,202 --> 00:01:25,146
+Then press Apply Filters at the bottom of the panel.
+
+12
+00:01:26,966 --> 00:01:31,752
+Now the list shows 28 studies, and every one is marked Recruiting, in green.
+
+13
+00:01:35,902 --> 00:01:39,509
+Let's open one. Click the study title to see its full page.
+
+14
+00:01:41,259 --> 00:01:46,486
+At the top you see the study's title, and on the right, its status. This one is Recruiting.
+
+15
+00:01:48,236 --> 00:02:00,621
+Scroll down to Study Overview. Intervention or Treatment tells you what is being tested. Here it's two diabetes pills, elecoglipron and dapagliflozin, alone and together.
+
+16
+00:02:02,371 --> 00:02:10,236
+Some groups get a placebo. A placebo looks like the real medicine, but has no medicine in it, so researchers can compare fairly.
+
+17
+00:02:11,986 --> 00:02:21,660
+Phase tells you how far along the testing is. Phase 3 means the treatment has already been tested in smaller groups, and is now being compared in many more people.
+
+18
+00:02:23,410 --> 00:02:32,028
+Next, Participation Criteria. Eligibility criteria are the rules for who can join a study, such as age and health history.
+
+19
+00:02:33,778 --> 00:02:41,596
+Inclusion criteria are things you must have. For example, a type 2 diabetes diagnosis for at least 90 days.
+
+20
+00:02:43,346 --> 00:02:50,950
+Exclusion criteria are things that would keep you out. For example, people with type 1 diabetes can't join this study.
+
+21
+00:02:52,700 --> 00:02:59,455
+Below the list, you can see the ages that can join, here 18 years and older, and that all sexes are welcome.
+
+22
+00:03:01,205 --> 00:03:08,850
+To ask about joining, go to Contacts and Locations. This study lists a contact phone number and email for questions.
+
+23
+00:03:10,600 --> 00:03:20,920
+Below that is every place the study runs. Find your state. Here, the two Boston sites say Not yet recruiting, so call the contact to ask when they will open.
+
+24
+00:03:22,670 --> 00:03:32,810
+One important note. A listing here is not medical advice, and the government does not review every study. Before you join any study, talk with your doctor.
+
+25
+00:03:36,960 --> 00:03:40,219
+Let's try the same steps once more, for high blood pressure.
+
+26
+00:03:42,320 --> 00:03:45,151
+This time, type Chicago in the Location box.
+
+27
+00:03:46,901 --> 00:03:49,139
+Choose Chicago, Illinois from the list.
+
+28
+00:03:52,259 --> 00:03:53,172
+And press Search.
+
+29
+00:03:57,500 --> 00:04:01,945
+There are 348 studies, but again, many are already finished.
+
+30
+00:04:03,695 --> 00:04:05,073
+So tick Recruiting again,
+
+31
+00:04:08,650 --> 00:04:09,832
+and apply the filter.
+
+32
+00:04:13,728 --> 00:04:20,992
+Now 33 studies are left, all looking for volunteers. From here, open any title and read it the same way.
+
+33
+00:04:22,642 --> 00:04:36,380
+To recap. Search for a condition near you. Keep only recruiting studies. Open a study to see what's being tested, who can join, where it runs, and who to contact. And always talk with your doctor before joining.

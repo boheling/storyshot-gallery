@@ -30,31 +30,48 @@ steps:
     actions:
       - drag: { from: { x: 800, y: 450 }, by: [{ x: -380 }, { x: 560 }, { x: -180 }] }
 
-  - caption: Pick a modern codec
-    duration: 2.2
+  - caption: Switch the codec to **WebP**
+    duration: 2.6
+    zoom: { target: { css: "select._builtin-select_1onzk_5._large_1onzk_29", nth: 1 }, scale: 1.7, start: 0.1, ramp: [0.5, 0.4] }
     actions:
       - select: { target: { css: "select._builtin-select_1onzk_5._large_1onzk_29", nth: 1 }, option: "WebP" }
-      - pause: 1500
+      - pause: 500
 
-  - caption: Dial the quality down
-    duration: 2.4
+  - caption: Set quality to **60**
+    duration: 2.6
+    zoom: { target: { css: "input[type=range]", nth: 1 }, scale: 2.2, start: 0.0, ramp: [0.4, 0.4] }
     actions:
-      - drag: { from: { x: 1516, y: 722 }, by: [{ x: -140 }] }
-      - pause: 1500
+      - slide: { target: { css: "input[type=range]", nth: 1 }, to: 0.594 }
+      - pause: 400
 
-  - caption: 2.79 MB → **228 kB, 92% smaller**
+  - hidden: true
+    actions:
+      - waitFor: { text: "509", timeout: 30000 }
+      - pause: 500
+
+  - caption: "Original: **2.79 MB**"
     captionPosition: top
     duration: 2.2
-    zoom: { target: { x: 1420, y: 852 }, scale: 1.5, start: 0.1, ramp: [0.5, 0.4] }
+    zoom: { target: { x: 140, y: 852 }, scale: 3.0, start: 0.0, ramp: [0.5, 0.3] }
     actions:
-      - move: { x: 1250, y: 780, ms: 800 }
-      - pause: 1200
+      - move: { x: 420, y: 700, ms: 600 }
+      - mark: "2.79 MB"
+      - pause: 600
 
-  - caption: Still sharp. **Way smaller.**
-    duration: 2.6
-    zoom: { target: { x: 700, y: 280 }, scale: 1.3, start: 0.2 }
+  - caption: "WebP: **509 kB, 82% smaller**"
+    captionPosition: top
+    duration: 2.4
+    zoom: { target: { x: 1440, y: 860 }, scale: 3.0, start: 0.0, ramp: [0.5, 0.4] }
     actions:
-      - drag: { from: { x: 800, y: 450 }, by: [{ x: -250 }, { x: 300 }] }
+      - move: { x: 1150, y: 700, ms: 600 }
+      - mark: "509"
+      - pause: 700
+
+  - caption: Up close, **hard to tell apart**
+    duration: 2.8
+    zoom: { target: { x: 700, y: 270 }, scale: 1.5, start: 0.2, ramp: [0.5, 0.4] }
+    actions:
+      - drag: { from: { x: 800, y: 450 }, by: [{ x: -170 }, { x: 140 }, { x: -90 }] }
 
 end_card:
   title: "Squoosh"

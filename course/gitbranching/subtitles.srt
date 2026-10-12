@@ -1,0 +1,55 @@
+1
+00:00:00,150 --> 00:00:05,617
+Merge and rebase both join two branches, but they leave very different histories behind.
+
+2
+00:00:08,817 --> 00:00:15,836
+In this sandbox, I'll create a feature branch, add one commit on main, then switch to feature and add two commits there.
+
+3
+00:00:21,736 --> 00:00:32,626
+Here's the picture. Both branches start from C1. Main moved on to C2, while feature has its own work, C3 and C4. The two histories have diverged.
+
+4
+00:00:36,776 --> 00:00:40,351
+First, merge. We're on feature, so I type git merge main.
+
+5
+00:00:42,101 --> 00:00:54,528
+Git created a new merge commit, C5, with two parents, C4 and C2. Nothing was rewritten. The fork stays in the history forever, along with a record of when the branches were joined.
+
+6
+00:00:58,678 --> 00:01:06,401
+Now let's rewind to the exact same starting point. Main at C2, feature at C4, both branching off C1.
+
+7
+00:01:08,151 --> 00:01:14,702
+Here's a question. We're on feature, and we run git rebase main. Where do C3 and C4 end up?
+
+8
+00:01:19,602 --> 00:01:21,537
+Let's run it. git rebase main.
+
+9
+00:01:26,475 --> 00:01:42,383
+Rebase replayed feature's commits on top of C2. They became C3 prime and C4 prime, brand new commits with new IDs. The originals, C3 and C4, are left behind, faded out. No merge commit, just a straight line.
+
+10
+00:01:44,133 --> 00:01:45,895
+To finish, switch back to main.
+
+11
+00:01:48,680 --> 00:01:57,947
+Now git merge feature has nothing to combine. Main simply slides forward to C4 prime. A fast-forward, and a perfectly linear history.
+
+12
+00:01:59,697 --> 00:02:18,535
+So when do you pick each? Merge on shared branches. It's safe and it records what really happened. Rebase your own local branch before you share it, to get a clean, linear history. And the golden rule. Never rebase commits that other people have already pulled, because rebase replaces them with new ones.
+
+13
+00:02:19,435 --> 00:02:28,301
+Look back at that straight line from C0 to C4 prime. That is what rebase buys you, a history that reads like one clean story.
+
+14
+00:02:29,951 --> 00:02:45,503
+To recap. Merge adds a commit with two parents and rewrites nothing. Rebase copies your commits onto the new base, giving them new IDs. Rebase locally, merge what's shared. Try it yourself at learn git branching dot j s dot org.

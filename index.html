@@ -90,6 +90,7 @@
 <dialog id="dlg"><div class="bar"><span id="dlgTitle"></span><button id="dlgClose" aria-label="Close">×</button></div><div id="dlgBody"></div></dialog>
 
 <script>
+const LANGS = { zh: '中文', es: 'Español', pt: 'Português', fr: 'Français', de: 'Deutsch', ja: '日本語' };
 const dlg = document.getElementById('dlg'), body = document.getElementById('dlgBody');
 const close = () => { body.innerHTML = ''; dlg.close(); };
 document.getElementById('dlgClose').onclick = close;
@@ -141,7 +142,7 @@ fetch('gallery.json').then((r) => r.json()).then((types) => {
       card.innerHTML = `
         <button class="thumb" aria-label="Play ${esc(it.title)}"><img src="${esc(it.poster)}" alt="" loading="lazy"><span class="play"></span><span class="len">${clock(it.seconds)}</span></button>
         <div class="body">
-          <div class="site">${esc(it.site ?? '')}${it.lang === 'zh' ? ' <span class="lang">中文</span>' : ''}</div>
+          <div class="site">${esc(it.site ?? '')}${LANGS[it.lang] ? ` <span class="lang">${LANGS[it.lang]}</span>` : ''}</div>
           <h3 class="title">${esc(it.title)}</h3>
           ${it.request ? `<p class="req">${esc(it.request)}</p>` : ''}
           <div class="links">

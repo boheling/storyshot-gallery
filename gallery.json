@@ -6,12 +6,12 @@
   "items": [
    {
     "id": "promo/cli-im",
-    "title": "输入网址，马上生成二维码",
+    "title": "草料二维码：网址一贴，马上出码",
     "site": "草料二维码 cli.im",
     "lang": "zh",
     "url": "https://cli.im/url",
     "request": "给草料二维码（https://cli.im/）做一个简短的中文宣传视频：输入一个网址，马上生成二维码，还可以美化一下样式。用于官网首页和社交媒体。中文字幕和中文配音。",
-    "seconds": 20.9,
+    "seconds": 19.366667,
     "video": "promo/cli-im/video.mp4",
     "poster": "promo/cli-im/poster.jpg",
     "storyboard": "promo/cli-im/storyboard.yaml",
@@ -34,12 +34,12 @@
    },
    {
     "id": "promo/jsoncrack",
-    "title": "Paste JSON, explore it as a graph",
+    "title": "JSON Crack: paste JSON, see the graph",
     "site": "JSON Crack",
     "lang": "en",
     "url": "https://jsoncrack.com/editor",
     "request": "Make a short promo video of JSON Crack's editor (https://jsoncrack.com/editor): paste a bit of JSON and watch it turn into an interactive graph you can explore. For a landing page / social post.",
-    "seconds": 17.1,
+    "seconds": 18.366667,
     "video": "promo/jsoncrack/video.mp4",
     "poster": "promo/jsoncrack/poster.jpg",
     "storyboard": "promo/jsoncrack/storyboard.yaml",
@@ -48,12 +48,12 @@
    },
    {
     "id": "promo/squoosh",
-    "title": "Shrink an image, compare before and after",
+    "title": "Squoosh: shrink images right in your browser",
     "site": "Squoosh",
     "lang": "en",
     "url": "https://squoosh.app/",
     "request": "Make a short promo video of Squoosh (https://squoosh.app), Google's in-browser image compressor — show how it shrinks an image while you compare before/after. For a landing page / social post.",
-    "seconds": 17.8,
+    "seconds": 23.333333,
     "video": "promo/squoosh/video.mp4",
     "poster": "promo/squoosh/poster.jpg",
     "storyboard": "promo/squoosh/storyboard.yaml",
@@ -69,16 +69,30 @@
   "items": [
    {
     "id": "tutorial/blast",
-    "title": "Run a protein BLAST search and read the results",
+    "title": "Protein BLAST (blastp) for new lab members",
     "site": "NCBI BLAST",
     "lang": "en",
     "url": "https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&PAGE_TYPE=BlastSearch",
     "request": "Make a tutorial video for new lab members on how to use NCBI protein BLAST (blastp): paste a query sequence, choose the database, run it, and read the results (hits table, what E-value / identity mean, opening one alignment). Use human hemoglobin beta as the main example, then show a second example with human insulin so they see how results differ.",
-    "seconds": 304.633333,
+    "seconds": 321.1,
     "video": "tutorial/blast/video.mp4",
     "poster": "tutorial/blast/poster.jpg",
     "storyboard": "tutorial/blast/storyboard.yaml",
     "notes": "tutorial/blast/notes.md",
+    "article": null
+   },
+   {
+    "id": "tutorial/clinicaltrials",
+    "title": "How to find a clinical trial on ClinicalTrials.gov",
+    "site": "ClinicalTrials.gov",
+    "lang": "en",
+    "url": "https://clinicaltrials.gov/",
+    "request": "Make a tutorial video for patients and caregivers on how to find a clinical trial on ClinicalTrials.gov (https://clinicaltrials.gov): search for a condition near where you live, keep only studies that are recruiting, open one study, and understand the key parts of the study page: what's being tested, who can join (eligibility), where it runs and who to contact. Plain language, no jargon, calm pace.",
+    "seconds": 276.933333,
+    "video": "tutorial/clinicaltrials/video.mp4",
+    "poster": "tutorial/clinicaltrials/poster.jpg",
+    "storyboard": "tutorial/clinicaltrials/storyboard.yaml",
+    "notes": "tutorial/clinicaltrials/notes.md",
     "article": null
    },
    {
@@ -108,6 +122,20 @@
     "storyboard": "tutorial/drawio/storyboard.yaml",
     "notes": "tutorial/drawio/notes.md",
     "article": null
+   },
+   {
+    "id": "tutorial/jupyterlite",
+    "title": "Your first data analysis in JupyterLite",
+    "site": "JupyterLite",
+    "lang": "en",
+    "url": "https://jupyter.org/try-jupyter/lab/",
+    "request": "Make a tutorial video showing a first data analysis in JupyterLite (https://jupyter.org/try-jupyter/lab/), Jupyter that runs entirely in the browser, nothing to install: open a new Python notebook, load a small dataset with pandas, look at it, compute a summary, and make a chart. For students who have never used Jupyter.",
+    "seconds": 229.566667,
+    "video": "tutorial/jupyterlite/video.mp4",
+    "poster": "tutorial/jupyterlite/poster.jpg",
+    "storyboard": "tutorial/jupyterlite/storyboard.yaml",
+    "notes": "tutorial/jupyterlite/notes.md",
+    "article": null
    }
   ]
  },
@@ -116,6 +144,48 @@
   "label": "Lessons",
   "blurb": "Explain the why: concept cards, the idea shown live, a question to check understanding.",
   "items": [
+   {
+    "id": "course/desmos-en",
+    "title": "Slope and y-intercept: what m and b mean in y = mx + b",
+    "site": "Desmos",
+    "lang": "en",
+    "url": "https://www.desmos.com/calculator?lang=en",
+    "request": "Make a short lesson video with the Desmos graphing calculator (https://www.desmos.com/calculator) on what m and b mean in y = mx + b (slope and y-intercept), in three languages: English, Simplified Chinese and Spanish, so I can share it with students who speak each one. Same lesson, each fully in its own language: the Desmos interface too, not only the narration.",
+    "seconds": 132,
+    "video": "course/desmos-en/video.mp4",
+    "poster": "course/desmos-en/poster.jpg",
+    "storyboard": "course/desmos-en/storyboard.yaml",
+    "notes": "course/desmos-en/notes.md",
+    "article": null
+   },
+   {
+    "id": "course/desmos-es",
+    "title": "Pendiente y ordenada al origen: qué significan m y b en y = mx + b",
+    "site": "Desmos",
+    "lang": "es",
+    "url": "https://www.desmos.com/calculator?lang=es",
+    "request": "Make a short lesson video with the Desmos graphing calculator (https://www.desmos.com/calculator) on what m and b mean in y = mx + b (slope and y-intercept), in three languages: English, Simplified Chinese and Spanish, so I can share it with students who speak each one. Same lesson, each fully in its own language: the Desmos interface too, not only the narration.",
+    "seconds": 141.333333,
+    "video": "course/desmos-es/video.mp4",
+    "poster": "course/desmos-es/poster.jpg",
+    "storyboard": "course/desmos-es/storyboard.yaml",
+    "notes": "course/desmos-es/notes.md",
+    "article": null
+   },
+   {
+    "id": "course/desmos-zh",
+    "title": "斜率与 y 轴截距：y = mx + b 中 m 和 b 的含义",
+    "site": "Desmos",
+    "lang": "zh",
+    "url": "https://www.desmos.com/calculator?lang=zh-CN",
+    "request": "Make a short lesson video with the Desmos graphing calculator (https://www.desmos.com/calculator) on what m and b mean in y = mx + b (slope and y-intercept), in three languages: English, Simplified Chinese and Spanish, so I can share it with students who speak each one. Same lesson, each fully in its own language: the Desmos interface too, not only the narration.",
+    "seconds": 160.133333,
+    "video": "course/desmos-zh/video.mp4",
+    "poster": "course/desmos-zh/poster.jpg",
+    "storyboard": "course/desmos-zh/storyboard.yaml",
+    "notes": "course/desmos-zh/notes.md",
+    "article": null
+   },
    {
     "id": "course/geogebra-zh",
     "title": "二次函数顶点式：a、h、k 怎样改变图像",
@@ -128,6 +198,20 @@
     "poster": "course/geogebra-zh/poster.jpg",
     "storyboard": "course/geogebra-zh/storyboard.yaml",
     "notes": "course/geogebra-zh/notes.md",
+    "article": null
+   },
+   {
+    "id": "course/gitbranching",
+    "title": "Git merge vs. rebase, live in Learn Git Branching",
+    "site": "Learn Git Branching",
+    "lang": "en",
+    "url": "https://learngitbranching.js.org/?NODEMO&locale=en_US",
+    "request": "Make a short lesson video using Learn Git Branching (https://learngitbranching.js.org/) that explains the difference between git merge and git rebase: start from the same two branches, show what merge does to the history, then what rebase does, and when you'd pick each. For developers who use git daily but never really got rebase.",
+    "seconds": 166.066667,
+    "video": "course/gitbranching/video.mp4",
+    "poster": "course/gitbranching/poster.jpg",
+    "storyboard": "course/gitbranching/storyboard.yaml",
+    "notes": "course/gitbranching/notes.md",
     "article": null
    },
    {
@@ -156,6 +240,20 @@
     "poster": "course/regex101/poster.jpg",
     "storyboard": "course/regex101/storyboard.yaml",
     "notes": "course/regex101/notes.md",
+    "article": null
+   },
+   {
+    "id": "course/visualgo",
+    "title": "How Dijkstra Finds Shortest Paths",
+    "site": "VisuAlgo",
+    "lang": "en",
+    "url": "https://visualgo.net/en/sssp",
+    "request": "Make a short lesson video that makes a hard algorithm idea visible, using VisuAlgo (https://visualgo.net). For example, why merge sort is faster than insertion sort on a large shuffled array, or how Dijkstra's algorithm finds shortest paths. For first-year CS students.",
+    "seconds": 214.366667,
+    "video": "course/visualgo/video.mp4",
+    "poster": "course/visualgo/poster.jpg",
+    "storyboard": "course/visualgo/storyboard.yaml",
+    "notes": "course/visualgo/notes.md",
     "article": null
    }
   ]
@@ -195,12 +293,12 @@
    },
    {
     "id": "docs/mermaid",
-    "title": "Start a flowchart, add a node, export SVG or PNG",
+    "title": "Create, edit and export a flowchart in Mermaid Live Editor",
     "site": "Mermaid Live Editor",
     "lang": "en",
     "url": "https://mermaid.live/edit",
     "request": "We need help-center GIFs and a short article for Mermaid Live Editor (https://mermaid.live): how to start a flowchart from the sample, edit the text to add a node, and export the diagram as an SVG or PNG.",
-    "seconds": 47.233008,
+    "seconds": 49.8,
     "video": "docs/mermaid/video.mp4",
     "poster": "docs/mermaid/poster.jpg",
     "storyboard": "docs/mermaid/storyboard.yaml",

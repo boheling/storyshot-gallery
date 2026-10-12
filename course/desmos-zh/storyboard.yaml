@@ -1,0 +1,122 @@
+# 课程：y = mx + b 中 m 和 b 的含义 — 简体中文版。
+# Structure identical to desmos-en.yaml / desmos-es.yaml; only text, url ?lang= and voice differ.
+# Targets are language-independent CSS (Desmos class names / expr-id), identical in all three.
+name: desmos-zh
+url: https://www.desmos.com/calculator?lang=zh-CN
+purpose: course
+out: desmos-zh.mp4
+lang: zh
+voice: { provider: say, voice: Tingting }
+subtitles: burn
+captions: false
+chapters: true
+music: false
+
+intro:
+  kicker: Desmos 课程
+  title: 斜率与 y 轴截距
+  subtitle: y = mx + b 中 **m** 和 **b** 的含义
+  bullets:
+    - 读出 b：直线与 y 轴的交点
+    - 读出 m：直线有多陡
+    - 根据方程预测直线
+  say: 我们用 Desmos 来学习 y 等于 m x 加 b 中，m 和 b 的含义。
+
+setup:
+  - hide: ".dcg-notice-wrapper"
+
+steps:
+  - card:
+      kicker: 概念
+      title: y = mx + b
+      bullets:
+        - "m 是斜率：竖直变化除以水平变化"
+        - "b 是 y 轴截距：直线与 y 轴的交点"
+    caption: 输入方程
+    say: 每条直线都可以写成 y 等于 m x 加 b。我们把它输入到 Desmos 的第一行。
+    actions:
+      - click: { css: ".dcg-expressionitem .dcg-mq-editable-field", nth: 0 }
+      - type: y=mx+b
+
+  - caption: 为 m 和 b 添加滑块
+    say: Desmos 还不知道 m 和 b 是多少，所以提示添加滑块。点击“全部”，两个都加上。
+    actions:
+      - click: { css: ".dcg-btn-slider", last: true }
+      - pause: 600
+
+  - caption: 起始的直线
+    follow: false
+    say: 两个滑块都从 1 开始，所以这条直线是 y 等于 x 加 1。
+    actions:
+      - move: { x: 0.75, y: 0.45, highlight: true }
+
+  - card: { kicker: 第 1 部分, title: "b：y 轴截距" }
+    caption: 向上拖动 b
+    follow: false
+    sayAt: 2.3
+    say: 现在把 b 的滑块向右拖到 3。整条直线向上移动，现在它在 3 的位置穿过 y 轴。
+    actions:
+      - drag: { from: { x: 280, y: 286 }, to: { x: 315, y: 286 }, ms: 600, dragMs: 1000 }   # b slider thumb: 1 -> 3
+      - move: { x: 1040, y: 304, ms: 900 }
+
+  - caption: 把 b 拖到零以下
+    follow: false
+    sayAt: 2.3
+    say: 再向左拖到负 2。现在直线在原点下方、负 2 的位置穿过 y 轴。注意，直线的陡峭程度一直没有变。
+    actions:
+      - drag: { from: { x: 315, y: 286 }, to: { x: 226, y: 286 }, ms: 600, dragMs: 1000 }   # b slider thumb: 3 -> -2
+      - move: { x: 1040, y: 584, ms: 900 }
+
+  - card: { kicker: 第 2 部分, title: "m：斜率" }
+    caption: 增大 m
+    follow: false
+    sayAt: 2.3
+    say: 现在把 m 拖到 2。直线变陡了。从 y 轴截距出发，向右走一格，就向上走两格。这就是竖直变化除以水平变化。
+    actions:
+      - drag: { from: { x: 280, y: 208 }, to: { x: 297, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: 1 -> 2
+
+  - caption: 让 m 变成负数
+    follow: false
+    sayAt: 2.3
+    say: 把 m 拖到零以下，到负 1。现在直线从左到右是下降的。
+    actions:
+      - drag: { from: { x: 297, y: 208 }, to: { x: 244, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: 2 -> -1
+
+  - caption: m 等于零
+    follow: false
+    sayAt: 2.3
+    say: 把 m 拖到零。现在直线是水平的，一直保持在 b 的高度。
+    actions:
+      - drag: { from: { x: 244, y: 208 }, to: { x: 262, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: -1 -> 0
+
+  - card:
+      kicker: 问题
+      title: "y = −2x + 4"
+      subtitle: 它在哪里穿过 y 轴？是上升还是下降？
+      think: 5
+      say: 来思考一个问题。对于 y 等于负 2 x 加 4，直线在哪里穿过 y 轴？它是上升还是下降？
+    caption: 把 m 设为 −2
+    follow: false
+    say: 我们来验证。把 m 设为负 2。
+    actions:
+      - type: { target: { css: "[expr-id=\"2\"] .dcg-main .dcg-math-field" }, text: "m=-2", clear: true }
+
+  - caption: 把 b 设为 4
+    follow: false
+    say: 再把 b 设为 4。
+    actions:
+      - type: { target: { css: "[expr-id=\"3\"] .dcg-main .dcg-math-field" }, text: "b=4", clear: true }
+
+  - caption: 答案
+    follow: false
+    say: 答案是：b 等于 4，所以直线在 4 的位置穿过 y 轴。m 等于负 2，所以直线下降，每向右走一格，就向下走两格。
+    actions:
+      - move: { x: 1040, y: 248, ms: 900 }
+
+end_card:
+  title: 回顾
+  bullets:
+    - "b：直线与 y 轴的交点"
+    - "m：竖直变化除以水平变化，表示直线有多陡"
+    - "m 大于零上升，小于零下降，等于零水平"
+  say: 回顾一下。b 是直线与 y 轴的交点。m 是斜率，也就是竖直变化除以水平变化。m 为正，直线上升；m 为负，直线下降；m 为零，直线水平。
