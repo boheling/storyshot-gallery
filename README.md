@@ -12,8 +12,8 @@ Every example folder (`<type>/<site>/`) has:
 - `notes.md`: the request, how long it took, what went wrong, and the agent's own assessment
 - docs examples also have `steps/`: per-step GIFs and PNGs plus the generated help article
 
-Voices are free and local: Kokoro for both English and Chinese (the Chinese voice is Kokoro v1.1-zh,
-`zf_001`). The title, section and end cards are [HyperFrames](https://github.com/heygen-com/hyperframes)
+Voices are free and local: Kokoro for English, Qwen3-TTS 0.6B CustomVoice (voice `dylan`) for the Chinese
+lessons, and macOS Paulina for the Spanish one. The title, section and end cards are [HyperFrames](https://github.com/heygen-com/hyperframes)
 animations (`hyperframes: true` in the storyboard; Storyshot installs HyperFrames on first use). The sites
 shown belong to their owners and are used as public examples.
 
