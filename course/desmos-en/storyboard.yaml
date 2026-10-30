@@ -1,0 +1,123 @@
+# Lesson: what m and b mean in y = mx + b — English version.
+# Structure is identical in desmos-zh.yaml and desmos-es.yaml; only text, url ?lang= and voice differ.
+# Targets are language-independent CSS (Desmos class names), so they are the same in all three.
+name: desmos-en
+url: https://www.desmos.com/calculator?lang=en
+purpose: course
+hyperframes: true
+out: desmos-en.mp4
+lang: en
+voice: { provider: kokoro, voice: af_heart }
+subtitles: burn
+captions: false
+chapters: true
+music: false
+
+intro:
+  kicker: Desmos lesson
+  title: Slope and y-intercept
+  subtitle: What **m** and **b** mean in y = mx + b
+  bullets:
+    - Read b, where the line crosses the y-axis
+    - Read m, how steep the line is
+    - Predict a line from its equation
+  say: Let's learn what m and b mean in y equals m x plus b, with Desmos.
+
+setup:
+  - hide: ".dcg-notice-wrapper"
+
+steps:
+  - card:
+      kicker: Concept
+      title: y = mx + b
+      bullets:
+        - "m is the slope: rise over run"
+        - "b is the y-intercept: where the line crosses the y-axis"
+    caption: Type the equation
+    say: Every straight line can be written as y equals m x plus b. Let's type it into the first line in Desmos.
+    actions:
+      - click: { css: ".dcg-expressionitem .dcg-mq-editable-field", nth: 0 }
+      - type: y=mx+b
+
+  - caption: Add sliders for m and b
+    say: Desmos doesn't know m and b yet, so it offers sliders. Click all to add one for each.
+    actions:
+      - click: { css: ".dcg-btn-slider", last: true }
+      - pause: 600
+
+  - caption: The starting line
+    follow: false
+    say: Both sliders start at one, so the line is y equals x plus one.
+    actions:
+      - move: { x: 0.75, y: 0.45, highlight: true }
+
+  - card: { kicker: Part 1, title: "b: the y-intercept" }
+    caption: Drag b up
+    follow: false
+    sayAt: 2.3
+    say: Now drag the b slider to the right, up to three. The whole line moves up, and it now crosses the y-axis at three.
+    actions:
+      - drag: { from: { x: 280, y: 286 }, to: { x: 315, y: 286 }, ms: 600, dragMs: 1000 }   # b slider thumb: 1 -> 3
+      - move: { x: 1040, y: 304, ms: 900 }
+
+  - caption: Drag b below zero
+    follow: false
+    sayAt: 2.3
+    say: Drag it left, to minus two. Now the line crosses below the origin, at minus two. Notice that the steepness never changed.
+    actions:
+      - drag: { from: { x: 315, y: 286 }, to: { x: 226, y: 286 }, ms: 600, dragMs: 1000 }   # b slider thumb: 3 -> -2
+      - move: { x: 1040, y: 584, ms: 900 }
+
+  - card: { kicker: Part 2, title: "m: the slope" }
+    caption: Make m bigger
+    follow: false
+    sayAt: 2.3
+    say: Now drag m up to two. The line gets steeper. From the y-intercept, one step to the right takes you two steps up. That is rise over run.
+    actions:
+      - drag: { from: { x: 280, y: 208 }, to: { x: 297, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: 1 -> 2
+
+  - caption: Make m negative
+    follow: false
+    sayAt: 2.3
+    say: Drag m below zero, to minus one. Now the line falls from left to right.
+    actions:
+      - drag: { from: { x: 297, y: 208 }, to: { x: 244, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: 2 -> -1
+
+  - caption: m equals zero
+    follow: false
+    sayAt: 2.3
+    say: Now drag m to zero. The line is flat. It just stays at the height b.
+    actions:
+      - drag: { from: { x: 244, y: 208 }, to: { x: 262, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: -1 -> 0
+
+  - card:
+      kicker: Question
+      title: "y = −2x + 4"
+      subtitle: Where does it cross the y-axis? Does it rise or fall?
+      think: 5
+      say: Here is a question. For y equals minus two x plus four, where does the line cross the y-axis, and does it rise or fall?
+    caption: Set m to −2
+    follow: false
+    say: Let's check. Set m to minus two.
+    actions:
+      - type: { target: { css: "[expr-id=\"2\"] .dcg-main .dcg-math-field" }, text: "m=-2", clear: true }
+
+  - caption: Set b to 4
+    follow: false
+    say: And set b to four.
+    actions:
+      - type: { target: { css: "[expr-id=\"3\"] .dcg-main .dcg-math-field" }, text: "b=4", clear: true }
+
+  - caption: The answer
+    follow: false
+    say: The answer. b is four, so the line crosses the y-axis at four. m is minus two, so it falls, two steps down for every step to the right.
+    actions:
+      - move: { x: 1040, y: 248, ms: 900 }
+
+end_card:
+  title: Recap
+  bullets:
+    - "b: where the line crosses the y-axis"
+    - "m: rise over run, how steep the line is"
+    - "m above zero rises, below zero falls, zero is flat"
+  say: To recap. b is where the line crosses the y-axis. m is the slope, rise over run. A positive m rises, a negative m falls, and zero is flat.

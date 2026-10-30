@@ -1,0 +1,85 @@
+name: mermaid-docs-flowchart
+url: https://mermaid.live/edit
+purpose: docs
+viewport: { width: 1280, height: 720 }
+output: { width: 1920, height: 1080, fps: 30 }
+out: mermaid-docs-flowchart.mp4
+article:
+  title: Create, edit and export a flowchart in Mermaid Live Editor
+  intro: "Mermaid Live Editor (mermaid.live) turns a few lines of text into a diagram. This article shows how to start a flowchart from a built-in sample, add a node by editing the code, and download the result as an **SVG** or **PNG** file. You don't need an account."
+
+setup:
+  - pause: 1500
+  - dismiss: { role: "button", name: "Stay on mermaid.live" }
+  - dismiss: { role: "button", name: "Dismiss banner", exact: true }
+  - drag: { from: { css: "[data-pane-resizer]" }, to: { x: 515, y: 400 } }   # widen the left panel to 40% so the Actions panel fits at 1280 px
+  - pause: 400
+
+steps:
+  - hidden: true
+    actions:
+      - click: { role: "button", name: "Sequence", exact: true }
+      - pause: 800
+
+  - caption: Open the **Flowchart** samples
+    doc: In the **Sample Diagrams** panel (bottom left), click the arrow next to **Flowchart** to see the flowchart examples.
+    actions:
+      - click: { role: "button", name: "Choose a Flowchart example", exact: true }
+      - pause: 600
+
+  - caption: Pick **Basic Flowchart**
+    doc: Choose **Basic Flowchart**. The sequence diagram in the **Code** editor is replaced by the flowchart's Mermaid code, and the preview on the right redraws as a flowchart. Loading a sample replaces whatever is in the editor.
+    actions:
+      - click: { text: "Basic Flowchart", exact: true }
+      - pause: 600
+      - move: { x: 250, y: 200, ms: 900, highlight: false }
+      - pause: 500
+      - move: { x: 850, y: 390, ms: 900, highlight: false }
+      - pause: 900
+
+  - caption: Type a **new line** of code
+    doc: "Click in the **Code** editor, go to the end of the last line and press **Enter**. Type `F --> G[Road trip]`. `F` is the ID of the existing **Car** node, `-->` draws an arrow, and `G[Road trip]` creates a new node with ID `G` and the label *Road trip*."
+    actions:
+      - click: { css: "textarea.ime-text-area", highlight: false }
+      - press: Meta+ArrowDown
+      - press: End
+      - press: Enter
+      - type: "F --> G[Road trip]"
+      - move: { x: 300, y: 252, ms: 500, highlight: false }
+      - pause: 1200
+    zoom: { target: { x: 230, y: 195 }, scale: 1.5, start: 0.2, end: 9.27, ramp: [0.6, 0.05] }
+
+  - caption: The **new node** appears
+    captionPosition: top
+    doc: The preview redraws as you type, so the **Road trip** box appears under **Car** right away. If the preview shows a syntax error instead, check the line for a missing bracket or arrow.
+    actions:
+      - move: { x: 1009, y: 632, ms: 1100, highlight: true }
+      - pause: 1500
+
+  - caption: Open the **Actions** panel
+    doc: Click **Actions** (bottom left) to show the export options.
+    actions:
+      - click: { text: "Actions", exact: true }
+      - pause: 500
+      - move: { x: 68, y: 472, ms: 600, highlight: false }
+      - pause: 600
+
+  - caption: Download as **SVG**
+    doc: Click **SVG** (the download arrow, not the open-in-new-tab icon next to it) to save the diagram as a scalable vector file, best for docs and slides. The browser confirms the download, and the file goes to your **Downloads** folder.
+    actions:
+      - click: { text: "SVG", exact: true }
+      - pause: 700
+
+  - hidden: true   # let the SVG "Downloaded" bubble fade before the PNG step starts
+    actions:
+      - pause: 2000
+
+  - caption: Or download as **PNG**
+    captionPosition: top
+    doc: For an image file, click **PNG** instead. **PNG size** is *Auto* by default; choose **Width** or **Height** and enter a number of pixels first if you need a specific size.
+    actions:
+      - note: { target: { css: "[role=group]:has([data-value=width])" }, text: "Optional: set a pixel size", side: top }
+      - pause: 400
+      - click: { text: "PNG", exact: true }
+      - unmark: true
+      - pause: 1300

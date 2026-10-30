@@ -1,0 +1,107 @@
+1
+00:00:00,150 --> 00:00:15,103
+In this video you'll learn three things in Desmos, a free online graphing calculator. How to plot a function, how to add a slider to change a number in it, and how to read off important points like intercepts. All you need is a web browser.
+
+2
+00:00:18,303 --> 00:00:28,343
+Open desmos dot com slash calculator. On the left is the expression list, where you type math. On the right is the graph paper, where Desmos draws it.
+
+3
+00:00:30,093 --> 00:00:35,486
+Click the first line of the expression list. A blinking cursor means it's ready for you to type.
+
+4
+00:00:37,236 --> 00:00:45,367
+Type y equals sine of x. Desmos turns the letters s i n into the sine function, and closes the bracket for you.
+
+5
+00:00:47,117 --> 00:00:57,768
+There's no enter key or graph button. As soon as the expression makes sense, the curve is drawn. This is the sine wave, going up and down between one and minus one.
+
+6
+00:01:01,918 --> 00:01:10,227
+Now let's put a parameter in front of sine. Click the line, then select everything on it with control A, or command A on a Mac.
+
+7
+00:01:11,977 --> 00:01:18,429
+Type y equals a, star, sine of x. The star means multiply, and shows up as a small dot.
+
+8
+00:01:20,179 --> 00:01:27,146
+Desmos doesn't know what a is yet, so the curve disappears and it offers a button called add slider. Click the a button.
+
+9
+00:01:28,896 --> 00:01:38,064
+A new line appears, a equals one, with a slider underneath that runs from minus ten to ten. The sine wave is back, because a is now a number.
+
+10
+00:01:39,814 --> 00:01:49,911
+Drag the slider dot. As a gets bigger, the wave gets taller. When a is negative, the wave flips upside down. So a controls the height, called the amplitude.
+
+11
+00:01:56,857 --> 00:02:01,650
+For an exact value, click on the a equals line and select it with control A.
+
+12
+00:02:03,400 --> 00:02:08,079
+Then type a equals two. The wave is now exactly twice as tall as before.
+
+13
+00:02:12,229 --> 00:02:24,168
+Now let's read points from the graph. Click anywhere on the curve. Grey dots appear on it. They mark the special points, like where the curve crosses the axes, and its highest and lowest points.
+
+14
+00:02:25,918 --> 00:02:40,560
+Click the grey dot where the curve crosses the x axis. A label pops up with its coordinates, pi comma zero. That's an x intercept, where y equals zero. Desmos even writes it as pi, not three point one four.
+
+15
+00:02:42,310 --> 00:02:46,704
+Now click the grey dot at the top of a hump, to see the highest point of the wave.
+
+16
+00:02:48,454 --> 00:02:58,363
+It reads pi over two, comma two. The height is two, exactly the value of a. Changing a changed the height, but the x intercepts stayed in the same place.
+
+17
+00:03:02,513 --> 00:03:12,697
+Now a second example, to show the same steps work for any function. First, click the coloured circle next to the sine wave to hide it, so the graph is less crowded.
+
+18
+00:03:14,447 --> 00:03:17,053
+Click the next empty line in the expression list.
+
+19
+00:03:18,857 --> 00:03:26,061
+Type y equals x, caret, two. The caret key, shift six, makes a power, so the two becomes a small exponent.
+
+20
+00:03:27,811 --> 00:03:31,710
+Press the right arrow to step out of the exponent, then type minus k.
+
+21
+00:03:33,460 --> 00:03:37,578
+Just like before, Desmos offers a slider for the new letter. Click k.
+
+22
+00:03:39,328 --> 00:03:47,839
+Drag the k slider. The parabola slides down when k grows, and up when k shrinks. The x intercepts move apart or together.
+
+23
+00:03:52,770 --> 00:03:58,493
+Set an exact value again. Click the k equals line, select it, and type k equals four.
+
+24
+00:04:00,243 --> 00:04:05,407
+Same as before. Click the parabola once, and grey dots appear at its special points.
+
+25
+00:04:07,157 --> 00:04:12,658
+Click the grey dot where it crosses the x axis on the right. The label says two comma zero.
+
+26
+00:04:14,408 --> 00:04:25,370
+Click the other crossing, at minus two comma zero. And the bottom of the parabola, the vertex, is at zero comma minus four, which is also where it crosses the y axis.
+
+27
+00:04:27,020 --> 00:04:43,014
+To recap. Type y equals your function to plot it. When you use a new letter, click add slider, then drag it or type an exact value. And click the curve to read off intercepts and other key points. These steps work for any function you want to explore.

@@ -1,0 +1,24 @@
+# JupyterLite: your first data analysis (tutorial)
+
+**Request:** "Make a tutorial video showing a first data analysis in JupyterLite (https://jupyter.org/try-jupyter/lab/), Jupyter that runs entirely in the browser, nothing to install: open a new Python notebook, load a small dataset with pandas, look at it, compute a summary, and make a chart. For students who have never used Jupyter."
+
+- **Wall-clock:** 04:17 to 08:56 PDT, about 279 minutes measured with `date`. The machine was shared with many parallel Storyshot builds (load average around 50), so each render took about 24 minutes and each compose 6 to 14 minutes. Most of the time went to waiting on those.
+- **Renders:** 3 full renders, of which 2 failed early (see below), plus 4 composes.
+- **Real process vs. video:** the recording took 59.5 s raw (1785 frames at 30 fps, including page load and setup). The 19 steps took 48.3 s raw in total. The output video is 229.6 s long: intro, 5 section cards, narration holds and the recap end card.
+- **Waits:** in this run JupyterLite was faster than expected. The kernel started inside the 5.0 s "open notebook" step, and the first `import pandas` / `matplotlib` finished inside step 5's 6.5 s, with typing included. The log reports `waiting x1.0` for every step, so nothing had to be squeezed. The narration still explains the wait ("the first import takes a moment, because Python is loading these libraries into your browser"), and there is no dead air.
+- **Dataset:** a 7-row CSV string typed inline (day, temp_c, ice_creams) and read with `pd.read_csv(StringIO(data))`, so it works offline. I tested it in JupyterLite with `inspect --after` before rendering. The short cells are typed and the multi-line data cell is pasted with `paste`. Every cell is run with Shift+Enter, shown with an on-screen key badge.
+- **Numbers narrated, checked against the frames:** 7 rows and 3 columns. `describe()` mean is 26.285714 °C (narrated "about 26 point 3") and 171.428571 ice creams (narrated "about 171"). Min/max are 19/33 °C and 95/260 ice creams. The tallest bar is Saturday (260) and the shortest is Wednesday (95). On the scatter plot, the coolest day is 19 °C with 95 sales and the hottest is 33 °C with 260.
+
+## Problems and fixes
+1. **Font-size setup broke render 1.** I tried to make JupyterLab's fonts bigger in `setup` with Settings > Theme > Increase Code Font Size. It worked in fast `inspect`, but in the real recording the animated cursor crossed the menus and opened a Licenses page. I dropped the change. Readability now comes from a 1280×720 viewport (shown 1.5× in 1080p), `frame: false` and explicit zooms.
+2. **Render 2 failed at the min/max mark.** The selector `table.dataframe tbody tr:nth-child(8)` with `nth: 1` failed because the first table has only 7 rows. I switched to row selectors based on the header text, such as `tr:has(th:text-is("max"))`, and checked them with `inspect --after 19`.
+3. **Code was too small to read.** In render 3, the automatic follow camera did not zoom on the type and run steps, and the studio window frame shrank the page further. Compose 1 set `frame: false`. Compose 2 added point zooms (1.4 to 1.8×) on the typing and run steps. Point zooms only need a compose, not a new recording.
+4. **Caption over the chart (steps 16 and 19).** I pinned step 19's caption to the top. On step 16 a zoom put the bar chart under the caption both at the top and at the bottom, so I turned that step's zoom off (`follow: false`). The final compose has no warnings.
+5. `pronounce` handles terms the voice would misread (JupyterLite, df, pd, plt, CSV, read_csv, matplotlib, Pyodide). Subtitles keep the real spelling.
+
+## Quality assessment
+The code, tables and both charts are sharp and easy to read in 1080p. Each run step shows the Shift+Enter badge, and the mean, min/max rows and the charts are highlighted while the narration reads out the matching numbers, which are correct. The pacing suits beginners, though it is slow: 3:50 for five short cells. A few small flaws remain: in some zoomed run steps the caption sits right next to the Enter badge, step 15 shows the top of the bar chart cut off for a moment before step 16 brings the whole chart into view, and the dramatic "long wait" this example was meant to show did not happen in this run.
+
+## Update, 2026-10-29
+
+Re-composed from the same recording with `hyperframes: true` (Storyshot 0.5.0), so the intro, section and end cards are now HyperFrames animations: titles land word by word, a bar shows the parts, and the intro's steps and the recap points light up as the narration names them. Nothing else changed.

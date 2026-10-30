@@ -1,0 +1,70 @@
+# Docs GIFs: filter a Datasette table, narrow it with a facet, export the result as CSV.
+# Recorded against a local Datasette 1.0a41 serving the same global-power-plants.db as the public
+# demo, because the demo puts a Cloudflare "verify you are human" page in front of filtered URLs.
+name: global-power-plants-docs-filter-facet-export
+url: http://127.0.0.1:8765/global-power-plants/global-power-plants
+purpose: docs
+article:
+  title: Filter a table, add a facet and export CSV in Datasette
+  intro: Narrow a large table down to the rows you need, then download exactly those rows as a CSV file.
+out: global-power-plants-docs-filter-facet-export.mp4
+
+steps:
+  - caption: Pick the column to filter on
+    doc: >-
+      Open the table. In the filter box under the row count, open the "- column -" dropdown
+      and choose the column you want to filter on, here "primary_fuel". Leave the operator on "=".
+    actions:
+      - select: { target: { css: "select[name=_filter_column]" }, option: "primary_fuel" }
+      - note: { target: { css: "select[name=_filter_column]" }, text: "Column to filter", side: top }
+
+  - caption: Type a value and apply the filter
+    doc: >-
+      Type the value to match in the box next to the operator (values are case-sensitive, so type
+      Solar, not solar) and click "Apply filters". The heading now says
+      9,662 rows where primary_fuel = Solar.
+    actions:
+      - type: { target: { css: "input.filter-value" }, text: Solar }
+      - click: { role: button, name: "Apply filters", exact: true }
+      - networkIdle: true
+      - mark: '9,662 rows where primary_fuel = "Solar"'
+
+  - caption: Narrow it down with a facet
+    doc: >-
+      The facet lists below the filter count the values in the rows you are looking at. Under
+      "country_long", click a country, for example "Spain". Datasette adds it as a second filter,
+      so the table now shows only solar plants in Spain: 243 rows.
+    actions:
+      - note: { target: { role: link, name: "Spain", exact: true }, text: "Click a value to filter by it" }
+      - click: { role: link, name: "Spain", exact: true }
+      - networkIdle: true
+      - mark: "243 rows"
+
+  - caption: Export the filtered rows as CSV
+    doc: >-
+      Next to "This data as", click "CSV". The link always carries your current filters, so
+      the export contains exactly the 243 rows you see, with every column, not just the first page.
+    actions:
+      - note: { target: { role: link, name: "CSV", exact: true }, text: "Keeps your filters" }
+      - click: { role: link, name: "CSV", exact: true }
+      - networkIdle: true
+      - mark: "rowid,country,country_long,name"
+      - pause: 1200
+
+  - hidden: true
+    actions:
+      - goto: /global-power-plants/global-power-plants?_sort=rowid&primary_fuel__exact=Solar&country_long=Spain
+      - networkIdle: true
+
+  - caption: Save the CSV as a file
+    doc: >-
+      The "CSV" link opens the data in the browser. To get a `.csv` file instead, click
+      "advanced" next to it, tick "download file" under *Advanced export*, and click
+      "Export CSV". Tick "stream all rows" as well if the filtered table has more than
+      1,000 rows.
+    actions:
+      - click: { role: link, name: "advanced", exact: true }
+      - click: { label: "download file" }
+      - note: { target: { label: "download file" }, text: "Saves a .csv file", side: bottom }
+      - click: { role: button, name: "Export CSV" }
+      - pause: 800

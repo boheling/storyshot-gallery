@@ -1,0 +1,64 @@
+name: excalidraw-docs-export-png
+url: https://excalidraw.com/
+purpose: docs
+out: excalidraw-docs-export-png.mp4
+article:
+  title: Export a drawing as a PNG image
+  intro: Save your Excalidraw drawing as a PNG file with a transparent or white background, or copy it to the clipboard to paste it anywhere.
+
+steps:
+  - caption: Draw a rectangle
+    doc: Need something to export? Pick the **Rectangle** tool in the toolbar (or press R), drag on the canvas, and optionally pick a background color in the panel on the left.
+    actions:
+      - click: { role: "button", name: "Rectangle", exact: true }
+      - drag: { from: { x: 640, y: 380 }, to: { x: 960, y: 560 } }
+      - click: { role: "button", name: "#a5d8ff", exact: true }
+      - pause: 500
+
+  - caption: Add a label
+    doc: With the rectangle selected, press Enter, type a label, then press Escape.
+    actions:
+      - press: Enter
+      - type: Hello
+      - press: Escape
+      - press: Escape
+      - pause: 500
+
+  - caption: Open the menu
+    doc: Click the **menu** button in the top-left corner.
+    actions:
+      - click: { css: "button.dropdown-menu-button.main-menu-trigger" }
+      - pause: 500
+
+  - caption: Choose Export image
+    doc: Choose **Export image...** (shortcut Cmd/Ctrl+Shift+E).
+    actions:
+      - click: { role: "menuitem", name: "Export image...", exact: true }
+      - pause: 800
+
+  - caption: Transparent background
+    doc: Turn **Background** off to export with a transparent background. The checkerboard in the preview shows the transparent areas.
+    actions:
+      - click: { label: "Background", exact: true }
+      - note: { target: { css: ".ImageExportModal__preview__canvas" }, text: "Checkerboard = transparent", side: bottom }
+      - pause: 800
+
+  - caption: White background
+    doc: Turn **Background** back on to export on a solid white background (the canvas color).
+    actions:
+      - click: { label: "Background", exact: true }
+      - note: { target: { css: ".ImageExportModal__preview__canvas" }, text: "White behind the drawing", side: bottom }
+      - pause: 800
+
+  - caption: Download the PNG
+    doc: Click **PNG** to save the image. Depending on your browser, it downloads straight away or asks where to save it. Tip — pick a **Scale** of 2× or 3× first for a sharper image.
+    actions:
+      - click: { role: "button", name: "Export to PNG", exact: true }
+      - pause: 1500
+
+  - caption: Copy to clipboard
+    doc: Or click **Copy to clipboard** to put the PNG on your clipboard, then paste it straight into a doc, chat or email. The Background setting applies here too. Shortcut without opening the dialog — Shift+Alt+C copies the selected shapes as a PNG.
+    actions:
+      - move: { role: "button", name: "Copy PNG to clipboard", exact: true, highlight: true }
+      - note: { target: { role: "button", name: "Copy PNG to clipboard", exact: true }, text: "Then paste anywhere", side: bottom }
+      - pause: 800

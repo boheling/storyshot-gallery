@@ -1,0 +1,168 @@
+# Storyshot storyboard (tutorial): a first data analysis in JupyterLite
+name: jupyter-tutorial-first-analysis
+url: https://jupyter.org/try-jupyter/lab/
+purpose: tutorial
+hyperframes: true
+out: jupyter-tutorial-first-analysis.mp4
+viewport: { width: 1280, height: 720 }
+output: { width: 1920, height: 1080, fps: 30 }
+voice:
+  provider: kokoro
+  voice: af_heart
+  pronounce: { JupyterLite: Jupyter Light, df: D F, pd: P D, plt: P L T, CSV: C S V, matplotlib: mat plot lib, read_csv: read C S V, DataFrame: data frame, Pyodide: Pie oh dide }
+subtitles: true
+chapters: true
+frame: false
+
+intro:
+  title: Your first data analysis in Jupyter
+  subtitle: pandas and a chart, **right in your browser**
+  bullets:
+    - Open a Python notebook
+    - Load a small table with pandas
+    - Summarize it with describe
+    - Draw a bar chart and a scatter plot
+  say: In this video you'll do your first data analysis in Jupyter. You need nothing but a web browser.
+
+setup:
+  - click: { role: tab, name: "File Browser (⇧ ⌘ F)", exact: true }
+  - move: { x: 0.5, y: 0.6 }
+
+steps:
+  # 1
+  - card: { kicker: Part 1, title: Open a notebook }
+    caption: JupyterLite, **Jupyter in your browser**
+    say: This is JupyterLite, the full Jupyter environment running inside your web browser, so there is nothing to install. Under Notebook, the Python Pyodide tile creates a new Python notebook.
+    actions:
+      - pause: 400
+      - move: { role: button, name: "Python (Pyodide)", nth: 0, highlight: true }
+  # 2
+  - caption: Click **Python (Pyodide)**
+    say: Click it. A new, empty notebook opens, and Python starts up inside this browser tab.
+    actions:
+      - click: { role: button, name: "Python (Pyodide)", nth: 0 }
+      - waitFor: { css: ".jp-Notebook .jp-Cell .cm-content", timeout: 60000 }
+  # 3
+  - caption: A notebook is a list of **cells**
+    say: A notebook is made of cells. You type code into a cell, run it, and the result appears right underneath.
+    zoom: { target: { x: 0.4, y: 0.22 }, scale: 1.5, start: 0.2 }
+    actions:
+      - note: { target: { css: ".jp-Notebook .jp-Cell .cm-content" }, text: "Type code here" }
+  # 4
+  - card: { kicker: Part 2, title: Load the data }
+    caption: Import **pandas** and matplotlib
+    say: Click into the cell and type two import lines. pandas works with tables of data, and matplotlib draws charts. pd and plt are their usual short nicknames.
+    zoom: { target: { x: 0.3, y: 0.2 }, scale: 1.8, start: 0.2 }
+    actions:
+      - click: { css: ".jp-Notebook .jp-Cell .cm-content" }
+      - type: "import pandas as pd\nimport matplotlib.pyplot as plt"
+  # 5
+  - caption: "**Shift+Enter** runs the cell"
+    say: Press Shift and Enter to run the cell. The first import takes a moment, because Python is loading these libraries into your browser. A star in the brackets means it is still working.
+    zoom: { target: { x: 0.3, y: 0.2 }, scale: 1.8, start: 0.2 }
+    actions:
+      - press: { key: Shift+Enter, show: true }
+      - waitFor: { css: '.jp-InputPrompt:text-is("[1]:")', timeout: 180000 }
+  # 6
+  - caption: The star became a **1**, done
+    say: When the star turns into the number one, the cell is done, and a new empty cell is waiting below.
+    actions:
+      - mark: { css: '.jp-InputPrompt:text-is("[1]:")' }
+  # 7
+  - caption: Paste a small **dataset**
+    say: Now the data. Paste a tiny CSV table, one week of temperatures and ice cream sales. read_csv turns the text into a table named df, and df on the last line displays it.
+    zoom: { target: { x: 0.25, y: 0.37 }, scale: 1.7, start: 0.2 }
+    actions:
+      - paste: "from io import StringIO\ndata = \"\"\"day,temp_c,ice_creams\nMon,22,120\nTue,25,150\nWed,19,95\nThu,28,190\nFri,30,210\nSat,33,260\nSun,27,175\"\"\"\ndf = pd.read_csv(StringIO(data))\ndf"
+  # 8
+  - caption: Run it with **Shift+Enter**
+    say: Run the cell with Shift and Enter.
+    zoom: { target: { x: 0.25, y: 0.55 }, scale: 1.4, start: 0.2 }
+    actions:
+      - press: { key: Shift+Enter, show: true }
+      - waitFor: { css: '.jp-InputPrompt:text-is("[2]:")', timeout: 60000 }
+  # 9
+  - caption: Your first **DataFrame**
+    say: This table is called a DataFrame. It has seven rows, one per day, and three columns, the day, the temperature in Celsius, and the number of ice creams sold. The numbers on the left are the row index, which starts at zero.
+    actions:
+      - mark: { css: "table.dataframe", nth: 0 }
+  # 10
+  - card: { kicker: Part 3, title: Summarize the data }
+    caption: Ask for a **summary**
+    say: Next, a summary. In the new cell, type df dot describe, with empty brackets.
+    zoom: { target: { x: 0.3, y: 0.75 }, scale: 1.8, start: 0.2 }
+    actions:
+      - type: "df.describe()"
+  # 11
+  - caption: Run it with **Shift+Enter**
+    say: Run it. describe calculates statistics for every column of numbers.
+    zoom: { target: { x: 0.25, y: 0.35 }, scale: 1.6, start: 0.2 }
+    actions:
+      - press: { key: Shift+Enter, show: true }
+      - waitFor: { css: '.jp-InputPrompt:text-is("[3]:")', timeout: 60000 }
+  # 12
+  - caption: The **mean** is the average
+    say: The mean row is the average. Across the week, the average temperature was about 26 point 3 degrees, and the average day sold about 171 ice creams.
+    actions:
+      - mark: { css: 'table.dataframe tbody tr:has(th:text-is("mean"))' }
+  # 13
+  - caption: "**Min** and **max** show the range"
+    say: Min and max show the range. Temperatures went from 19 to 33 degrees, and sales from 95 to 260 ice creams a day.
+    actions:
+      - mark: { css: 'table.dataframe tbody tr:has(th:text-is("min"))' }
+      - mark: { css: 'table.dataframe tbody tr:has(th:text-is("max"))' }
+  # 14
+  - card: { kicker: Part 4, title: Make a chart }
+    caption: Draw a **bar chart**
+    say: Now a chart. df dot plot dot bar draws one bar per row, with the day on the x axis and ice creams on the y axis. The semicolon at the end just hides a line of technical text.
+    zoom: { target: { x: 0.3, y: 0.4 }, scale: 1.6, start: 0.2 }
+    actions:
+      - type: "df.plot.bar(x=\"day\", y=\"ice_creams\");"
+  # 15
+  - caption: Run it with **Shift+Enter**
+    say: Run the cell. The chart appears right below the code.
+    zoom: { target: { x: 0.3, y: 0.35 }, scale: 1.5, start: 0.2 }
+    actions:
+      - press: { key: Shift+Enter, show: true }
+      - waitFor: { css: '.jp-InputPrompt:text-is("[4]:")', timeout: 120000 }
+      - waitFor: { css: ".jp-RenderedImage img", timeout: 30000 }
+  # 16
+  - caption: Read the **bars**
+    say: Each bar is one day. Saturday has the tallest bar, at 260 ice creams, and Wednesday the shortest, at 95.
+    captionPosition: bottom
+    follow: false
+    actions:
+      - mark: { css: ".jp-RenderedImage img", nth: 0 }
+  # 17
+  - card: { kicker: Second example, title: Does heat sell ice cream? }
+    caption: Try a **scatter plot**
+    say: One more chart, this time comparing two columns. df dot plot dot scatter puts temperature on the x axis and ice creams on the y axis, one dot per day.
+    zoom: { target: { x: 0.3, y: 0.6 }, scale: 1.5, start: 0.2 }
+    actions:
+      - type: "df.plot.scatter(x=\"temp_c\", y=\"ice_creams\");"
+  # 18
+  - caption: Run it with **Shift+Enter**
+    say: Run it.
+    zoom: { target: { x: 0.3, y: 0.45 }, scale: 1.4, start: 0.2 }
+    actions:
+      - press: { key: Shift+Enter, show: true }
+      - waitFor: { css: '.jp-InputPrompt:text-is("[5]:")', timeout: 120000 }
+      - waitFor: { css: ".jp-RenderedImage img >> nth=1", timeout: 30000 }
+  # 19
+  - caption: Hotter days, **more ice cream**
+    say: The dots climb from left to right. The coolest day, at 19 degrees, sold the fewest ice creams, and the hottest, at 33 degrees, sold the most. A bar chart compares categories, while a scatter plot shows how two numbers move together.
+    captionPosition: top
+    zoom: { target: { x: 0.3, y: 0.45 }, scale: 1.2, start: 0.2 }
+    actions:
+      - mark: { css: ".jp-RenderedImage img", nth: 1 }
+
+end_card:
+  title: You did your first analysis
+  bullets:
+    - "Launcher, then Python (Pyodide): a new notebook"
+    - "Type code in a cell, run it with Shift+Enter"
+    - "pd.read_csv loads a table"
+    - "df.describe() summarizes it"
+    - "df.plot draws bar and scatter charts"
+  cta: Try it at jupyter.org/try-jupyter
+  say: To recap. Open a Python notebook from the Launcher. Type code in a cell and run it with Shift and Enter. read_csv loads a table, describe summarizes it, and plot draws charts. Now try it with your own data.

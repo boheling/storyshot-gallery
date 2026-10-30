@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" font-family="Helvetica, Arial, sans-serif">
+  <rect width="900" height="300" rx="18" fill="#ffffff"/>
+  <defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#333"/></marker></defs>
+  <circle cx="170" cy="120" r="48" fill="#f7931e"/>
+  <text x="170" y="134" font-size="40" font-weight="700" fill="#fff" text-anchor="middle">u</text>
+  <text x="170" y="210" font-size="30" font-weight="700" fill="#d62828" text-anchor="middle">d[u] = 9</text>
+  <line x1="222" y1="120" x2="618" y2="120" stroke="#333" stroke-width="6" marker-end="url(#a)"/>
+  <text x="420" y="100" font-size="34" font-weight="700" fill="#333" text-anchor="middle">w = 42</text>
+  <circle cx="680" cy="120" r="48" fill="#fff" stroke="#333" stroke-width="6"/>
+  <text x="680" y="134" font-size="40" font-weight="700" fill="#333" text-anchor="middle">v</text>
+  <text x="680" y="210" font-size="30" font-weight="700" fill="#d62828" text-anchor="middle">d[v]: Inf → 51</text>
+  <text x="450" y="270" font-size="30" fill="#0f172a" text-anchor="middle">relax: if d[u] + w &lt; d[v], set d[v] = d[u] + w</text>
+</svg>

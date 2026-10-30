@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="Inter, Helvetica, Arial, sans-serif">
+  <rect width="640" height="400" fill="#ffffff" rx="18"/>
+  <g stroke="#1f2937" stroke-width="2">
+    <circle cx="230" cy="135" r="88" fill="#a5b4fc"/>
+    <circle cx="410" cy="135" r="88" fill="#86efac"/>
+    <circle cx="230" cy="275" r="88" fill="#fdba74"/>
+    <circle cx="410" cy="275" r="88" fill="#f9a8d4"/>
+  </g>
+  <g font-size="26" font-weight="700" fill="#111827" text-anchor="middle">
+    <text x="205" y="120">α1</text><text x="435" y="120">β1</text>
+    <text x="205" y="300">β2</text><text x="435" y="300">α2</text>
+  </g>
+  <g fill="#b91c1c" stroke="#7f1d1d" stroke-width="2">
+    <rect x="236" y="130" width="34" height="34" rx="6" transform="rotate(45 253 147)"/>
+    <rect x="370" y="130" width="34" height="34" rx="6" transform="rotate(45 387 147)"/>
+    <rect x="236" y="236" width="34" height="34" rx="6" transform="rotate(45 253 253)"/>
+    <rect x="370" y="236" width="34" height="34" rx="6" transform="rotate(45 387 253)"/>
+  </g>
+  <g font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">
+    <text x="253" y="152">Fe</text><text x="387" y="152">Fe</text><text x="253" y="258">Fe</text><text x="387" y="258">Fe</text>
+  </g>
+  <g font-size="16" fill="#374151">
+    <rect x="18" y="352" width="18" height="18" fill="#b91c1c" transform="rotate(45 27 361)"/>
+    <text x="46" y="367">heme (iron binds one O₂)  ·  4 chains → 4 hemes → up to 4 O₂</text>
+  </g>
+</svg>

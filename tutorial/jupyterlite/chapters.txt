@@ -1,0 +1,6 @@
+0:00 Introduction
+0:06 Part 1 · Open a notebook
+0:38 Part 2 · Load the data
+1:48 Part 3 · Summarize the data
+2:27 Part 4 · Make a chart
+2:59 Second example · Does heat sell ice cream?

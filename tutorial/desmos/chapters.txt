@@ -1,0 +1,5 @@
+0:00 Introduction
+0:15 Part 1 · Plot a function
+0:59 Part 2 · Add a slider
+2:09 Part 3 · Read off points
+2:59 Part 4 · Same steps: a parabola
