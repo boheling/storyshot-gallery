@@ -1,0 +1,7 @@
+0:00 Introduction
+0:15 Part 1 · Start a blank diagram
+1:05 Part 2 · Add flowchart shapes
+1:31 Part 3 · Connect the shapes
+2:01 Part 4 · Label the shapes
+2:31 Part 5 · Export as PNG
+3:26 Part 6 · A second example

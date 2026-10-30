@@ -1,0 +1,158 @@
+# Storyshot storyboard (course): git merge vs git rebase, shown live in the Learn Git Branching sandbox.
+name: learngitbranching-lesson-merge-vs-rebase
+url: https://learngitbranching.js.org/?NODEMO&locale=en_US
+purpose: course
+hyperframes: true
+out: learngitbranching-lesson-merge-vs-rebase.mp4
+voice:
+  provider: kokoro
+  voice: af_heart
+  pronounce: { C0: C zero, C1: C one, C2: C two, C3: C three, C4: C four, C5: C five }
+subtitles: true
+chapters: true
+follow: false
+
+intro:
+  title: Merge vs. rebase
+  subtitle: Same branches, **two different histories**
+  bullets:
+    - See what git merge does to history
+    - See what git rebase does instead
+    - Know when to pick each
+  say: Merge and rebase both join two branches, but they leave very different histories behind.
+
+setup:
+  - hide: "#upsell, #upsellImageLink, #upsellImage"
+  - pause: 800
+
+steps:
+  # ── Part 1: the starting point ──
+  - card: { kicker: Part 1, title: The starting point }
+    caption: Build two diverging branches
+    say: In this sandbox, I'll create a feature branch, add one commit on main, then switch to feature and add two commits there.
+    actions:
+      - type: "git branch feature; git commit; git checkout feature; git commit; git commit"
+      - press: Enter
+      - pause: 300
+      - waitFor: { css: "#commandDisplay .reactCommandView:last-child p.finished", timeout: 30000 }
+      - pause: 1000
+
+  - caption: "main at **C2**, feature at **C4**"
+    say: Here's the picture. Both branches start from C1. Main moved on to C2, while feature has its own work, C3 and C4. The two histories have diverged.
+    zoom: { target: { x: 1000, y: 250 }, scale: 1.7, start: 0.3, ramp: [0.6, 0.5] }
+    actions:
+      - move: { x: 712, y: 250, ms: 900, highlight: true }
+      - pause: 700
+      - move: { x: 1286, y: 362, ms: 1100, highlight: true }
+      - pause: 700
+
+  # ── Part 2: git merge ──
+  - card: { kicker: Part 2, title: What git merge does }
+    caption: Merge main into feature
+    say: First, merge. We're on feature, so I type git merge main.
+    zoom: { target: { x: 1000, y: 270 }, scale: 1.5, start: 2.5, ramp: [0.8, 0.5] }
+    actions:
+      - type: "git merge main"
+      - press: Enter
+      - pause: 300
+      - waitFor: { css: "#commandDisplay .reactCommandView:last-child p.finished", timeout: 30000 }
+      - pause: 1000
+
+  - caption: "**C5** has two parents"
+    say: Git created a new merge commit, C5, with two parents, C4 and C2. Nothing was rewritten. The fork stays in the history forever, along with a record of when the branches were joined.
+    zoom: { target: { x: 1000, y: 290 }, scale: 1.5, start: 0.3, ramp: [0.6, 0.5] }
+    actions:
+      - move: { x: 1286, y: 476, ms: 900, highlight: true }
+      - pause: 800
+      - move: { x: 712, y: 250, ms: 1200, highlight: true }
+      - pause: 800
+
+  # ── Part 3: git rebase ──
+  - hidden: true
+    actions:
+      - goto: "https://learngitbranching.js.org/?NODEMO&locale=en_US"
+      - pause: 1500
+      - type: "git branch feature; git commit; git checkout feature; git commit; git commit"
+      - press: Enter
+      - pause: 300
+      - waitFor: { css: "#commandDisplay .reactCommandView:last-child p.finished", timeout: 30000 }
+      - pause: 800
+
+  - card: { kicker: Part 3, title: What git rebase does }
+    caption: Same starting point again
+    say: Now let's rewind to the exact same starting point. Main at C2, feature at C4, both branching off C1.
+    zoom: { target: { x: 1000, y: 250 }, scale: 1.7, start: 0.3, ramp: [0.6, 0.5] }
+    actions:
+      - move: { x: 1000, y: 137, ms: 900, highlight: true }
+      - pause: 900
+
+  - card:
+      kicker: Question
+      title: "After git rebase main, where do C3 and C4 end up?"
+      say: Here's a question. We're on feature, and we run git rebase main. Where do C3 and C4 end up?
+      think: 4
+    caption: Rebase feature onto main
+    say: Let's run it. git rebase main.
+    zoom: { target: { x: 1180, y: 270 }, scale: 1.5, start: 2.0, ramp: [0.8, 0.5] }
+    actions:
+      - type: "git rebase main"
+      - press: Enter
+      - pause: 300
+      - waitFor: { css: "#commandDisplay .reactCommandView:last-child p.finished", timeout: 30000 }
+      - pause: 1000
+
+  - caption: "Copied on top of C2: **C3' and C4'**"
+    captionPosition: top
+    say: Rebase replayed feature's commits on top of C2. They became C3 prime and C4 prime, brand new commits with new IDs. The originals, C3 and C4, are left behind, faded out. No merge commit, just a straight line.
+    zoom: { target: { x: 1180, y: 270 }, scale: 1.65, start: 0.3, ramp: [0.6, 0.5] }
+    actions:
+      - move: { x: 948, y: 362, ms: 900, highlight: true }
+      - pause: 600
+      - move: { x: 948, y: 476, ms: 700, highlight: true }
+      - pause: 600
+      - move: { x: 1522, y: 300, ms: 1100, highlight: true }
+      - pause: 800
+
+  - caption: Switch back to main
+    say: To finish, switch back to main.
+    actions:
+      - type: "git checkout main"
+      - press: Enter
+      - pause: 300
+      - waitFor: { css: "#commandDisplay .reactCommandView:last-child p.finished", timeout: 30000 }
+      - pause: 600
+
+  - caption: "Merge is now a **fast-forward**"
+    zoom: { target: { x: 1180, y: 270 }, scale: 1.5, start: 3.0, ramp: [0.8, 0.5] }
+    say: Now git merge feature has nothing to combine. Main simply slides forward to C4 prime. A fast-forward, and a perfectly linear history.
+    actions:
+      - type: "git merge feature"
+      - press: Enter
+      - pause: 300
+      - waitFor: { css: "#commandDisplay .reactCommandView:last-child p.finished", timeout: 30000 }
+      - pause: 1200
+
+  # ── Part 4: when to pick each ──
+  - card:
+      kicker: Concept
+      title: When to pick each
+      bullets:
+        - "Merge: shared branches; keeps the true history"
+        - "Rebase: your own branch, before you share it"
+        - "Never rebase commits others already pulled"
+      say: So when do you pick each? Merge on shared branches. It's safe and it records what really happened. Rebase your own local branch before you share it, to get a clean, linear history. And the golden rule. Never rebase commits that other people have already pulled, because rebase replaces them with new ones.
+    caption: "main and feature both at **C4'**"
+    say: Look back at that straight line from C0 to C4 prime. That is what rebase buys you, a history that reads like one clean story.
+    zoom: { target: { x: 1180, y: 270 }, scale: 1.6, start: 0.2, ramp: [0.6, 0.5] }
+    actions:
+      - move: { x: 948, y: 476, ms: 1000, highlight: true }
+      - pause: 1000
+
+end_card:
+  title: Merge vs. rebase
+  bullets:
+    - "Merge adds a commit with two parents; nothing is rewritten"
+    - "Rebase copies your commits onto the new base, with new IDs"
+    - "Rebase locally; merge what's shared"
+  cta: "Try it at learngitbranching.js.org"
+  say: To recap. Merge adds a commit with two parents and rewrites nothing. Rebase copies your commits onto the new base, giving them new IDs. Rebase locally, merge what's shared. Try it yourself at learn git branching dot j s dot org.

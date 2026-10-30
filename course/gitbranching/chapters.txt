@@ -1,0 +1,6 @@
+0:00 Introduction
+0:06 Part 1 · The starting point
+0:34 Part 2 · What git merge does
+0:56 Part 3 · What git rebase does
+1:07 Question · After git rebase main, where do C3 and C4 end up?
+1:59 Concept · When to pick each

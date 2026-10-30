@@ -1,0 +1,123 @@
+# Lección: qué significan m y b en y = mx + b — versión en español.
+# Structure identical to desmos-en.yaml / desmos-zh.yaml; only text, url ?lang= and voice differ.
+# Targets are language-independent CSS (Desmos class names / expr-id), identical in all three.
+name: desmos-es
+url: https://www.desmos.com/calculator?lang=es
+purpose: course
+hyperframes: true
+out: desmos-es.mp4
+lang: es
+voice: { provider: say, voice: Paulina, pronounce: { "y": "ye" } }
+subtitles: burn
+captions: false
+chapters: true
+music: false
+
+intro:
+  kicker: Lección de Desmos
+  title: Pendiente y ordenada al origen
+  subtitle: Qué significan **m** y **b** en y = mx + b
+  bullets:
+    - Leer b, donde la recta cruza el eje y
+    - Leer m, qué tan inclinada es la recta
+    - Predecir una recta a partir de su ecuación
+  say: Veamos qué significa cada letra en y igual a m x más b.
+
+setup:
+  - hide: ".dcg-notice-wrapper"
+
+steps:
+  - card:
+      kicker: Concepto
+      title: y = mx + b
+      bullets:
+        - "m es la pendiente: lo que sube entre lo que avanza"
+        - "b es la ordenada al origen: donde la recta cruza el eje y"
+    caption: Escribe la ecuación
+    say: Toda recta se puede escribir como y igual a m x más b. Escribámosla en la primera línea de Desmos.
+    actions:
+      - click: { css: ".dcg-expressionitem .dcg-mq-editable-field", nth: 0 }
+      - type: y=mx+b
+
+  - caption: Agrega deslizadores para m y b
+    say: Desmos todavía no sabe cuánto valen m ni b, así que ofrece deslizadores. Haz clic en todo para agregar uno para cada una.
+    actions:
+      - click: { css: ".dcg-btn-slider", last: true }
+      - pause: 600
+
+  - caption: La recta inicial
+    follow: false
+    say: Los dos deslizadores empiezan en uno, así que la recta es y igual a x más uno.
+    actions:
+      - move: { x: 0.75, y: 0.45, highlight: true }
+
+  - card: { kicker: Parte 1, title: "b: la ordenada al origen" }
+    caption: Sube b
+    follow: false
+    sayAt: 2.3
+    say: Ahora arrastra el deslizador de b hacia la derecha, hasta tres. Toda la recta sube; ahora cruza el eje y en tres.
+    actions:
+      - drag: { from: { x: 280, y: 286 }, to: { x: 315, y: 286 }, ms: 600, dragMs: 1000 }   # b slider thumb: 1 -> 3
+      - move: { x: 1040, y: 304, ms: 900 }
+
+  - caption: Baja b de cero
+    follow: false
+    sayAt: 2.3
+    say: Arrástralo a la izquierda, hasta menos dos. Ahora la recta cruza por debajo del origen, en menos dos. Fíjate que la inclinación no cambió.
+    actions:
+      - drag: { from: { x: 315, y: 286 }, to: { x: 226, y: 286 }, ms: 600, dragMs: 1000 }   # b slider thumb: 3 -> -2
+      - move: { x: 1040, y: 584, ms: 900 }
+
+  - card: { kicker: Parte 2, title: "m: la pendiente" }
+    caption: Aumenta m
+    follow: false
+    sayAt: 2.3
+    say: Ahora sube m hasta dos. La recta se vuelve más inclinada. Desde la ordenada al origen, un paso a la derecha te lleva dos pasos arriba. Eso es lo que sube entre lo que avanza.
+    actions:
+      - drag: { from: { x: 280, y: 208 }, to: { x: 297, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: 1 -> 2
+
+  - caption: Haz m negativa
+    follow: false
+    sayAt: 2.3
+    say: Baja m de cero, hasta menos uno. Ahora la recta baja de izquierda a derecha.
+    actions:
+      - drag: { from: { x: 297, y: 208 }, to: { x: 244, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: 2 -> -1
+
+  - caption: m igual a cero
+    follow: false
+    sayAt: 2.3
+    say: Ahora lleva m a cero. La recta queda horizontal, a la altura b.
+    actions:
+      - drag: { from: { x: 244, y: 208 }, to: { x: 262, y: 208 }, ms: 600, dragMs: 1000 }   # m slider thumb: -1 -> 0
+
+  - card:
+      kicker: Pregunta
+      title: "y = −2x + 4"
+      subtitle: ¿Dónde cruza el eje y? ¿Sube o baja?
+      think: 5
+      say: Una pregunta. Para y igual a menos dos x más cuatro, ¿dónde cruza la recta el eje y? ¿Sube o baja?
+    caption: Pon m en −2
+    follow: false
+    say: Comprobemos. Pon m en menos dos.
+    actions:
+      - type: { target: { css: "[expr-id=\"2\"] .dcg-main .dcg-math-field" }, text: "m=-2", clear: true }
+
+  - caption: Pon b en 4
+    follow: false
+    say: Ahora pon b en cuatro.
+    actions:
+      - type: { target: { css: "[expr-id=\"3\"] .dcg-main .dcg-math-field" }, text: "b=4", clear: true }
+
+  - caption: La respuesta
+    follow: false
+    say: La respuesta. b es cuatro, así que la recta cruza el eje y en cuatro. m es menos dos, así que baja dos pasos por cada paso a la derecha.
+    actions:
+      - move: { x: 1040, y: 248, ms: 900 }
+
+end_card:
+  title: Repaso
+  bullets:
+    - "b: donde la recta cruza el eje y"
+    - "m: lo que sube entre lo que avanza, la inclinación"
+    - "m mayor que cero sube, menor que cero baja, cero es horizontal"
+  say: Repasemos. b es donde la recta cruza el eje y. m es la pendiente, lo que sube entre lo que avanza. Una m positiva sube, una negativa baja; con cero es horizontal.

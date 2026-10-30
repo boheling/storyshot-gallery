@@ -1,0 +1,83 @@
+1
+00:00:00,150 --> 00:00:04,724
+You'll run a protein BLAST search, read the hits table, and open an alignment.
+
+2
+00:00:05,524 --> 00:00:15,422
+This is the NCBI protein BLAST page. The blastp tab is selected, which means a protein query searched against a protein database.
+
+3
+00:00:19,572 --> 00:00:33,842
+Click the query box and paste your protein sequence. Our first example is human hemoglobin beta, UniProt P68871. You can also enter an accession number or a FASTA record.
+
+4
+00:00:35,592 --> 00:00:45,386
+Next, choose the database. We pick UniProtKB Swiss-Prot, a smaller, expert-curated set, so the hits are well annotated and the search is fast.
+
+5
+00:00:47,136 --> 00:00:56,826
+Leave the algorithm on blastp and click the blue BLAST button. The search usually takes under a minute, and the page refreshes by itself when it's done.
+
+6
+00:01:03,161 --> 00:01:12,164
+The results page opens with a summary of your job. Check the database, swissprot, and the query length, 147 amino acids.
+
+7
+00:01:13,914 --> 00:01:26,854
+Below is the descriptions table. Each row is a database protein that matches your query, sorted from best to worst. The first row is human hemoglobin beta itself, which tells you the search worked.
+
+8
+00:01:28,604 --> 00:01:45,198
+The E value is how many hits this good you would expect by pure chance in a database this size. Smaller is better, and anything below 1e-5 usually means a real relationship. Here it is 6e-106, essentially zero.
+
+9
+00:01:46,948 --> 00:02:06,210
+Percent identity is the share of aligned positions with the same amino acid. Our protein is 100.00 percent identical to itself. The gorilla, in row two, is 99.32 percent identical, with an E value of 2e-105.
+
+10
+00:02:07,960 --> 00:02:22,000
+Read the description too. This row is human hemoglobin delta, a related globin from our own genome. It is 93.20 percent identical, with an E value of 2e-99.
+
+11
+00:02:23,750 --> 00:02:37,075
+Near the bottom of the list, mouse hemoglobin beta 1 is 80.27 percent identical. Its E value, 2e-86, is still tiny, so it is clearly a real beta globin.
+
+12
+00:02:41,225 --> 00:02:47,573
+To see how a hit lines up with your query, click its description. Let's open the gorilla hit in row two.
+
+13
+00:02:49,323 --> 00:03:02,231
+Each alignment shows your query on top and the database protein below. The middle line shows a letter where they are identical, a plus sign where the amino acids are similar, and a blank where they differ.
+
+14
+00:03:03,981 --> 00:03:23,691
+The header sums it up. 146 of 147 positions are identical, that's 99 percent, with no gaps. The single difference is at position 105, where human has arginine, R, and gorilla has lysine, K, a similar amino acid, shown by the plus sign.
+
+15
+00:03:27,841 --> 00:03:37,728
+Now let's repeat the search with a different protein, human insulin, UniProt P01308. On a fresh search page, paste the sequence.
+
+16
+00:03:39,478 --> 00:03:44,530
+Choose the same database, Swiss-Prot, so the two results are comparable, and click BLAST.
+
+17
+00:03:49,386 --> 00:04:09,136
+Human insulin is again the top hit, 100.00 percent identical. But its E value is 2e-76, not 6e-106. The insulin precursor is only 110 amino acids long, and a shorter alignment can't reach as small an E value.
+
+18
+00:04:10,886 --> 00:04:24,484
+Identity also drops much sooner than for hemoglobin. Already in row six, rat insulin 2 is only 82.73 percent identical, with an E value of 3e-56.
+
+19
+00:04:26,234 --> 00:04:38,777
+Chicken insulin is 63.64 percent identical. Its E value, 3e-39, is still far below 1e-5, so it is clearly the same protein.
+
+20
+00:04:40,527 --> 00:05:04,528
+Near the bottom are relatives from the same family. This is human insulin-like growth factor 2, only 33.98 percent identical, with an E value of 2e-07. That is below 1e-5, so the relationship is real, but it is a different protein. Judge a hit by its E value first, then identity, and always read the description.
+
+21
+00:05:06,178 --> 00:05:19,411
+To recap. Paste your sequence, pick a database, and click BLAST. In the hits table, check the E value first, then percent identity, and read the description. Click a description to see the alignment itself.

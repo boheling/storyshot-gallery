@@ -1,0 +1,80 @@
+name: jsoncrack-promo
+url: https://jsoncrack.com/editor
+purpose: pitch
+hyperframes: true
+out: jsoncrack-promo.mp4
+music: { bpm: 120 }
+
+intro:
+  title: "JSON Crack"
+  subtitle: Paste JSON. **See the graph.**
+
+setup:
+  - waitFor: { css: ".monaco-editor .view-lines", timeout: 30000 }
+
+steps:
+  # Puts the JSON on the real clipboard (paste action), then resets the editor to `{}` so
+  # the canvas is empty. Storyshot's paste falls back to insertText on Monaco's EditContext
+  # (it can't see the change), which would duplicate the text; the visible step therefore
+  # pastes with a real Cmd+V from the clipboard filled here.
+  - hidden: true
+    actions:
+      - click: { css: ".monaco-editor .view-lines" }
+      - press: Meta+A
+      - paste: |
+          {
+            "project": "Atlas",
+            "version": "2.1",
+            "owner": { "name": "Ada", "role": "lead" },
+            "tags": ["api", "graph", "viz"],
+            "tasks": [
+              { "id": 1, "title": "Parse", "done": true },
+              { "id": 2, "title": "Render", "done": false },
+              { "id": 3, "title": "Ship", "done": false }
+            ]
+          }
+      - press: Meta+A
+      - press: Backspace
+      - type: "{}"
+      - pause: 1500
+      - press: Meta+A
+
+  - caption: Paste **any JSON**
+    duration: 2.8
+    actions:
+      - press: { key: Meta+V, show: true }
+      - pause: 1700
+
+  - caption: Collapse branches **in one click**
+    duration: 3
+    zoom: { target: { x: 950, y: 520 }, scale: 1.4, start: 0, ramp: [0.5, 0.4] }
+    actions:
+      - click: { css: '[data-collapse-path="[\"tasks\"]"]' }
+      - pause: 1100
+      - click: { role: "button", name: "Expand", exact: true }
+      - pause: 700
+
+  - caption: Click a node for its **JSON path**
+    duration: 3
+    zoom: { target: { x: 900, y: 480 }, scale: 1.6, start: 0.7, ramp: [0.5, 0.4] }
+    actions:
+      - click: { x: 1299, y: 655 }
+      - pause: 1600
+
+  - caption: Flip the layout **instantly**
+    captionPosition: top
+    duration: 3.6
+    actions:
+      - press: Escape
+      - pause: 300
+      - click: { role: "button", name: "rotate layout", exact: true }
+      - pause: 600
+      - click: { role: "button", name: "fit to center", exact: true }
+      - pause: 400
+      - click: { role: "button", name: "zoom out", exact: true }
+      - pause: 1800
+
+end_card:
+  title: "JSON Crack"
+  subtitle: Your JSON, **as a graph**
+  cta: "Try it at jsoncrack.com/editor"

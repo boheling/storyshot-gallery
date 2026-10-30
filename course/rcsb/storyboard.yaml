@@ -1,0 +1,130 @@
+# Storyshot storyboard (course): hemoglobin structure lesson on RCSB PDB 4HHB
+name: rcsb-lesson-hemoglobin
+url: https://www.rcsb.org/structure/4HHB
+purpose: course
+hyperframes: true
+out: rcsb-lesson-hemoglobin.mp4
+voice:
+  provider: kokoro
+  pronounce:
+    4HHB: four H H B
+    PDB: P D B
+    O2: O two
+    3D: three D
+subtitles: true
+chapters: true
+music: false
+
+intro:
+  kicker: Biology lesson
+  title: Why hemoglobin is built from **four chains**
+  bullets:
+    - Find hemoglobin's chains on a PDB entry page
+    - Spot the heme group that carries oxygen
+    - See all four chains and hemes in 3D
+  say: In this lesson we open hemoglobin, entry 4HHB in the Protein Data Bank, and ask why it is built the way it is.
+
+steps:
+  - card: { kicker: Part 1, title: The entry page }
+    caption: Entry 4HHB, human hemoglobin
+    say: This is the entry page for 4HHB, the crystal structure of human hemoglobin. Its classification is oxygen transport. It picks up oxygen in the lungs and drops it off in the tissues.
+    actions:
+      - pause: 400
+      - mark: "THE CRYSTAL STRUCTURE OF HUMAN DEOXYHAEMOGLOBIN"
+      - mark: "OXYGEN TRANSPORT"
+
+  - caption: Four chains, two kinds
+    captionPosition: top
+    say: Under the picture, Global Stoichiometry reads hetero four-mer, A two B two. That means four protein chains of two different kinds, two of each.
+    actions:
+      - mark: "Hetero 4-mer - A2B2"
+
+  - caption: Two **alpha** chains, A and C
+    say: Scroll down to Macromolecules. The first entity is hemoglobin subunit alpha. It appears twice, as chains A and C.
+    actions:
+      - scrollTo: { css: "#table_macromolecule-protein-entityId-1", ms: 1200 }
+      - scroll: -160
+      - pause: 400
+      - mark: { css: "#table_macromolecule-protein-entityId-1 tr:has(> td a[href='/sequence/4HHB#A'])" }
+      - note: { target: { css: "#table_macromolecule-protein-entityId-1 a[href='/sequence/4HHB#C']" }, text: "alpha = chains A and C", side: bottom }
+
+  - caption: Two **beta** chains, B and D
+    say: The second entity is hemoglobin subunit beta, as chains B and D. So A two B two means two alpha and two beta chains.
+    actions:
+      - scrollTo: { css: "#table_macromolecule-protein-entityId-2", ms: 1200 }
+      - scroll: -160
+      - pause: 400
+      - mark: { css: "#table_macromolecule-protein-entityId-2 tr:has(> td a[href='/sequence/4HHB#B'])" }
+      - note: { target: { css: "#table_macromolecule-protein-entityId-2 a[href='/sequence/4HHB#D']" }, text: "beta = chains B and D", side: bottom }
+
+  - caption: One **heme** in every chain
+    say: Now the Small Molecules table. H E M is heme, a ring with an iron atom at its center. It is listed four times, once for each of chains A, B, C and D.
+    actions:
+      - mark: { css: "#ligand_row_HEM" }
+
+  - card:
+      kicker: Concept
+      title: Why four chains, each with a heme?
+      image: hemoglobin-diagram.svg
+      bullets:
+        - The iron in each heme binds one O2
+        - Four hemes, so up to four O2 per molecule
+        - The chains touch, so binding one O2 helps the next
+      say: Here is the why. The iron in each heme binds one oxygen molecule, so four chains carry up to four oxygens. And because the chains touch, oxygen binding to one chain makes the others grab oxygen more easily. This teamwork, called cooperativity, lets hemoglobin load fully in the lungs and unload readily in the tissues. A single chain could not do that.
+    caption: Open the **Structure** tab
+    say: Now let's see it in three D. Scroll back up and click the Structure tab.
+    actions:
+      - click: { role: "link", name: "Structure", exact: true }
+      - waitFor: { css: "#viewer canvas", timeout: 60000 }
+      - pause: 3000
+      - scroll: 220
+      - pause: 600
+
+  - card: { kicker: Part 2, title: See it in 3D }
+    caption: Four colors, four chains
+    captionPosition: top
+    follow: false
+    zoom: { target: { x: 650, y: 500 }, scale: 1.35, start: 0.3 }
+    say: This is the three D viewer. Each color is one protein chain, folded mostly into helices. Notice how the four chains pack into one compact unit. On your own screen you can drag to turn it.
+    actions:
+      - move: { x: 0.36, y: 0.55, ms: 1200, highlight: false }
+      - pause: 1500
+
+  - caption: Hide the water for a clearer view
+    follow: false
+    say: The red dots are water from the crystal. In the Components panel, click the eye next to Water to hide them.
+    actions:
+      - click: { x: 1425, y: 481 }
+      - pause: 1000
+
+  - card:
+      kicker: Question
+      title: How many oxygen molecules can one hemoglobin carry at most?
+      think: 4
+      say: Quick check. How many oxygen molecules can one hemoglobin molecule carry at most? Pause and think.
+    caption: "Answer: **four**, one per heme"
+    follow: false
+    zoom: { target: { x: 650, y: 480 }, scale: 1.4, start: 4 }
+    say: Let's check. Hide the protein by clicking the eye next to Polymer, then Reset Zoom. What is left are four heme groups, each in the color of its chain, held by a histidine. Four hemes means at most four oxygen molecules.
+    actions:
+      - click: { x: 1425, y: 415 }
+      - pause: 600
+      - click: { role: "button", name: "Reset Zoom", exact: true, highlight: false }
+      - pause: 2500
+
+  - caption: Each heme sits in its own pocket
+    follow: false
+    say: Show the protein again. Each heme sits in a pocket of its own chain, tucked between helices.
+    actions:
+      - click: { x: 1425, y: 415 }
+      - pause: 600
+      - click: { role: "button", name: "Reset Zoom", exact: true, highlight: false }
+      - pause: 2000
+
+end_card:
+  title: Hemoglobin, 4HHB
+  bullets:
+    - "Four chains: two alpha (A, C) and two beta (B, D)"
+    - Each chain holds one heme; its iron binds one O2
+    - Chains work together, so oxygen loads and unloads efficiently
+  say: To recap. Hemoglobin has four chains, two alpha and two beta. Each holds one heme whose iron binds one oxygen. And the chains work together, so oxygen loads in the lungs and unloads where it is needed.

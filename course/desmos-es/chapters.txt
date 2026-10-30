@@ -1,0 +1,5 @@
+0:00 Introducción
+0:05 Concepto · y = mx + b
+0:34 Parte 1 · b: la ordenada al origen
+1:02 Parte 2 · m: la pendiente
+1:37 Pregunta · y = −2x + 4

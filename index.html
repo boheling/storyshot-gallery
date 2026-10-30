@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storyshot Gallery</title>
+<meta name="description" content="Promos, tutorials, lessons and help-center docs of real web apps, each made by an AI coding agent with Storyshot from a one-paragraph request.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #0f172a; --muted: #5b6474; --line: #e3e7ee;
+    --accent: #d9f75b; --accent-ink: #0f172a; --chip: #eef1f5; --shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b1020; --panel: #121933; --ink: #e8ecf5; --muted: #9aa4b8; --line: #222b45; --chip: #1b2442;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b1020; --panel: #121933; --ink: #e8ecf5; --muted: #9aa4b8; --line: #222b45; --chip: #1b2442;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 Inter, -apple-system, "Segoe UI", sans-serif; }
+  a { color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+  header { padding: 56px 0 28px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.01em; }
+  .brand i { width: 14px; height: 14px; border-radius: 4px; background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); }
+  h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-spacing: -.03em; margin: 18px 0 12px; }
+  h1 em { font-style: normal; background: linear-gradient(transparent 62%, var(--accent) 62%); color: var(--ink); }
+  .lede { color: var(--muted); max-width: 720px; margin: 0; }
+  .lede code { font: 14px "JetBrains Mono", ui-monospace, monospace; background: var(--chip); padding: 2px 6px; border-radius: 6px; color: var(--ink); }
+  nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; gap: 6px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; }
+  nav a { text-decoration: none; padding: 7px 14px; border-radius: 999px; font-weight: 500; font-size: 14px; color: var(--muted); white-space: nowrap; }
+  nav a:hover { background: var(--chip); color: var(--ink); }
+  nav a b { font-weight: 600; color: var(--ink); margin-left: 4px; }
+  section { padding: 40px 0 8px; scroll-margin-top: 60px; }
+  section h2 { font-size: 24px; letter-spacing: -.02em; margin: 0 0 4px; }
+  section > .wrap > p { color: var(--muted); margin: 0 0 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 20px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+  .thumb { position: relative; aspect-ratio: 16 / 9; background: #0b1020; cursor: pointer; border: 0; padding: 0; display: block; width: 100%; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+  .thumb:hover img { transform: scale(1.03); }
+  .thumb .play { position: absolute; inset: 0; margin: auto; width: 58px; height: 58px; border-radius: 50%; background: rgba(15,23,42,.72); display: grid; place-items: center; box-shadow: 0 6px 20px rgba(0,0,0,.35); }
+  .thumb .play::after { content: ""; border-left: 18px solid #fff; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 5px; }
+  .thumb .len { position: absolute; right: 10px; bottom: 10px; background: rgba(15,23,42,.8); color: #fff; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .site { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .lang { margin-left: 6px; padding: 1px 7px; border-radius: 6px; background: var(--accent); color: var(--accent-ink); letter-spacing: 0; text-transform: none; }
+  .title { font-weight: 600; font-size: 17px; line-height: 1.3; letter-spacing: -.01em; margin: 0; }
+  .req { margin: 0; font-size: 14px; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 10px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .req::before { content: "Asked for: "; font-weight: 600; color: var(--ink); }
+  .links { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+  .links button, .links a { font: 500 13px Inter, sans-serif; border: 1px solid var(--line); background: var(--chip); color: var(--ink); padding: 6px 11px; border-radius: 8px; cursor: pointer; text-decoration: none; }
+  .links button:hover, .links a:hover { border-color: var(--muted); }
+  .empty { color: var(--muted); font-style: italic; }
+  dialog { border: 0; padding: 0; border-radius: 14px; background: var(--panel); color: var(--ink); width: min(1100px, calc(100vw - 32px)); max-height: calc(100vh - 32px); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  dialog::backdrop { background: rgba(5,8,18,.72); }
+  dialog .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 14px; }
+  dialog .bar button { border: 0; background: var(--chip); color: var(--ink); width: 32px; height: 32px; border-radius: 8px; font-size: 18px; cursor: pointer; }
+  dialog video { display: block; width: 100%; max-height: calc(100vh - 110px); background: #000; }
+  dialog .article { padding: 8px 22px 22px; max-height: calc(100vh - 110px); overflow: auto; }
+  dialog .article h2 { font-size: 22px; letter-spacing: -.02em; }
+  dialog .article h3 { font-size: 17px; margin: 22px 0 6px; }
+  dialog .article img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); margin: 8px 0; }
+  dialog pre { margin: 0; padding: 16px 18px; max-height: calc(100vh - 110px); overflow: auto; font: 13px/1.55 "JetBrains Mono", ui-monospace, monospace; white-space: pre-wrap; }
+  footer { color: var(--muted); font-size: 14px; padding: 48px 0 64px; }
+  @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } header { padding-top: 36px; } }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="brand"><i></i>Storyshot</div>
+  <h1>Real web apps, made into <em>videos by an agent</em></h1>
+  <p class="lede">Each video below started as a one-paragraph request to an AI coding agent with the
+    <a href="https://github.com/boheling/storyshot">Storyshot</a> skill. The agent looked at the site, wrote the storyboard,
+    rendered, checked the frames and fixed what it found. Every example comes with its storyboard, so you can copy it,
+    change the URL and make your own: <code>npx -y storyshot setup claude</code> (or <code>cursor</code>, <code>codex</code>, <code>gemini</code>, <code>vscode</code>, <code>windsurf</code>, <code>cline</code>)</p>
+</header>
+<nav><div class="wrap" id="nav"></div></nav>
+<main id="main"></main>
+<footer class="wrap">Voices are free and local: Kokoro for both English and Chinese (the Chinese voice is Kokoro v1.1-zh, zf_001). Title and section cards are <a href="https://github.com/heygen-com/hyperframes">HyperFrames</a> animations (<code>hyperframes: true</code> in the storyboard). Sites shown belong to their owners and are used as public examples.
+  Notes for each video say how long it took, what went wrong and what the agent thought of the result.</footer>
+
+<dialog id="dlg"><div class="bar"><span id="dlgTitle"></span><button id="dlgClose" aria-label="Close">×</button></div><div id="dlgBody"></div></dialog>
+
+<script>
+const LANGS = { zh: '中文', es: 'Español', pt: 'Português', fr: 'Français', de: 'Deutsch', ja: '日本語' };
+const dlg = document.getElementById('dlg'), body = document.getElementById('dlgBody');
+const close = () => { body.innerHTML = ''; dlg.close(); };
+document.getElementById('dlgClose').onclick = close;
+dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
+dlg.addEventListener('close', () => { body.innerHTML = ''; });
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const clock = (s) => s == null ? '' : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+function play(item) {
+  document.getElementById('dlgTitle').textContent = item.title;
+  body.innerHTML = `<video src="${esc(item.video)}" poster="${esc(item.poster)}" controls autoplay playsinline></video>`;
+  dlg.showModal();
+}
+async function showText(title, file) {
+  document.getElementById('dlgTitle').textContent = title;
+  body.innerHTML = '<pre>Loading…</pre>';
+  dlg.showModal();
+  try { const r = await fetch(file); body.firstChild.textContent = r.ok ? await r.text() : `Could not load ${file}`; }
+  catch { body.firstChild.textContent = `Could not load ${file}`; }
+}
+// the help article Storyshot writes (steps/README.md): title, numbered bold step headings, text, images
+async function showArticle(title, file) {
+  document.getElementById('dlgTitle').textContent = title;
+  body.innerHTML = '<div class="article">Loading…</div>';
+  dlg.showModal();
+  const base = file.replace(/[^/]+$/, '');
+  try {
+    const md = await (await fetch(file)).text();
+    body.firstChild.innerHTML = md.split('\n').map((l) => {
+      let m;
+      if ((m = l.match(/^# (.+)/))) return `<h2>${esc(m[1])}</h2>`;
+      if ((m = l.match(/^(\d+)\. \*\*(.+)\*\*/))) return `<h3>${m[1]}. ${esc(m[2])}</h3>`;
+      if ((m = l.match(/^\s*!\[(.*)\]\((.+)\)/))) return `<img src="${esc(base + m[2])}" alt="${esc(m[1])}" loading="lazy">`;
+      return l.trim() ? `<p>${esc(l.trim())}</p>` : '';
+    }).join('');
+  } catch { body.firstChild.textContent = `Could not load ${file}`; }
+}
+fetch('gallery.json').then((r) => r.json()).then((types) => {
+  document.getElementById('nav').innerHTML = types.map((t) => `<a href="#${t.id}">${esc(t.label)}<b>${t.items.length}</b></a>`).join('');
+  const main = document.getElementById('main');
+  for (const t of types) {
+    const sec = document.createElement('section');
+    sec.id = t.id;
+    sec.innerHTML = `<div class="wrap"><h2>${esc(t.label)}</h2><p>${esc(t.blurb)}</p><div class="grid"></div></div>`;
+    const grid = sec.querySelector('.grid');
+    if (!t.items.length) grid.innerHTML = '<p class="empty">Coming soon.</p>';
+    for (const it of t.items) {
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <button class="thumb" aria-label="Play ${esc(it.title)}"><img src="${esc(it.poster)}" alt="" loading="lazy"><span class="play"></span><span class="len">${clock(it.seconds)}</span></button>
+        <div class="body">
+          <div class="site">${esc(it.site ?? '')}${LANGS[it.lang] ? ` <span class="lang">${LANGS[it.lang]}</span>` : ''}</div>
+          <h3 class="title">${esc(it.title)}</h3>
+          ${it.request ? `<p class="req">${esc(it.request)}</p>` : ''}
+          <div class="links">
+            <button data-k="storyboard">Storyboard</button>
+            <button data-k="notes">How it went</button>
+            ${it.article ? '<button data-k="article">Article</button>' : ''}
+            ${it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">Site ↗</a>` : ''}
+          </div>
+        </div>`;
+      card.querySelector('.thumb').onclick = () => play(it);
+      card.querySelectorAll('[data-k]').forEach((b) => {
+        const k = b.dataset.k;
+        b.onclick = () => (k === 'article' ? showArticle : showText)(`${it.title} · ${b.textContent}`, it[k]);
+      });
+      grid.appendChild(card);
+    }
+    main.appendChild(sec);
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+# Tutorial: run a protein BLAST search (blastp) and read the results.
+# Rows are marked by accession (tr:has(a[href*="protein/<acc>."])), so the marked row is always the
+# protein the narration names, whatever its rank. Numbers in say: lines were read from the real results.
+name: blast-tutorial
+url: https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&PAGE_TYPE=BlastSearch
+purpose: tutorial
+out: blast-tutorial.mp4
+voice:
+  provider: kokoro
+  voice: af_heart
+  pronounce:
+    BLAST: blast
+    blastp: blast P
+    NCBI: N C B I
+    UniProtKB: Uni Prot K B
+    Swiss-Prot: Swiss Prot
+    UniProt: Uni Prot
+    "1e-5": 1 e minus 5
+    "6e-106": 6 e minus 106
+    "2e-105": 2 e minus 105
+    "2e-99": 2 e minus 99
+    "2e-86": 2 e minus 86
+    "2e-76": 2 e minus 76
+    "3e-56": 3 e minus 56
+    "3e-39": 3 e minus 39
+    "2e-07": 2 e minus 7
+subtitles: true
+hyperframes:
+  band: MVHLTPEEKSAVTALWGKVNVDEVGGEALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVKAHGKKVLGAFSDGLAHLDNLKGTFATLSELHCDKLHVDPENFRLLGNVLVCVLAHHFGKEFTPPVQAAYQKVVAGVANALAHKYH
+  bandColors: aminoacid
+  emblem:
+    - LHCDKLHVDPENFRLLGNVLVCVLAHHF
+    - "|||||||||||||+||||||||||||||"
+    - LHCDKLHVDPENFKLLGNVLVCVLAHHF
+chapters: true
+
+intro:
+  title: Protein BLAST for beginners
+  subtitle: NCBI **blastp**, step by step
+  bullets:
+    - Run a blastp search
+    - Read the hits table
+    - Open one alignment
+  say: You'll run a protein BLAST search, read the hits table, and open an alignment.
+
+setup:
+  - hide: '[id*="QSI"], [class*="QSI"]'   # NCBI survey / feedback pop-ups, for the whole video
+  - dismiss: { role: button, name: "Tell us what you think!", exact: true }
+
+steps:
+  - caption: The protein BLAST page
+    say: This is the NCBI protein BLAST page. The blastp tab is selected, which means a protein query searched against a protein database.
+    actions:
+      - move: { css: "#blastpTab", highlight: false, ms: 1200 }
+      - mark: "Enter Query Sequence"
+      - note: { target: { css: "#blastpTab" }, text: "protein query vs. protein database" }
+
+  - card: { kicker: Part 1, title: Set up the search }
+    caption: Paste the query sequence
+    say: Click the query box and paste your protein sequence. Our first example is human hemoglobin beta, UniProt P68871. You can also enter an accession number or a FASTA record.
+    actions:
+      - type: { target: { label: "Enter accession number(s), gi(s), or FASTA sequence(s)" }, text: "MVHLTPEEKSAVTALWGKVNVDEVGGEALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVKAHGKKVLGAFSDGLAHLDNLKGTFATLSELHCDKLHVDPENFRLLGNVLVCVLAHHFGKEFTPPVQAAYQKVVAGVANALAHKYH", delay: 6 }
+
+  - caption: Choose the database
+    say: Next, choose the database. We pick UniProtKB Swiss-Prot, a smaller, expert-curated set, so the hits are well annotated and the search is fast.
+    actions:
+      - select: { target: { label: "Database", exact: true }, option: "UniProtKB/Swiss-Prot(swissprot)" }
+      - note: { target: { label: "Database", exact: true }, text: "Curated, fast: good for learning" }
+
+  - caption: Run the search
+    say: Leave the algorithm on blastp and click the blue BLAST button. The search usually takes under a minute, and the page refreshes by itself when it's done.
+    actions:
+      - move: { role: button, name: "BLAST", exact: true, highlight: false, ms: 1500 }
+      - mark: { role: button, name: "BLAST", exact: true }
+      - pause: 2500
+      - click: { role: button, name: "BLAST", exact: true }
+
+  - hidden: true
+    actions:
+      - waitFor: { text: "Sequences producing significant alignments", timeout: 240000 }
+      - scrollTo: { css: "body", ms: 200 }
+
+  - card: { kicker: Part 2, title: Read the hits table }
+    caption: The search summary
+    say: The results page opens with a summary of your job. Check the database, swissprot, and the query length, 147 amino acids.
+    actions:
+      - mark: "swissprot"
+      - mark: "Query Length"
+
+  - caption: Each row is one **hit**
+    say: Below is the descriptions table. Each row is a database protein that matches your query, sorted from best to worst. The first row is human hemoglobin beta itself, which tells you the search worked.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P68871."]) td.c10' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - scrollTo: { css: "#tabDescr", ms: 1200 }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P68871."])' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P68871."]) td.c10' }
+
+  - caption: "E value: could this be **chance**?"
+    say: The E value is how many hits this good you would expect by pure chance in a database this size. Smaller is better, and anything below 1e-5 usually means a real relationship. Here it is 6e-106, essentially zero.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P68871."]) td.c9' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P68871."]) td.c9' }
+      - note: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P68871."]) td.c9' }, text: "Smaller = less likely by chance", side: bottom }
+
+  - caption: "Percent identity: how **similar**"
+    say: Percent identity is the share of aligned positions with the same amino acid. Our protein is 100.00 percent identical to itself. The gorilla, in row two, is 99.32 percent identical, with an E value of 2e-105.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P02024."]) td.c10' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P68871."]) td.c10' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P02024."])' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P02024."]) td.c10' }
+      - note: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P02024."]) td.c10' }, text: "Same amino acid at each position", side: bottom }
+
+  - caption: Not every hit is the **same gene**
+    say: Read the description too. This row is human hemoglobin delta, a related globin from our own genome. It is 93.20 percent identical, with an E value of 2e-99.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P02042."]) td.c10' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P02042."])' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P02042."]) td.c10' }
+      - note: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P02042."]) td.c10' }, text: "Human delta globin: 93.20%", side: bottom }
+
+  - caption: Distant species, still **significant**
+    say: Near the bottom of the list, mouse hemoglobin beta 1 is 80.27 percent identical. Its E value, 2e-86, is still tiny, so it is clearly a real beta globin.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P02088."]) td.c9' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P02088."])' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P02088."]) td.c9' }
+      - note: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P02088."]) td.c9' }, text: "Lower identity, E still tiny", side: bottom }
+
+  - card: { kicker: Part 3, title: Open one alignment }
+    caption: Click a description to see its alignment
+    say: To see how a hit lines up with your query, click its description. Let's open the gorilla hit in row two.
+    actions:
+      - scrollTo: { css: "#tabDescr", ms: 1200 }
+      - click: { css: "a[href='#alnHdr_P02024']" }
+      - pause: 1200
+
+  - caption: Query on top, **hit** below
+    zoom: { target: { x: 631, y: 290 }, scale: 1.6, start: 0.5 }
+    say: Each alignment shows your query on top and the database protein below. The middle line shows a letter where they are identical, a plus sign where the amino acids are similar, and a blank where they differ.
+    actions:
+      - mark: { css: "#ar_P02024_1" }
+
+  - caption: "146 of 147 identical: **one** change"
+    zoom: { target: { x: 600, y: 255 }, scale: 1.6, start: 0.5 }
+    say: The header sums it up. 146 of 147 positions are identical, that's 99 percent, with no gaps. The single difference is at position 105, where human has arginine, R, and gorilla has lysine, K, a similar amino acid, shown by the plus sign.
+    actions:
+      - mark: "146/147(99%)"
+      - mark: "ENF+LLG"
+
+  - hidden: true
+    actions:
+      - goto: "https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&PAGE_TYPE=BlastSearch"
+      - networkIdle: true
+
+  - card: { kicker: Part 4, title: Now a second example, subtitle: Human insulin, emblem: [MALWMRLLPLLALLALWGPDPAAAFVNQ] }
+    caption: Paste the insulin sequence
+    say: Now let's repeat the search with a different protein, human insulin, UniProt P01308. On a fresh search page, paste the sequence.
+    actions:
+      - type: { target: { label: "Enter accession number(s), gi(s), or FASTA sequence(s)" }, text: "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKTRREAEDLQVGQVELGGGPGAGSLQPLALEGSLQKRGIVEQCCTSICSLYQLENYCN", delay: 6 }
+
+  - caption: Same database, then BLAST
+    captionPosition: top
+    say: Choose the same database, Swiss-Prot, so the two results are comparable, and click BLAST.
+    actions:
+      - select: { target: { label: "Database", exact: true }, option: "UniProtKB/Swiss-Prot(swissprot)" }
+      - click: { role: button, name: "BLAST", exact: true }
+
+  - hidden: true
+    actions:
+      - waitFor: { text: "Sequences producing significant alignments", timeout: 240000 }
+      - scrollTo: { css: "#tabDescr", ms: 200 }
+
+  - caption: Shorter protein, **larger** E value
+    say: Human insulin is again the top hit, 100.00 percent identical. But its E value is 2e-76, not 6e-106. The insulin precursor is only 110 amino acids long, and a shorter alignment can't reach as small an E value.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P01308."]) td.c9' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P01308."])' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P01308."]) td.c9' }
+      - note: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P01308."]) td.c9' }, text: "Short query, larger E value", side: bottom }
+
+  - caption: Identity falls **faster**
+    say: Identity also drops much sooner than for hemoglobin. Already in row six, rat insulin 2 is only 82.73 percent identical, with an E value of 3e-56.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P01323."]) td.c10' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P01323."])' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P01323."]) td.c10' }
+      - note: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P01323."]) td.c10' }, text: "Rat: 82.73%", side: bottom }
+
+  - caption: A bird, still a **clear match**
+    captionPosition: top
+    say: Chicken insulin is 63.64 percent identical. Its E value, 3e-39, is still far below 1e-5, so it is clearly the same protein.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P67970."]) td.c10' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P67970."])' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P67970."]) td.c10' }
+      - note: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P67970."]) td.c10' }, text: "Chicken: 63.64%", side: bottom }
+
+  - caption: Related, but **not insulin**
+    say: Near the bottom are relatives from the same family. This is human insulin-like growth factor 2, only 33.98 percent identical, with an E value of 2e-07. That is below 1e-5, so the relationship is real, but it is a different protein. Judge a hit by its E value first, then identity, and always read the description.
+    zoom: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P01344."]) td.c9' }, scale: 1.9, start: 1.0, offset: { x: -220 } }
+    actions:
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P01344."])' }
+      - mark: { css: '#dscTable tbody tr:has(a[href*="protein/P01344."]) td.c9' }
+      - note: { target: { css: '#dscTable tbody tr:has(a[href*="protein/P01344."]) td.c9' }, text: "Real relative, different protein", side: bottom }
+
+end_card:
+  title: You can now run blastp
+  subtitle: Recap
+  bullets:
+    - Paste a sequence or accession
+    - Pick a database, e.g. Swiss-Prot
+    - Click BLAST and wait
+    - "E value: small means not chance"
+    - "Identity: share of same amino acids"
+    - Read the description, open the alignment
+  say: To recap. Paste your sequence, pick a database, and click BLAST. In the hits table, check the E value first, then percent identity, and read the description. Click a description to see the alignment itself.
