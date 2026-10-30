@@ -3,7 +3,7 @@ url: https://www.geogebra.org/graphing?lang=zh_CN
 purpose: course
 hyperframes: true
 out: geogebra-lesson-vertex-form.mp4
-voice: { provider: kokoro, voice: zf_001, pronounce: { h: 爱曲 } }  # Kokoro reads a lone h like "a"; spoken only, the subtitles keep h
+voice: { provider: qwen, voice: dylan }
 subtitles: burn
 chapters: true
 follow: false

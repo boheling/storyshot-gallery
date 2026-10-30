@@ -2,8 +2,8 @@
 
 **Request:** 用 GeoGebra 中文版（https://www.geogebra.org/graphing?lang=zh_CN）做一节中文微课：讲清楚二次函数顶点式 y = a(x−h)² + k 里 a、h、k 分别怎么影响图像，为什么。要现场演示（拖动滑动条看变化），中间加一个小测验题让学生先想一想，最后总结。中文字幕和中文配音。
 
-- **Type:** `course` (lesson), 16:9 1080p, 4:07 (247 s). 8 chapters: intro, setup, a, why-a, k, quiz on h, why-h, combined exercise, recap.
-- **Voice:** Kokoro v1.1-zh, `zf_001`, free and local. It was first made with macOS `say` and Tingting; see the update at the end. No music.
+- **Type:** `course` (lesson), 16:9 1080p, 4:57 (297 s). 8 chapters: intro, setup, a, why-a, k, quiz on h, why-h, combined exercise, recap.
+- **Voice:** Qwen3-TTS 0.6B CustomVoice, `dylan`, free and local (Apple Silicon). It was first made with macOS `say` and Tingting, then Kokoro `zf_001`; see the updates at the end. No music.
 - **Captions:** short Chinese step captions at the top, the full narration burned in at the bottom (`subtitles: burn`, with word-by-word highlighting), plus `.srt` and `.chapters.txt` files.
 - **Wall-clock time:** 21:54 to 22:47 PDT, about 53 minutes.
 - **Runs:** 2 full renders and 2 composes. I also ran about 10 `inspect --after N` checks to test typing and to measure where the sliders are.
@@ -58,3 +58,7 @@ A teacher would probably want a more natural voice before showing it to a class.
 ## Update, 2026-10-29
 
 Re-voiced with Kokoro v1.1-zh (`zf_001`) instead of macOS Tingting, and re-composed from the same recording with HyperFrames cards (`hyperframes: true`, Storyshot 0.5.0). The video went from 4:39 to 4:07. Kokoro reads a lone letter h like "a", which matters in a lesson about a, h and k, so the storyboard has `pronounce: { h: 爱曲 }` (how h is often read in Chinese classrooms); the subtitles still show h. The countdown ("先想一想") and the first chapter ("开场") are now Chinese, so the two English labels noted above are gone.
+
+## Update, 2026-10-30
+
+Re-voiced with Qwen3-TTS 0.6B CustomVoice, voice `dylan` (`voice: { provider: qwen, voice: dylan }`, Storyshot 0.6.0), and re-composed from the same recording. It is free and runs locally on an Apple Silicon Mac. Dylan is a male voice with a light Beijing accent, and it suits a lesson. Dylan reads the letter h correctly, so the `pronounce: { h: 爱曲 }` workaround is gone. The video went from 4:07 to 4:57 because Dylan speaks more slowly. A Whisper round-trip of the whole narration (speech recognition back to text, compared with the script) gives a 7.0% character error rate, against 21.0% for `zf_001`. The only compose warning is the long intro (13.9 s, 12.5 s before), which was already there.

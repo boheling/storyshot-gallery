@@ -4,14 +4,14 @@
 
 - **Wall-clock:** 04:17 → 05:46 PDT (≈ 89 min for all three languages together; built in parallel from one structure).
 - **Renders / composes (zh):** 3 full renders (render 1: `slide`, value/narration mismatch found here; render 2: thumb `drag`s; render 3: faster drag + `sayAt`); 1 compose (`sayAt` timing).
-- **Output:** `video.mp4` (2:19, 1920×1080), `storyboard.yaml`, `subtitles.srt`, `chapters.txt`, `poster.jpg` (step 6: m = 2, b = −2).
+- **Output:** `video.mp4` (2:46, 1920×1080), `storyboard.yaml`, `subtitles.srt`, `chapters.txt`, `poster.jpg` (step 6: m = 2, b = −2).
 - **Lesson shape (identical in all three):** intro (goals) → Concept card (y = mx + b, m = slope, b = y-intercept) → type `y=mx+b` → add sliders → Part 1: drag b to 3, then −2 → Part 2: drag m to 2, −1, 0 → Question card "y = −2x + 4" with 5 s think pause → set m = −2, b = 4 live → answer → recap card.
 
 ## Language-specific notes (Simplified Chinese)
-- Voice: Kokoro v1.1-zh, `zf_001` (free, local). It was first made with macOS `say` / `Tingting`; see the update at the end. The built-in labels are Chinese (chapter "开场", the "先想一想" countdown). The Latin letters m, b, x and y are read as English letters, which is how they are read in Chinese classrooms.
+- Voice: Qwen3-TTS 0.6B CustomVoice, `dylan` (free, local, Apple Silicon). It was first made with macOS `say` / `Tingting`, then Kokoro `zf_001`; see the updates at the end. The built-in labels are Chinese (chapter "开场", the "先想一想" countdown). The Latin letters m, b, x and y are read as English letters, which is how they are read in Chinese classrooms.
 - Desmos UI in Chinese (`?lang=zh-CN`, verified with inspect). The slider button is "全部", and the narration says “点击‘全部’”.
 - "Rise over run" is rendered as 竖直变化除以水平变化 (vertical change ÷ horizontal change).
-- With Tingting it was the longest of the three (2:40) because Tingting speaks slowly. With Kokoro it runs 2:19, between English (2:12) and Spanish (2:21).
+- With Tingting it was the longest of the three (2:40) because Tingting speaks slowly. With Kokoro it ran 2:19, between English (2:12) and Spanish (2:21). Dylan speaks more slowly and clearly, so it is now 2:46.
 
 ## Problems and fixes (shared by all three languages)
 
@@ -47,3 +47,7 @@ Fully localized: the Desmos chrome, slider prompt (添加滑块 / 全部), cards
 ## Update, 2026-10-29
 
 Re-voiced with Kokoro v1.1-zh (`zf_001`) instead of macOS Tingting, and re-composed from the same recording with HyperFrames cards (`hyperframes: true`, Storyshot 0.5.0). Kokoro speaks faster, so the video went from 2:40 to 2:19. The narration was checked line by line with speech recognition.
+
+## Update, 2026-10-30
+
+Re-voiced with Qwen3-TTS 0.6B CustomVoice, voice `dylan` (`voice: { provider: qwen, voice: dylan }`, Storyshot 0.6.0), and re-composed from the same recording. It is free and runs locally on an Apple Silicon Mac. Dylan is a male voice with a light Beijing accent, and it suits a lesson. The video went from 2:19 to 2:46 because Dylan speaks more slowly. A Whisper round-trip of the whole narration (speech recognition back to text, compared with the script) gives a 2.6% character error rate, against 6.5% for `zf_001`. The compose had no warnings.

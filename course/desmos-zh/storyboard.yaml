@@ -7,7 +7,7 @@ purpose: course
 hyperframes: true
 out: desmos-zh.mp4
 lang: zh
-voice: { provider: kokoro, voice: zf_001 }
+voice: { provider: qwen, voice: dylan }
 subtitles: burn
 captions: false
 chapters: true
