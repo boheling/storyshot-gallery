@@ -1,55 +1,107 @@
 1
-00:00:00,150 --> 00:00:04,371
+00:00:00,150 --> 00:00:06,464
 Veamos qué significa cada letra en y igual a m x más b.
 
 2
-00:00:08,771 --> 00:00:15,709
-Toda recta se puede escribir como y igual a m x más b. Escribámosla en la primera línea de Desmos.
+00:00:10,864 --> 00:00:15,594
+Toda recta se puede escribir como y igual a m x más b.
 
 3
-00:00:17,459 --> 00:00:25,928
-Desmos todavía no sabe cuánto valen m ni b, así que ofrece deslizadores. Haz clic en todo para agregar uno para cada una.
+00:00:16,194 --> 00:00:19,271
+Escribámosla en la primera línea de Desmos.
 
 4
-00:00:27,678 --> 00:00:32,936
-Los dos deslizadores empiezan en uno, así que la recta es y igual a x más uno.
+00:00:21,021 --> 00:00:29,191
+Desmos todavía no sabe cuánto valen m ni b, así que ofrece deslizadores.
 
 5
-00:00:39,236 --> 00:00:47,296
-Ahora arrastra el deslizador de b hacia la derecha, hasta tres. Toda la recta sube; ahora cruza el eje y en tres.
+00:00:29,911 --> 00:00:34,324
+Haz clic en todo para agregar uno para cada una.
 
 6
-00:00:51,196 --> 00:01:00,460
-Arrástralo a la izquierda, hasta menos dos. Ahora la recta cruza por debajo del origen, en menos dos. Fíjate que la inclinación no cambió.
+00:00:36,074 --> 00:00:42,722
+Los dos deslizadores empiezan en uno, así que la recta es y igual a x más uno.
 
 7
-00:01:06,760 --> 00:01:18,237
-Ahora sube m hasta dos. La recta se vuelve más inclinada. Desde la ordenada al origen, un paso a la derecha te lleva dos pasos arriba. Eso es lo que sube entre lo que avanza.
+00:00:49,022 --> 00:00:55,582
+Ahora arrastra el deslizador de b hacia la derecha, hasta tres.
 
 8
-00:01:22,137 --> 00:01:27,404
-Baja m de cero, hasta menos uno. Ahora la recta baja de izquierda a derecha.
+00:00:56,182 --> 00:01:00,153
+Toda la recta sube; ahora cruza el eje y en tres.
 
 9
-00:01:31,304 --> 00:01:36,075
-Ahora lleva m a cero. La recta queda horizontal, a la altura b.
+00:01:04,053 --> 00:01:06,973
+Arrástralo a la izquierda, hasta menos dos.
 
 10
-00:01:37,825 --> 00:01:44,875
-Una pregunta. Para y igual a menos dos x más cuatro, ¿dónde cruza la recta el eje y? ¿Sube o baja?
+00:01:07,623 --> 00:01:11,883
+Ahora la recta cruza por debajo del origen, en menos dos.
 
 11
-00:01:50,775 --> 00:01:53,280
-Comprobemos. Pon m en menos dos.
+00:01:12,523 --> 00:01:15,448
+Fíjate que la inclinación no cambió.
 
 12
-00:01:55,030 --> 00:01:56,823
-Ahora pon b en cuatro.
+00:01:21,748 --> 00:01:23,518
+Ahora sube m hasta dos.
 
 13
-00:01:58,573 --> 00:02:07,685
-La respuesta. b es cuatro, así que la recta cruza el eje y en cuatro. m es menos dos, así que baja dos pasos por cada paso a la derecha.
+00:01:24,128 --> 00:01:26,168
+La recta se vuelve más inclinada.
 
 14
-00:02:09,335 --> 00:02:20,836
-Repasemos. b es donde la recta cruza el eje y. m es la pendiente, lo que sube entre lo que avanza. Una m positiva sube, una negativa baja; con cero es horizontal.
+00:01:26,768 --> 00:01:32,728
+Desde la ordenada al origen, un paso a la derecha te lleva dos pasos arriba.
+
+15
+00:01:33,328 --> 00:01:36,006
+Eso es lo que sube entre lo que avanza.
+
+16
+00:01:39,906 --> 00:01:43,026
+Baja m de cero, hasta menos uno.
+
+17
+00:01:43,626 --> 00:01:46,223
+Ahora la recta baja de izquierda a derecha.
+
+18
+00:01:50,123 --> 00:01:51,343
+Ahora lleva m a cero.
+
+19
+00:01:51,943 --> 00:01:54,688
+La recta queda horizontal, a la altura b.
+
+20
+00:01:56,438 --> 00:01:57,308
+Una pregunta.
+
+21
+00:01:57,978 --> 00:02:06,300
+Para y igual a menos dos x más cuatro, ¿dónde cruza la recta el eje y? ¿Sube o baja?
+
+22
+00:02:12,200 --> 00:02:13,870
+Comprobemos.
+
+23
+00:02:14,640 --> 00:02:19,207
+Pon m en menos dos.
+
+24
+00:02:20,957 --> 00:02:22,798
+Ahora pon b en cuatro.
+
+25
+00:02:24,548 --> 00:02:37,997
+La respuesta. b es cuatro, así que la recta cruza el eje y en cuatro. m es menos dos, así que baja dos pasos por cada paso a la derecha.
+
+26
+00:02:39,647 --> 00:02:48,457
+Repasemos. b es donde la recta cruza el eje y. m es la pendiente, lo que sube entre lo que avanza.
+
+27
+00:02:49,317 --> 00:02:55,033
+Una m positiva sube, una negativa baja; con cero es horizontal.

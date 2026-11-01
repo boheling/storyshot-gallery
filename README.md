@@ -13,7 +13,7 @@ Every example folder (`<type>/<site>/`) has:
 - docs examples also have `steps/`: per-step GIFs and PNGs plus the generated help article
 
 Voices are free and local: Kokoro for English, Qwen3-TTS 0.6B CustomVoice (voice `dylan`) for the Chinese
-lessons, and macOS Paulina for the Spanish one. The title, section and end cards are [HyperFrames](https://github.com/heygen-com/hyperframes)
+lessons, and Qwen3-TTS (voice `aiden`) for the Spanish one. The title, section and end cards are [HyperFrames](https://github.com/heygen-com/hyperframes)
 animations (`hyperframes: true` in the storyboard; Storyshot installs HyperFrames on first use). The sites
 shown belong to their owners and are used as public examples.
 

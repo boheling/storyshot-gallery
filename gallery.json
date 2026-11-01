@@ -151,7 +151,7 @@
     "lang": "es",
     "url": "https://www.desmos.com/calculator?lang=es",
     "request": "Make a short lesson video with the Desmos graphing calculator (https://www.desmos.com/calculator) on what m and b mean in y = mx + b (slope and y-intercept), in three languages: English, Simplified Chinese and Spanish, so I can share it with students who speak each one. Same lesson, each fully in its own language: the Desmos interface too, not only the narration.",
-    "seconds": 141.4,
+    "seconds": 176.533333,
     "video": "course/desmos-es/video.mp4",
     "poster": "course/desmos-es/poster.jpg",
     "storyboard": "course/desmos-es/storyboard.yaml",
