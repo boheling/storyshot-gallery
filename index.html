@@ -32,6 +32,9 @@
   h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-spacing: -.03em; margin: 18px 0 12px; }
   h1 em { font-style: normal; background: linear-gradient(transparent 62%, var(--accent) 62%); color: var(--ink); }
   .lede { color: var(--muted); max-width: 720px; margin: 0; }
+  .pitch { margin: 28px 0 0; max-width: 960px; }
+  .pitch video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; background: #0b1020; box-shadow: var(--shadow); }
+  .pitch p { color: var(--muted); font-size: 14px; margin: 10px 0 0; }
   .lede code { font: 14px "JetBrains Mono", ui-monospace, monospace; background: var(--chip); padding: 2px 6px; border-radius: 6px; color: var(--ink); }
   nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
   nav .wrap { display: flex; gap: 6px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; }
@@ -81,6 +84,11 @@
     <a href="https://github.com/boheling/storyshot">Storyshot</a> skill. The agent looked at the site, wrote the storyboard,
     rendered, checked the frames and fixed what it found. Every example comes with its storyboard, so you can copy it,
     change the URL and make your own: <code>npx -y storyshot setup claude</code> (or <code>cursor</code>, <code>codex</code>, <code>gemini</code>, <code>vscode</code>, <code>windsurf</code>, <code>cline</code>)</p>
+  <div class="pitch">
+    <video src="pitch/video.mp4" poster="pitch/poster.jpg" controls preload="none" playsinline></video>
+    <p>The 68-second pitch, made with <a href="https://github.com/heygen-com/hyperframes">HyperFrames</a> and a free local voice (Kokoro).
+      The request, storyboard, recording, contact sheet and render log in it, and the 16 videos on the wall, are real Storyshot output from this gallery.</p>
+  </div>
 </header>
 <nav><div class="wrap" id="nav"></div></nav>
 <main id="main"></main>
