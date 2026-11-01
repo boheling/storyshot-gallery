@@ -7,7 +7,7 @@ purpose: course
 hyperframes: true
 out: desmos-es.mp4
 lang: es
-voice: { provider: say, voice: Paulina, pronounce: { "y": "ye" } }
+voice: { provider: qwen, voice: aiden, pronounce: { "y": "ye" } }
 subtitles: burn
 captions: false
 chapters: true

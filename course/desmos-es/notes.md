@@ -4,11 +4,11 @@
 
 - **Wall-clock:** 04:17 → 05:46 PDT (≈ 89 min for all three languages together; built in parallel from one structure).
 - **Renders / composes (es):** 3 full renders started (render 1 was stopped during its compose once the `slide` problem showed up in zh; renders 2 and 3 completed); 2 composes (the first, for the intro fix, was stopped because render 3 replaced it; the second applied `sayAt` and the intro fix).
-- **Output:** `video.mp4` (2:21, 1920×1080), `storyboard.yaml`, `subtitles.srt`, `chapters.txt`, `poster.jpg` (step 6: m = 2, b = −2).
+- **Output:** `video.mp4` (2:57, 1920×1080), `storyboard.yaml`, `subtitles.srt`, `chapters.txt`, `poster.jpg` (step 6: m = 2, b = −2).
 - **Lesson shape (identical in all three):** intro (goals) → Concept card (y = mx + b, m = slope, b = y-intercept) → type `y=mx+b` → add sliders → Part 1: drag b to 3, then −2 → Part 2: drag m to 2, −1, 0 → Question card "y = −2x + 4" with 5 s think pause → set m = −2, b = 4 live → answer → recap card.
 
 ## Language-specific notes (Spanish)
-- Voice: macOS `say` / `Paulina` (es_MX), `lang: es`. The built-in labels are Spanish ("Piénsalo un momento" countdown, chapter "Introducción").
+- Voice: Qwen3-TTS 0.6B CustomVoice, `aiden`, speaking Spanish (`lang: es`). It was first made with macOS `say` / `Paulina` (es_MX); see the update at the end. The built-in labels are Spanish ("Piénsalo un momento" countdown, chapter "Introducción").
 - **The letter y vs. the word "y" ("and").** The TTS would read the variable y like the conjunction. I added `voice.pronounce: { "y": "ye" }` and rewrote every line so the conjunction never appears ("m ni b", "¿Sube o baja?", "Ahora pon b en cuatro", "Veamos qué significa cada letra"). Every remaining "y" in the narration is the variable, and the subtitles keep the real spelling "y".
 - Terms: "pendiente" (slope), "ordenada al origen" (y-intercept, the usual term in Mexico), "lo que sube entre lo que avanza" (rise over run).
 - Desmos UI in Spanish (`?lang=es`); the slider button is "todo", and the narration says "Haz clic en todo".
@@ -43,8 +43,14 @@
 
 ## Quality assessment
 
-Fully localized: the Desmos UI (Gráfica sin título, añadir control deslizante / todo, Escala), cards, chapters, countdown and subtitles are all Spanish, and every value matches what's on screen. Paulina sounds natural enough for a classroom. Rewriting the text so the conjunction "y" never appears avoids the y/and ambiguity, though some sentences sound a little unusual as a result. As in the other versions, the slider values are small because the graph is shown un-zoomed.
+Fully localized: the Desmos UI (Gráfica sin título, añadir control deslizante / todo, Escala), cards, chapters, countdown and subtitles are all Spanish, and every value matches what's on screen. Paulina sounded natural enough for a classroom (it has since been replaced, see below). Rewriting the text so the conjunction "y" never appears avoids the y/and ambiguity, though some sentences sound a little unusual as a result. As in the other versions, the slider values are small because the graph is shown un-zoomed.
 
 ## Update, 2026-10-29
 
 Re-composed from the same recording with `hyperframes: true` (Storyshot 0.5.0), so the intro, section and end cards are now HyperFrames animations: titles land word by word, a bar shows the parts, and the intro's steps and the recap points light up as the narration names them. Nothing else changed.
+
+## Update, 2026-11-01
+
+Re-voiced with Qwen3-TTS 0.6B CustomVoice, voice `aiden` (`voice: { provider: qwen, voice: aiden, pronounce: { "y": "ye" } }`, Storyshot 0.7.1, which passes `lang: es` to Qwen), and re-composed from the same recording. Apple's license allows the macOS voices for personal, non-commercial use only, so Paulina doesn't belong in a published example; Qwen3-TTS is Apache-2.0, free, and runs locally on an Apple Silicon Mac. Aiden speaks more slowly, so the video went from 2:21 to 2:57.
+
+A round trip of every narration line (Qwen3-ASR back to text, compared with the script, ignoring case, accents and punctuation) gives a 0.9% character error rate, against 5.4% for Paulina, who reads b as "be grande". The remaining differences are single letters: "sube m" heard as "sube menos", and "lleva m a" as "lleva más". The compose reported one warning, a false alarm: Storyshot's take check compared the take with the line as rewritten for `pronounce` ("ye") rather than as written ("y"), and counted "Escribámosla" heard as "escribamos la" as a mistake.
