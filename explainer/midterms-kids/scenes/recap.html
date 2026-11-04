@@ -8,14 +8,14 @@
 
     /* --- link 1: a President's four years, with the midterm pin in the middle --- */
     #recap-bar { position: absolute; left: 70px; top: 580px; width: 330px; height: 56px;
-      border-radius: 28px; background: rgba(243, 241, 234, .07); border: 5px solid rgba(154, 165, 189, .8); opacity: 0; }
+      border-radius: 28px; background: rgba(26, 35, 56, .06); border: 5px solid var(--chalk-2); opacity: 0; }
     #recap-mid { position: absolute; left: 118px; top: -5px; width: 84px; height: 56px;
       border-radius: 28px; background: var(--you); opacity: 0; }
     /* year 1 and year 3: the bar reads as four years, with the midterm in the middle of them */
     #recap-bar .tick { position: absolute; top: 9px; width: 5px; height: 28px; border-radius: 3px;
-      background: rgba(243, 241, 234, .38); }
+      background: rgba(26, 35, 56, .38); }
     #recap-pin { position: absolute; left: 195px; top: 468px; width: 80px; height: 113px; opacity: 0; }
-    #recap-mt { left: 147px; top: 412px; font-size: 34px; letter-spacing: .06em; color: var(--you); opacity: 0; }
+    #recap-mt { left: 147px; top: 412px; font-size: 34px; letter-spacing: .06em; color: var(--you-ink); opacity: 0; }
     #recap-4y { left: 172px; top: 658px; font-size: 34px; color: var(--chalk-2); opacity: 0; }
 
     /* --- links 2, 3, 4: who a midterm elects --- */
@@ -41,9 +41,12 @@
     #recap-walk { position: absolute; left: 1140px; top: 709px; width: 400px; height: 75px; }
     #recap-boxwrap { position: absolute; left: 1550px; top: 504px; width: 300px; height: 300px; opacity: 0; }
     #recap-slip { position: absolute; left: 95px; top: -35px; width: 111px; height: 112px; overflow: hidden; }
+    /* the slip is a white sheet on a warm ground now, so it carries its own edge and shadow
+       (an inset ring, not a border, so nothing inside it moves) */
     #recap-slip .paper { position: absolute; left: 11px; top: 8px; width: 89px; height: 104px;
-      border-radius: 7px; background: #f3f1ea; transform: rotate(-5deg); }
-    #recap-slip .paper i { position: absolute; left: 13px; height: 6px; border-radius: 3px; background: #9aa5bd; }
+      border-radius: 7px; background: var(--ground-2); transform: rotate(-5deg);
+      box-shadow: inset 0 0 0 3px var(--line), 0 5px 12px rgba(26, 35, 56, .12); }
+    #recap-slip .paper i { position: absolute; left: 13px; height: 6px; border-radius: 3px; background: var(--chalk-2); }
 
     /* the joints of the chain */
     #recap .chev { position: absolute; top: 488px; width: 46px; height: 46px; opacity: 0; }
@@ -52,7 +55,9 @@
   <div id="recap" class="world" data-composition-id="recap" data-width="1920" data-height="1080">
 
     <!-- the question scene 1 opened with -->
-    <div id="recap-q" class="big">Who gets to <span id="recap-decide">decide?</span></div>
+    <!-- "decide?" carries the kit's .hl outline from the start, but the tween holds it at ink until cue 8,
+         so an ink letter inside an ink outline is just ink: the word only becomes amber when it lights up -->
+    <div id="recap-q" class="big">Who gets to <span id="recap-decide" class="hl">decide?</span></div>
 
     <!-- (1) a President's four years, and the pin in the middle -->
     <div id="recap-bar">
@@ -77,8 +82,8 @@
     <div id="recap-law" class="card" data-layout-allow-overlap>
       <span id="recap-lawtxt">Law</span>
       <svg id="recap-seal" viewBox="0 0 120 120" width="56" height="56" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="60" cy="60" r="52" fill="#ffc94a"/>
-        <path d="M 34 62 l 17 18 l 35 -42" fill="none" stroke="#16203a" stroke-width="12"
+        <circle cx="60" cy="60" r="52" style="fill:var(--you)"/>
+        <path d="M 34 62 l 17 18 l 35 -42" fill="none" style="stroke:var(--chalk)" stroke-width="12"
           stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
@@ -125,13 +130,16 @@
       const S = window.__storyshot, K = window.Kit;
       const at = (k, o = 0) => S.at(k, o);
       const el = (id) => document.getElementById('recap-' + id);
+      // gsap tweens colours as values, not as var(--x), so read the kit's tokens off :root and tween
+      // those: the recap's thumbnails then keep the same colours as the scenes they come from.
+      const C = (n) => getComputedStyle(document.documentElement).getPropertyValue('--' + n).trim();
 
       // (1) the pin that marked the middle of the term, as it was drawn in step 4
       el('pin').innerHTML =
         '<svg viewBox="0 0 110 156" width="80" height="113" xmlns="http://www.w3.org/2000/svg">'
-        + '<path d="M 14 80 L 55 154 L 96 80 Z" fill="#ffc94a"/>'
-        + '<circle cx="55" cy="55" r="50" fill="#ffc94a" stroke="#16203a" stroke-width="7"/>'
-        + '<circle cx="55" cy="55" r="19" fill="#16203a"/></svg>';
+        + '<path d="M 14 80 L 55 154 L 96 80 Z" style="fill:var(--you)"/>'
+        + '<circle cx="55" cy="55" r="50" style="fill:var(--you);stroke:var(--chalk)" stroke-width="7"/>'
+        + '<circle cx="55" cy="55" r="19" style="fill:var(--chalk)"/></svg>';
 
       // (2) the whole House: 435 seats, as in step 2
       const hdots = K.dots(el('hd'), { n: K.US.house, cols: 29, size: 8, gap: 2, cls: 'house' });
@@ -199,8 +207,8 @@
       tl.fromTo('#recap-sl', { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, ...IN }, at(3));
       tl.fromTo(sdots, { autoAlpha: 0, scale: 0.3 },
         { autoAlpha: 1, scale: 1, duration: 0.3, ease: 'expo.out', stagger: 0.003 }, at(3, 0.1));
-      tl.fromTo(sUp, { backgroundColor: '#46506b' },
-        { backgroundColor: '#c2a6ff', duration: 0.3, stagger: 0.01 }, at(3, 0.32));
+      tl.fromTo(sUp, { backgroundColor: C('off') },
+        { backgroundColor: C('senate'), duration: 0.3, stagger: 0.01 }, at(3, 0.32));
 
       // (4) "and a long list of local jobs."
       tl.fromTo('#recap-ll', { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, ...IN }, at(4));
@@ -222,8 +230,8 @@
       tl.fromTo('#recap-chev2', { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: 'expo.out' }, at(6));
       tl.fromTo(folk, { autoAlpha: 0, scale: 0.4 },
         { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'expo.out', stagger: 0.004, transformOrigin: '50% 100%' }, at(6, 0.1));
-      tl.fromTo(ink, { backgroundColor: '#46506b' },
-        { backgroundColor: '#ffc94a', duration: 0.3, stagger: 0.008 }, at(6, 0.75));
+      tl.fromTo(ink, { backgroundColor: C('off') },
+        { backgroundColor: C('you'), duration: 0.3, stagger: 0.008 }, at(6, 0.75));
 
       // (7) "Which means the ones who do show up," — they walk into the ballot box
       tl.fromTo('#recap-chev3', { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: 'expo.out' }, at(7));
@@ -235,7 +243,7 @@
       tl.fromTo(walkers, { x: 0 }, { x: 200, duration: 1.4, ease: 'power1.inOut', stagger: 0.07 }, at(7, 0.7));
 
       // (8) "decide." — the question at the top answers itself
-      tl.fromTo('#recap-decide', { color: '#f3f1ea' }, { color: '#ffc94a', duration: 0.5 }, at(8, -0.1));
+      tl.fromTo('#recap-decide', { color: C('chalk') }, { color: C('you'), duration: 0.5 }, at(8, -0.1));
       tl.fromTo('#recap-boxwrap', { scale: 1 },
         { scale: 1.05, duration: 0.25, ease: 'power2.out', transformOrigin: '50% 100%' }, at(8, 0.15));
       tl.fromTo('#recap-boxwrap', { scale: 1.05 },

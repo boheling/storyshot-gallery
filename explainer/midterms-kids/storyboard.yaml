@@ -17,7 +17,7 @@ voice:
   speed: 0.95
 subtitles: burn
 music: { style: calm, bpm: 72 }
-theme: { accent: "#ffc94a", ink: "#0b1226" }
+theme: { accent: "#d97706", ink: "#101624" }   # accent = the burned subtitles' spoken-word sweep; ink = their outline
 scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js }
 
 steps:

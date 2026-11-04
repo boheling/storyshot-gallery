@@ -5,7 +5,7 @@
        four buckets. The bucket heights are illustrative, not a budget (see the credit). */
     #money-kick { left: 120px; top: 78px; }
     #money-one { position: absolute; left: 404px; top: 62px; width: 62px; height: 62px;
-      border-radius: 50%; background: var(--you); color: #16203a;
+      border-radius: 50%; background: var(--you); color: #27150a;   /* ink on amber, as the kit's .bubble */
       font: 800 38px/62px var(--font); text-align: center; }
 
     /* the ballot scene 5 ends on: same sheet, same place, handed over to the law on (2) */
@@ -13,21 +13,21 @@
     #money-ob .brow { font-size: 42px; }
     #money-ob .brow .box { display: flex; align-items: center; justify-content: center;
       width: 44px; height: 44px; border-radius: 11px; }
-    #money-ob .cnt { font-size: 48px; color: #3f4860; }
-    #money-ob .unit { font: 700 40px/1 var(--font); color: #5a6478; }
+    #money-ob .cnt { font-size: 48px; color: var(--chalk-2); }
+    #money-ob .unit { font: 700 40px/1 var(--font); color: var(--chalk-2); }
     #money-ob .gr { position: absolute; left: 50px; width: 980px; height: 5px;
-      border-radius: 3px; background: #e4dfd0; }
+      border-radius: 3px; background: var(--line); }
     #money-ob-year { position: absolute; left: 50px; top: 30px; width: 980px; text-align: center;
-      font: 800 86px/1 var(--font); letter-spacing: -.02em; color: #2a3148; }
+      font: 800 86px/1 var(--font); letter-spacing: -.02em; color: var(--chalk); }
     #money-ob-hrule { position: absolute; left: 50px; top: 142px; width: 980px; height: 6px;
-      border-radius: 3px; background: #ddd8c9; }
+      border-radius: 3px; background: var(--chalk); }
     #money-ob-div { position: absolute; left: 50px; top: 424px; width: 980px; height: 0;
-      border-top: 5px dashed #c9c3b2; }
+      border-top: 5px dashed var(--chalk-2); }
     #money-ob-band { position: absolute; left: 24px; top: 690px; width: 1032px; height: 64px;
       border-radius: 18px; background: var(--local); }
     #money-school { position: absolute; left: 1496px; top: 120px; width: 360px; height: 770px; }
     #money-ground { position: absolute; left: 24px; top: 380px; width: 310px; height: 9px;
-      border-radius: 5px; background: rgba(243, 241, 234, .75); }
+      border-radius: 5px; background: var(--chalk-2); }
 
     #money-card { left: 730px; top: 118px; width: 460px; height: 264px;
       display: flex; align-items: center; justify-content: flex-start; padding-left: 56px; }
@@ -72,18 +72,19 @@
       <div id="money-ob-div"></div>
     </div>
     <div id="money-school" data-layout-allow-overlap>
+      <!-- the same school scene 5 ends on: white building, ink outline, ink windows -->
       <svg id="money-building" width="320" height="300" viewBox="0 0 320 300" style="position:absolute;left:20px;top:80px">
-        <rect x="28" y="100" width="264" height="200" rx="14" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7"/>
-        <path d="M 8 104 L 160 16 L 312 104 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7" stroke-linejoin="round"/>
-        <circle cx="160" cy="66" r="18" fill="none" stroke="#f3f1ea" stroke-width="6"/>
-        <path d="M 160 55 L 160 66 L 169 73" fill="none" stroke="#f3f1ea" stroke-width="5" stroke-linecap="round"/>
-        <rect x="62" y="128" width="60" height="52" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
-        <rect x="198" y="128" width="60" height="52" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
-        <rect x="131" y="188" width="58" height="112" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
+        <rect x="28" y="100" width="264" height="200" rx="14" style="fill:var(--ground-2);stroke:var(--chalk)" stroke-width="7"/>
+        <path d="M 8 104 L 160 16 L 312 104 Z" style="fill:var(--ground-2);stroke:var(--chalk)" stroke-width="7" stroke-linejoin="round"/>
+        <circle cx="160" cy="66" r="18" fill="none" style="stroke:var(--chalk)" stroke-width="6"/>
+        <path d="M 160 55 L 160 66 L 169 73" fill="none" style="stroke:var(--chalk)" stroke-width="5" stroke-linecap="round"/>
+        <rect x="62" y="128" width="60" height="52" rx="10" style="fill:var(--chalk);stroke:var(--chalk)" stroke-width="5"/>
+        <rect x="198" y="128" width="60" height="52" rx="10" style="fill:var(--chalk);stroke:var(--chalk)" stroke-width="5"/>
+        <rect x="131" y="188" width="58" height="112" rx="10" style="fill:var(--chalk);stroke:var(--chalk)" stroke-width="5"/>
       </svg>
       <div id="money-ground"></div>
       <svg id="money-link" width="150" height="380" viewBox="0 0 150 380" style="position:absolute;left:2px;top:380px">
-        <path d="M 6 342 C 74 330, 14 140, 122 22" fill="none" stroke="#ff9d6b" stroke-width="9" stroke-linecap="round"/>
+        <path d="M 6 342 C 74 330, 14 140, 122 22" fill="none" style="stroke:var(--local)" stroke-width="9" stroke-linecap="round"/>
       </svg>
     </div>
 
@@ -92,7 +93,7 @@
       <span id="money-cardtxt">Law</span>
       <svg id="money-seal" width="120" height="120" viewBox="0 0 120 120">
         <circle cx="60" cy="60" r="52" style="fill:var(--you)"/>
-        <path d="M 34 62 l 17 18 l 35 -42" fill="none" stroke="#16203a" stroke-width="12"
+        <path d="M 34 62 l 17 18 l 35 -42" fill="none" style="stroke:var(--chalk)" stroke-width="12"
           stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
@@ -101,7 +102,7 @@
     <!-- the treasury, its gate, and the rule that keeps the gate shut -->
     <div class="jar" id="money-jar" data-layout-allow-overlap></div>
     <svg id="money-funnel" width="260" height="110" viewBox="0 0 260 110">
-      <path d="M 10 4 L 250 4 L 150 106 L 110 106 Z" style="fill:rgba(141,223,107,.10);stroke:var(--money)"
+      <path d="M 10 4 L 250 4 L 150 106 L 110 106 Z" style="fill:var(--money);fill-opacity:.10;stroke:var(--money)"
         stroke-width="6" stroke-linejoin="round"/>
     </svg>
     <div class="post" id="money-post-l"></div>
@@ -110,13 +111,13 @@
     <div class="leaf" id="money-gate-r"></div>
     <div class="label" id="money-rulelab">The rule</div>
     <svg id="money-scroll" width="170" height="190" viewBox="0 0 170 190">
-      <rect x="25" y="22" width="120" height="146" rx="9" fill="#f3f1ea" stroke="#cfcabb" stroke-width="4"/>
-      <g stroke="#9aa0b0" stroke-width="7" stroke-linecap="round">
+      <rect x="25" y="22" width="120" height="146" rx="9" style="fill:var(--ground-2);stroke:var(--chalk)" stroke-width="4"/>
+      <g style="stroke:var(--chalk-2)" stroke-width="7" stroke-linecap="round">
         <path d="M 47 60 L 124 60"/><path d="M 47 85 L 124 85"/><path d="M 47 110 L 108 110"/>
       </g>
       <circle cx="117" cy="141" r="15" style="fill:var(--you)"/>
-      <rect x="11" y="6" width="148" height="27" rx="13" fill="#e6e1d2" stroke="#b8b2a2" stroke-width="4"/>
-      <rect x="11" y="157" width="148" height="27" rx="13" fill="#e6e1d2" stroke="#b8b2a2" stroke-width="4"/>
+      <rect x="11" y="6" width="148" height="27" rx="13" style="fill:var(--ground);stroke:var(--chalk)" stroke-width="4"/>
+      <rect x="11" y="157" width="148" height="27" rx="13" style="fill:var(--ground);stroke:var(--chalk)" stroke-width="4"/>
     </svg>
 
     <!-- Congress, with its hand on the gate -->
@@ -145,7 +146,7 @@
       // --- the ballot scene 5 ends on, redrawn in its final state so the cut lands on it -------
       const OB = document.getElementById('money-ob'), OBR = document.getElementById('money-ob-rules');
       const OBTICK = '<svg viewBox="0 0 24 24" width="28" height="28"><path d="M4 12.5 l5.5 5.5 l10.5 -14"'
-        + ' fill="none" stroke="#2a3148" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        + ' fill="none" style="stroke:var(--chalk)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       [
         { top: 182, rule: 236, text: 'U.S. House', count: String(Kit.Y2026.house), tint: 'var(--house)' },
         { top: 266, rule: 320, text: 'U.S. Senate', count: String(Kit.Y2026.senate), tint: 'var(--senate)' },
@@ -156,8 +157,10 @@
         { top: 700, rule: 746, text: 'School board', mark: true },
       ].forEach((r) => {
         OBR.insertAdjacentHTML('beforeend', '<div class="gr" style="top:' + r.rule + 'px"></div>');
-        OB.insertAdjacentHTML('beforeend', '<div class="brow" style="top:' + r.top + 'px;left:50px;width:980px">'
-          + '<span class="box" style="' + (r.tint ? 'background:' + r.tint + ';border-color:' + r.tint : r.mark ? 'border-color:#2a3148' : '') + '">'
+        // the marked row lies on the solid --local band, so its ink is the sheet's own white
+        OB.insertAdjacentHTML('beforeend', '<div class="brow" style="top:' + r.top + 'px;left:50px;width:980px'
+          + (r.mark ? ';color:var(--ground-2)' : '') + '">'
+          + '<span class="box" style="' + (r.tint ? 'background:' + r.tint + ';border-color:' + r.tint : r.mark ? 'border-color:var(--chalk)' : '') + '">'
           + (r.mark ? OBTICK : '') + '</span><span>' + r.text + '</span>'
           + (r.count ? '<span class="cnt" style="margin-left:auto">' + r.count + '</span>' : '')
           + (r.unit ? '<span class="unit">' + r.unit + '</span>' : '') + '</div>');

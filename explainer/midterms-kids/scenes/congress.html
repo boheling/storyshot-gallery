@@ -8,16 +8,25 @@
       text-align: center; font: 800 54px/1 var(--font); color: var(--chalk); }
     /* a folded slip in the ballot box's slot — the same object scene 1 ended on */
     #congress-slip { position: absolute; left: 145px; top: -54px; width: 170px; height: 172px; overflow: hidden; }
+    /* a white sheet on warm paper: the edge is an inset ring so the lines inside do not shift */
     #congress-slip .paper { position: absolute; left: 17px; top: 12px; width: 136px; height: 160px;
-      border-radius: 10px; background: #f3f1ea; transform: rotate(-5deg); }
-    #congress-slip .paper i { position: absolute; left: 20px; height: 9px; border-radius: 5px; background: #9aa5bd; }
+      border-radius: 10px; background: var(--ground-2); transform: rotate(-5deg);
+      box-shadow: inset 0 0 0 3px var(--line), 0 6px 14px rgba(26,35,56,.14); }
+    #congress-slip .paper i { position: absolute; left: 20px; height: 9px; border-radius: 5px; background: var(--chalk-2); }
+    /* 435 teal and 100 violet seats, 7 and 12 px across, sit inside their own wing's wash: at full
+       strength the token colour all but disappears into it, so the seats are the same hue inked down.
+       The numbers and the labels keep the plain token. */
+    #congress .dot.house { background: color-mix(in srgb, var(--house) 55%, var(--chalk)); }
+    #congress .dot.senate { background: color-mix(in srgb, var(--senate) 55%, var(--chalk)); }
   </style>
 
   <div id="congress" class="world" data-composition-id="congress" data-width="1920" data-height="1080">
 
     <div id="congress-credit" class="credit" data-layout-ignore>U.S. Constitution, Article I · Reapportionment Act of 1929</div>
 
-    <div id="congress-glow" data-layout-ignore style="position:absolute;left:400px;top:120px;width:1120px;height:760px;background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,201,74,.11) 0%, rgba(255,201,74,0) 70%)"></div>
+    <!-- was a warm wash behind the figure; a glow only reads as a stain on paper, so it is a flat
+         warm panel with a crisp edge — the frame is pointing at this one office -->
+    <div id="congress-glow" data-layout-ignore style="position:absolute;left:400px;top:120px;width:1120px;height:760px;background:rgba(217,119,6,.09);border-radius:72px"></div>
 
     <!-- ===== the seam: scene 1 ended on this ballot box, centred ===== -->
     <div id="congress-boxwrap" style="position:absolute;left:730px;top:250px;width:460px;height:460px">
@@ -27,7 +36,7 @@
         </div>
       </div>
     </div>
-    <div id="congress-election" class="big" style="left:660px;top:742px;width:600px;text-align:center;color:var(--you)">Election</div>
+    <div id="congress-election" class="big hl" style="left:660px;top:742px;width:600px;text-align:center">Election</div>
 
     <!-- ===== the office of President: a plain figure with a label ===== -->
     <div id="congress-pres" data-layout-allow-overlap>
@@ -51,18 +60,18 @@
     <!-- ===== both rooms have to say yes ===== -->
     <svg id="congress-tickh" width="96" height="96" viewBox="0 0 100 100" fill="none"
          style="position:absolute;left:569px;top:300px" data-layout-ignore>
-      <circle cx="50" cy="50" r="44" fill="rgba(90,209,196,.14)" stroke="#5ad1c4" stroke-width="7"/>
-      <path d="M29 51 l14 16 l28 -34" stroke="#5ad1c4" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="50" cy="50" r="44" fill="rgba(13,142,130,.14)" stroke="#0d8e82" stroke-width="7"/>
+      <path d="M29 51 l14 16 l28 -34" stroke="#0d8e82" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <svg id="congress-ticks" width="96" height="96" viewBox="0 0 100 100" fill="none"
          style="position:absolute;left:1255px;top:300px" data-layout-ignore>
-      <circle cx="50" cy="50" r="44" fill="rgba(194,166,255,.14)" stroke="#c2a6ff" stroke-width="7"/>
-      <path d="M29 51 l14 16 l28 -34" stroke="#c2a6ff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="50" cy="50" r="44" fill="rgba(109,40,217,.14)" stroke="#6d28d9" stroke-width="7"/>
+      <path d="M29 51 l14 16 l28 -34" stroke="#6d28d9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
 
     <div id="congress-idea" class="lcard" style="left:830px;top:120px;width:260px">
       <span id="congress-t1">Idea</span>
-      <span id="congress-t2" style="opacity:0;color:var(--you)">Law</span>
+      <span id="congress-t2" style="opacity:0;color:var(--you-ink)">Law</span>
     </div>
   </div>
 
@@ -118,8 +127,8 @@
       tl.fromTo('#congress-law', { opacity: 0, scale: .3, y: -150 },
         { opacity: 1, scale: 1, y: -312, duration: .7, ease: 'expo.out', transformOrigin: '50% 50%' }, S.at(2) + .1);
       tl.fromTo('#congress-law', { y: -312 }, { y: -252, duration: .4, ease: 'power2.in' }, S.at(2) + 1.1);
-      tl.fromTo('#congress-law', { borderColor: '#9aa5bd' }, { borderColor: '#46506b', duration: .35 }, S.at(2) + 1.25);
-      tl.fromTo('#congress-law span', { color: '#f3f1ea' }, { color: '#46506b', duration: .35 }, S.at(2) + 1.25);
+      tl.fromTo('#congress-law', { borderColor: '#5d6578' }, { borderColor: '#b3ab99', duration: .35 }, S.at(2) + 1.25);
+      tl.fromTo('#congress-law span', { color: '#1a2338' }, { color: '#5d6578', duration: .35 }, S.at(2) + 1.25);
 
       // (3) "Laws are made by Congress." — the figure steps aside, the Capitol rises
       tl.fromTo('#congress-law', { opacity: 1 }, { opacity: 0, duration: .35 }, S.at(3));
@@ -173,7 +182,7 @@
         { scale: 1, opacity: 1, duration: .4, ease: 'back.out(2)', transformOrigin: '50% 50%' }, S.at(10) + .65);
       tl.fromTo('#congress-t1', { opacity: 1 }, { opacity: 0, duration: .3 }, S.at(10) + 1.0);
       tl.fromTo('#congress-t2', { opacity: 0 }, { opacity: 1, duration: .3 }, S.at(10) + 1.05);
-      tl.fromTo('#congress-idea', { borderColor: '#9aa5bd' }, { borderColor: '#ffc94a', duration: .4 }, S.at(10) + 1.0);
+      tl.fromTo('#congress-idea', { borderColor: '#5d6578' }, { borderColor: '#d97706', duration: .4 }, S.at(10) + 1.0);
       tl.fromTo('#congress-idea', { x: 343, y: 310, scale: 1 },
         { x: 0, y: 50, scale: 1.08, duration: .6, ease: 'expo.out' }, S.at(10) + 1.05);
 
