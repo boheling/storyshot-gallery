@@ -1,0 +1,260 @@
+<template>
+  <style>
+    /* hook: a drug stops working -> which gene? -> 20,000 experiments -> one flask */
+    #hook-view { position: absolute; inset: 0; -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 872px, transparent 905px); mask-image: linear-gradient(to bottom, #000 0, #000 872px, transparent 905px); }
+    #hook-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    #hook-field { left: 64px; top: 140px; width: 1792px; height: 728px; }
+    .hook-skin { position: absolute; inset: -2px; border-radius: 50%; background: var(--dead); border: 2px solid #2b2f37; opacity: 0; }
+    .hook-mut { position: absolute; left: 43%; top: 43%; width: 14%; height: 14%; border-radius: 50%; background: var(--chalk); opacity: 0; }
+
+    /* labels on the top strip */
+    #hook-l-cells, #hook-l-months { left: 64px; top: 72px; }
+    #hook-l-months { display: flex; align-items: center; gap: 18px; }
+    #hook-l-months i { display: block; width: 120px; height: 3px; background: var(--chalk-2); transform-origin: 0 50%; }
+    #hook-l-drug { right: 64px; top: 72px; display: flex; align-items: center; gap: 16px; }
+    #hook-l-drug b { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--chalk); box-shadow: 0 0 12px rgba(236,235,230,.7); }
+
+    /* the BRAF chip on one cell */
+    #hook-chip { position: absolute; height: 64px; display: flex; align-items: center; translate: -50% 0; padding: 0 24px; border-radius: 30px; border: 2.5px solid var(--chalk); background: rgba(15,18,24,.92);
+      font: 700 38px/1 var(--font); color: var(--chalk); white-space: nowrap; letter-spacing: .02em; }
+    #hook-lead { position: absolute; width: 3px; background: var(--chalk); transform-origin: 50% 100%; }
+    #hook-dock { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: var(--chalk); box-shadow: 0 0 16px rgba(236,235,230,.8); }
+    #hook-drug { position: absolute; inset: 0; pointer-events: none; }
+    .hook-p { position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--chalk); box-shadow: 0 0 10px rgba(236,235,230,.55); }
+
+    /* the question on a survivor */
+    #hook-q { position: absolute; left: 860px; top: 370px; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;
+      font: 800 170px/1 var(--font); color: var(--chalk); text-shadow: 0 0 40px rgba(15,18,24,.9); }
+
+    /* ~20,000 genes: 200 x 100 squares of 5 px on a 7 px pitch, drawn as one background each */
+    #hook-genes { position: absolute; left: 260px; top: 160px; width: 1400px; height: 700px; transform-origin: 0 0; }
+    .hook-sq { position: absolute; background: conic-gradient(from 90deg at 2px 2px, var(--sq) 25%, transparent 0) 0 0 / 7px 7px; }
+    #hook-grid { left: 0; top: 0; width: 1400px; height: 700px; --sq: #3a414e; clip-path: circle(0px at 700px 310px); }
+    #hook-lit { left: 0; top: 0; width: 1400px; height: 0; --sq: #9ba1ae; }
+    #hook-litrow { left: 0; top: 0; width: 0; height: 7px; --sq: #9ba1ae; }
+    #hook-cursor { position: absolute; left: -5px; top: -5px; width: 19px; height: 19px; border: 2.5px solid var(--chalk); border-radius: 4px; opacity: 0; }
+    #hook-unk { position: absolute; left: 961px; top: 429px; width: 5px; height: 5px; background: var(--chalk); box-shadow: 0 0 8px 2px rgba(236,235,230,.8); opacity: 0; }
+    #hook-ring { position: absolute; left: 917.5px; top: 385.5px; width: 92px; height: 92px; border-radius: 50%; border: 4px solid var(--chalk); background: rgba(15,18,24,.35); opacity: 0; }
+    #hook-uq { position: absolute; left: 1022px; top: 262px; font: 800 104px/1 var(--font); color: var(--chalk); text-shadow: 0 0 24px rgba(15,18,24,.95); opacity: 0; }
+    #hook-uline { position: absolute; left: 997px; top: 352px; width: 4px; height: 52px; background: var(--chalk); transform: rotate(34deg); transform-origin: 50% 100%; opacity: 0; }
+    #hook-tiles { position: absolute; left: 0; top: 0; width: 1400px; height: 700px; opacity: 0; }
+    .hook-tile { --sq: #9ba1ae; width: 140px; height: 70px; }
+    #hook-l-genes { left: 260px; top: 96px; }
+    #hook-count { right: 260px; top: 96px; display: flex; align-items: baseline; gap: 12px; }
+    #hook-n { font-size: 38px; }
+
+    /* the flask: a culture flask seen from above (the same shape lib draws), neck and cap on the left */
+    #hook-flask { position: absolute; left: 1010px; top: 285px; width: 836px; height: 395px; overflow: visible; }
+    #hook-fcells { left: 1130px; top: 314px; width: 694px; height: 336px; clip-path: inset(0 round 12px); }
+    #hook-title { left: 120px; top: 404px; font-size: 136px; }
+  </style>
+
+  <div id="hook" class="world" data-composition-id="hook" data-width="1920" data-height="1080">
+    <div id="hook-view">
+      <div id="hook-cam" data-layout-allow-overlap>
+        <div id="hook-field" class="cellfield" data-layout-allow-overlap></div>
+      </div>
+    </div>
+    <div id="hook-drug"></div>
+    <div id="hook-lead"></div>
+    <div id="hook-chip">BRAF V600E</div>
+    <div id="hook-dock"></div>
+    <div id="hook-q">?</div>
+
+    <div id="hook-genes" data-layout-allow-overlap>
+      <div id="hook-grid" class="hook-sq"></div>
+      <div id="hook-lit" class="hook-sq"></div>
+      <div id="hook-litrow" class="hook-sq"></div>
+      <div id="hook-cursor"></div>
+      <div id="hook-ring"></div>
+      <div id="hook-unk"></div>
+      <div id="hook-uline"></div>
+      <div id="hook-uq">?</div>
+      <div id="hook-tiles"></div>
+    </div>
+
+    <svg id="hook-flask" viewBox="0 0 1100 520" width="836" height="395" xmlns="http://www.w3.org/2000/svg">
+      <path id="hook-glass" d="M170 20 H1060 Q1090 20 1090 50 V470 Q1090 500 1060 500 H170 Q140 500 140 470 V50 Q140 20 170 20 Z" fill="#171b23" fill-opacity=".9"/>
+      <path id="hook-med" d="M170 20 H1060 Q1090 20 1090 50 V470 Q1090 500 1060 500 H170 Q140 500 140 470 V50 Q140 20 170 20 Z" fill="#8d93a0" fill-opacity=".10"/>
+      <path id="hook-neckfill" d="M140 180 L52 214 L52 306 L140 340 Z" fill="#171b23" fill-opacity=".9"/>
+      <path id="hook-outline" d="M170 20 H1060 Q1090 20 1090 50 V470 Q1090 500 1060 500 H170 Q140 500 140 470 V50 Q140 20 170 20 Z"
+        fill="none" stroke="#ecebe6" stroke-width="4.5" pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"/>
+      <path id="hook-neck" d="M140 180 L52 214 L52 306 L140 340" fill="none" stroke="#ecebe6" stroke-width="4.5" stroke-linejoin="round"
+        pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"/>
+      <g id="hook-cap">
+        <rect x="8" y="200" width="46" height="120" rx="10" fill="#3a404c" stroke="#8d93a0" stroke-width="3"/>
+        <path d="M18 214 V306 M30 214 V306 M42 214 V306" stroke="#2b313d" stroke-width="4"/>
+      </g>
+    </svg>
+    <div id="hook-fcells" class="cellfield" data-layout-allow-overlap></div>
+
+    <div id="hook-l-cells" class="label">黑色素瘤细胞</div>
+    <div id="hook-l-months" class="label"><i></i><span>几个月后</span></div>
+    <div id="hook-l-drug" class="label"><b></b><span>维莫非尼</span></div>
+    <div id="hook-l-genes" class="label">约 <span class="num">20,000</span> 个基因</div>
+    <div id="hook-count" class="label"><span>实验 ×</span><span id="hook-n" class="num">1</span></div>
+    <div id="hook-title" class="big">CRISPR 筛选</div>
+    <div class="tag-schematic" data-layout-ignore>示意</div>
+    <div id="hook-cr" class="credit" data-layout-ignore>Chapman et al. 2011 · NEJM · 缓解率 48%</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (s) => document.querySelector(s);
+      const FX = 64, FY = 140;                       // the field's offset on screen
+
+      // ---- the cell field: on screen from the first frame (the film's thumbnail) ----
+      const cells = Kit.cells($('#hook-field'), { w: 1792, h: 728, n: 119, r: 38, seed: 11 });
+      cells.forEach((c) => { const s = document.createElement('div'); s.className = 'hook-skin'; c.el.appendChild(s); c.skin = s; });
+      const HERO = 59;                               // row 3, col 8: the cell that gets the BRAF chip
+      const SURV = [19, 47, 74, 101];                // the few that survive the drug
+      const QS = 74;                                 // the survivor that gets the "?"
+      const hero = cells[HERO];
+      const mut = document.createElement('div'); mut.className = 'hook-mut'; hero.el.appendChild(mut);
+      const others = cells.filter((c, i) => i !== HERO);
+      const dying = cells.filter((c, i) => !SURV.includes(i));
+      const rnd = Kit.rng(5);
+      const hx = FX + hero.x, hy = FY + hero.y;      // hero centre on screen
+
+      // chip above the hero cell, with a leader down to it
+      const chip = $('#hook-chip'), lead = $('#hook-lead'), dock = $('#hook-dock');
+      const chipH = 64, chipTop = hy - 1.8 * hero.r - 70 - chipH;
+      chip.style.left = hx + 'px'; chip.style.top = chipTop + 'px';
+      lead.style.left = (hx - 1.5) + 'px'; lead.style.top = (chipTop + chipH) + 'px'; lead.style.height = '70px';
+      dock.style.left = (hx - 11) + 'px'; dock.style.top = (chipTop - 11) + 'px';
+
+      // phrase 0-2: melanoma cells; one cell, its mutation named
+      tl.fromTo('#hook-l-cells', { opacity: 1 }, { opacity: 1, duration: 0.01 }, 0);
+      tl.fromTo(others.map((c) => c.el), { opacity: 1 }, { opacity: 0.28, duration: 0.6, ease: 'power2.out' }, S.at(1));
+      tl.fromTo(hero.el, { scale: 1, borderColor: '#4b5466' }, { scale: 1.8, borderColor: '#ecebe6', duration: 0.7, ease: 'expo.out' }, S.at(1));
+      tl.fromTo(mut, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out' }, S.at(1, 0.4));
+      tl.fromTo(lead, { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: 'power2.out' }, S.at(2));
+      tl.fromTo(chip, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(2, 0.15));
+
+      // phrase 3: vemurafenib washes in; one particle docks on BRAF, which dims
+      tl.fromTo('#hook-l-drug', { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, S.at(3));
+      const drug = $('#hook-drug'), parts = [];
+      for (let k = 0; k < 46; k++) {
+        const p = document.createElement('div'); p.className = 'hook-p'; drug.appendChild(p);
+        const x = 100 + rnd() * 1720, y = 190 + rnd() * 660;
+        p.style.left = x + 'px'; p.style.top = y + 'px'; parts.push(p);
+        tl.fromTo(p, { y: -y - 40, opacity: 0 }, { y: 0, opacity: 0.9, duration: 0.9, ease: 'power2.out' }, S.at(3, 0.1 + rnd() * 1.1));
+      }
+      tl.fromTo(others.map((c) => c.el), { opacity: 0.28 }, { opacity: 1, duration: 0.6, ease: 'power1.out' }, S.at(3, 0.2));
+      tl.fromTo(dock, { y: -chipTop - 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, S.at(3, 0.1));
+      tl.fromTo(chip, { opacity: 1 }, { opacity: 0.4, duration: 0.4 }, S.at(3, 0.9));
+      tl.fromTo(hero.el, { borderColor: '#ecebe6' }, { borderColor: '#4b5466', duration: 0.4 }, S.at(3, 0.9));
+
+      // phrase 4: most cells die (grey, shrink)
+      tl.fromTo([chip, lead, dock], { opacity: (i) => (i === 0 ? 0.4 : 1) }, { opacity: 0, duration: 0.3 }, S.at(4));
+      tl.fromTo(mut, { opacity: 1 }, { opacity: 0, duration: 0.3 }, S.at(4));
+      tl.fromTo(hero.el, { scale: 1.8 }, { scale: 1, duration: 0.4, ease: 'power2.out' }, S.at(4));
+      dying.forEach((c) => {
+        const d = c === hero ? 0.6 : 0.15 + rnd() * 1.3;
+        c.die = d;
+        tl.fromTo(c.skin, { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(4, d));
+        tl.fromTo(c.el, { scale: 1 }, { scale: 0.62, duration: 0.6, ease: 'power2.out' }, S.at(4, d + 0.05));
+      });
+      tl.fromTo(parts, { opacity: 0.9 }, { opacity: 0, duration: 0.5 }, S.at(4, 1.4));
+
+      // phrase 5: months later; the dead are cleared, the few survivors remain
+      tl.fromTo('#hook-l-cells', { opacity: 1 }, { opacity: 0, duration: 0.3 }, S.at(5));
+      tl.fromTo('#hook-l-drug', { opacity: 1 }, { opacity: 0, duration: 0.3 }, S.at(5));
+      tl.fromTo('#hook-l-months', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, S.at(5, 0.32));
+      tl.fromTo('#hook-l-months i', { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: 'power2.inOut' }, S.at(5, 0.36));
+      dying.forEach((c) => {
+        tl.fromTo(c.el, { opacity: 1 }, { opacity: 0, duration: 0.5 }, S.at(5, rnd() * 0.6));
+        tl.fromTo(c.el, { scale: 0.62 }, { scale: 0.35, duration: 0.5 }, S.at(5, 0.1));
+      });
+
+      // phrase 6: the survivors regrow the field, outward from each of them
+      const sv = SURV.map((i) => cells[i]);
+      const dist = dying.map((c) => Math.min(...sv.map((s) => Math.hypot(s.x - c.x, s.y - c.y))));
+      const dmax = Math.max(...dist);
+      dying.forEach((c, k) => {
+        const t = S.at(6, -0.5 + Math.pow(dist[k] / dmax, 0.8) * 2.4);
+        tl.fromTo(c.skin, { opacity: 1 }, { opacity: 0, duration: 0.01 }, t);
+        tl.fromTo(c.el, { opacity: 0 }, { opacity: 1, duration: 0.4 }, t);
+        tl.fromTo(c.el, { scale: 0.35 }, { scale: 1, duration: 0.6, ease: 'expo.out' }, t);
+      });
+
+      // phrase 7-8: close in on one survivor: some other gene is at work, "?"
+      const q = cells[QS], qx = FX + q.x, qy = FY + q.y, Z = 3, Z2 = 3.35;
+      tl.fromTo('#hook-l-months', { opacity: 1 }, { opacity: 0, duration: 0.3 }, S.at(7));
+      tl.fromTo('#hook-cam', { x: 0, y: 0, scale: 1 }, { x: 960 - Z * qx, y: 470 - Z * qy, scale: Z, duration: 1.0, ease: 'power3.inOut' }, S.at(7));
+      tl.fromTo(q.el, { borderColor: '#4b5466' }, { borderColor: '#ecebe6', duration: 0.5 }, S.at(7, 0.5));
+      tl.fromTo('#hook-q', { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'expo.out' }, S.at(8));
+      tl.fromTo('#hook-cam', { x: 960 - Z * qx, y: 470 - Z * qy, scale: Z }, { x: 960 - Z2 * qx, y: 470 - Z2 * qy, scale: Z2, duration: 3.0, ease: 'none' }, S.at(8, 0.6));
+
+      // phrase 9: the genes: ~20,000 squares open out of the cell
+      tl.fromTo('#hook-q', { opacity: 1 }, { opacity: 0, duration: 0.3 }, S.at(9));
+      tl.fromTo('#hook-grid', { clipPath: 'circle(0px at 700px 310px)' }, { clipPath: 'circle(1600px at 700px 310px)', duration: 1.1, ease: 'power2.in' }, S.at(9));
+      tl.fromTo('#hook-cam', { opacity: 1 }, { opacity: 0, duration: 0.6 }, S.at(9, 0.3));
+      tl.fromTo('#hook-l-genes', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(9, 0.5));
+
+      // phrase 10: which one? one square, unknown
+      tl.fromTo('#hook-ring', { opacity: 0, scale: 2.4 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'expo.out' }, S.at(10));
+      tl.fromTo('#hook-unk', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(10));
+      tl.fromTo('#hook-uline', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.4 }, S.at(10, 0.25));
+      tl.fromTo('#hook-uq', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(10, 0.35));
+
+      // phrase 11-12: try them one at a time: a counter to 20,000, the squares light in order
+      tl.fromTo(['#hook-ring', '#hook-unk', '#hook-uline', '#hook-uq'], { opacity: 1 }, { opacity: 0, duration: 0.3 }, S.at(11));
+      tl.fromTo('#hook-count', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(11));
+      const lit = $('#hook-lit'), row = $('#hook-litrow'), cur = $('#hook-cursor'), nEl = $('#hook-n');
+      const proxy = { n: 0 };
+      const paint = () => {
+        const n = Math.round(proxy.n), rows = Math.floor(n / 200), part = n - rows * 200;
+        lit.style.height = rows * 7 + 'px';
+        row.style.top = rows * 7 + 'px'; row.style.width = part * 7 + 'px';
+        const k = Math.max(0, n - 1), c = k % 200, r = Math.floor(k / 200);
+        cur.style.left = (c * 7 + 4.5 - 9.5) + 'px'; cur.style.top = (r * 7 + 4.5 - 9.5) + 'px';
+        cur.style.opacity = n < 1 ? 0 : n < 60 ? 1 : Math.max(0, 1 - (n - 60) / 340);
+        nEl.textContent = Math.max(1, n).toLocaleString('en-US');
+      };
+      const t11 = S.at(11, 0.3), t12 = S.end(12, -0.15);
+      // n stays 0 until the count starts, then jumps to 1 and climbs (one square at a time at first)
+      tl.fromTo(proxy, { n: 0 }, { n: 20000, duration: t12 - t11, ease: (p) => (p <= 0 ? 0 : (1 + 19999 * Math.pow(p, 6)) / 20000), onUpdate: paint }, t11);
+
+      // phrase 13: the grid steps aside, a flask draws itself, the name lands
+      tl.fromTo(['#hook-l-genes', '#hook-count'], { opacity: 1 }, { opacity: 0, duration: 0.3 }, S.at(13));
+      tl.fromTo('#hook-genes', { x: 0, y: 0, scale: 1 }, { x: -140, y: -56, scale: 0.38, duration: 0.8, ease: 'power3.inOut' }, S.at(13));
+      tl.fromTo('#hook-glass', { opacity: 0 }, { opacity: 1, duration: 0.8 }, S.at(13, 0.3));
+      tl.fromTo('#hook-neckfill', { opacity: 0 }, { opacity: 1, duration: 0.6 }, S.at(13, 0.8));
+      tl.fromTo('#hook-outline', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 1.0, ease: 'power2.out', autoRound: false }, S.at(13, 0.2));
+      tl.fromTo('#hook-neck', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', autoRound: false }, S.at(13, 0.8));
+      tl.fromTo('#hook-med', { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo('#hook-cap', { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo('#hook-title', { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, S.at(13, 0.4));
+
+      // phrase 14: all 20,000 pour into the flask (the grid swaps for 100 identical tiles that fly)
+      const tiles = $('#hook-tiles'), tl14 = S.at(14), list = [];
+      for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) {
+        const d = document.createElement('div'); d.className = 'hook-sq hook-tile';
+        d.style.left = c * 140 + 'px'; d.style.top = r * 70 + 'px'; tiles.appendChild(d);
+        list.push({ d, c, r, cx: c * 140 + 70, cy: r * 70 + 35 });
+      }
+      tl.fromTo(['#hook-grid', '#hook-lit', '#hook-litrow'], { opacity: 1 }, { opacity: 0, duration: 0.01 }, tl14);
+      tl.fromTo(tiles, { opacity: 0 }, { opacity: 1, duration: 0.01 }, tl14);
+      // wrapper-local target points (screen = (120,104) + 0.38 * local): beside the neck, then in through it
+      const AX = (985 - 120) / 0.38, AY = (482 - 104) / 0.38, BX = (1185 - 120) / 0.38;
+      list.sort((a, b) => (b.c - a.c) || (b.r - a.r)).forEach((o, k) => {
+        const t = tl14 + 0.05 + k * 0.008 + Kit.rng(k + 3)() * 0.08;
+        tl.fromTo(o.d, { x: 0, scale: 1 }, { x: AX - o.cx, scale: 0.5, duration: 0.8, ease: 'power2.out' }, t);
+        tl.fromTo(o.d, { y: 0 }, { y: AY - o.cy, duration: 0.8, ease: 'power2.in' }, t);
+        tl.fromTo(o.d, { x: AX - o.cx, scale: 0.5, opacity: 1 }, { x: BX - o.cx, scale: 0.12, opacity: 0, duration: 0.3, ease: 'power1.in' }, t + 0.8);
+      });
+      tl.fromTo('#hook-med', { opacity: 0 }, { opacity: 1, duration: 1.4 }, tl14 + 0.6);
+
+      // phrase 15: the flask holds cells, one experiment each, spreading from the neck; the cap goes on
+      const pourEnd = tl14 + 0.05 + 99 * 0.008 + 0.08 + 1.1;
+      tl.fromTo('#hook-cap', { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, Math.max(S.at(15), pourEnd));
+      const fc = Kit.cells($('#hook-fcells'), { w: 694, h: 336, n: 72, r: 17, seed: 23 });
+      fc.forEach((c, k) => tl.fromTo(c.el, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'expo.out' }, S.at(15, (c.x / 694) * 0.9 + Kit.rng(k + 40)() * 0.25)));
+
+      window.__timelines['hook'] = tl;
+    })();
+  </script>
+</template>

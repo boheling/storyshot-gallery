@@ -1,0 +1,194 @@
+<template>
+  <style>
+    /* Cas9 + guide: one box (1200 x 420, origin top-left) moved as a whole; inside it the two lobes
+       move apart to let the DNA through. At scale 1 its numbers are frame px. */
+    #cas-cas { position: absolute; left: 0; top: 0; width: 1200px; height: 420px; transform-origin: 0 0; }
+    #cas-body { position: absolute; left: 0; top: 0; width: 1200px; height: 420px; }
+    #cas-body svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    #cas-guide { left: 68px; top: 182px; }
+    #cas-q { position: absolute; left: 1196px; top: 10px; font: 700 110px/1 var(--font); color: var(--chalk-2); }
+    #cas-top { left: 146px; top: 470px; }
+    #cas-bot { left: 146px; top: 560px; }
+    /* the kit's dim strand would hide a pink tile: say it again for this strand */
+    #cas-bot .nt.guide { color: var(--guide); border-color: var(--guide); background: rgba(255,92,138,.10); }
+    .cas-tick { position: absolute; top: 621px; width: 4px; height: 24px; margin-left: -2px; border-radius: 2px; background: var(--guide); transform-origin: 50% 0; }
+    #cas-glabel { left: 481px; top: 708px; color: #ffd1de; }
+    #cas-nf2 { left: 146px; top: 404px; }
+    #cas-nf2 b { color: var(--nf2); font-weight: 700; }
+    #cas-pam { left: 1514px; top: 258px; color: var(--pam); }
+    #cas-pamline { position: absolute; left: 1606px; top: 306px; width: 3px; height: 160px; background: var(--pam); transform-origin: 50% 0; }
+    #cas-mark { position: absolute; left: 1390px; top: 452px; width: 4px; height: 182px; background: repeating-linear-gradient(to bottom, var(--cut) 0 12px, transparent 12px 20px); }
+    #cas-flash { position: absolute; left: 1272px; top: 403px; width: 240px; height: 280px; background: radial-gradient(ellipse at center, rgba(255,90,78,.95) 0%, rgba(255,90,78,.45) 30%, rgba(255,90,78,0) 68%); }
+  </style>
+  <div id="cas" class="world" data-composition-id="cas" data-width="1920" data-height="1080">
+    <div id="cas-tag" class="tag-schematic" data-layout-ignore>示意</div>
+    <div id="cas-credit" class="credit" data-layout-ignore>Ensembl GRCh38 · ENST00000338641</div>
+    <div id="cas-cas" data-layout-allow-overlap data-layout-allow-overflow>
+      <div id="cas-body"></div>
+      <div id="cas-guide" class="strand"></div>
+      <div id="cas-q">?</div>
+    </div>
+    <div id="cas-dna" data-layout-allow-overlap>
+      <div id="cas-top" class="strand"></div>
+      <div id="cas-bot" class="strand"></div>
+      <div id="cas-ticks"></div>
+    </div>
+    <div id="cas-glabel" class="label">向导 RNA · 20 个碱基</div>
+    <div id="cas-nf2" class="label"><b>NF2</b> · 第 2 外显子</div>
+    <div id="cas-pamline"></div>
+    <div id="cas-pam" class="label">PAM · NGG</div>
+    <div id="cas-mark"></div>
+    <div id="cas-flash" data-layout-ignore></div>
+  </div>
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const N = Kit.NF2, A = 10, B = 44;                 // exon indexes 10..43 on screen
+      const X0 = 146, PITCH = 48;
+      const tileX = (i) => X0 + (i - A) * PITCH;          // a tile's left edge, frame px
+      const g0 = N.guideStart, g1 = N.guideStart + N.guide.length - 1;   // 19..38
+      const p0 = N.pamStart, p1 = N.pamStart + N.pam.length - 1;         // 39..41
+      const cutX = tileX(N.cut) - 2;                      // the 4 px between index 35 and 36
+
+      // ---- the DNA: NF2 exon 2, indexes 10..43, and its complement ----
+      const seq = N.exon2.slice(A, B);
+      const top = Kit.strand($('cas-top'), seq);
+      const bot = Kit.strand($('cas-bot'), Kit.comp(seq), {}, 'dim');
+      const at = (arr, i) => arr[i - A];
+      const left = (arr) => arr.slice(0, N.cut - A), right = (arr) => arr.slice(N.cut - A);
+
+      // ---- the guide RNA (RNA letters), and one pairing tick per base ----
+      const rna = N.guide.replace(/T/g, 'U');
+      const guide = Kit.strand($('cas-guide'), rna, {}, 'rna');
+      const ticks = [];
+      for (let i = g0; i <= g1; i++) {
+        const d = document.createElement('div');
+        d.className = 'cas-tick'; d.id = 'cas-tick-' + i; d.style.left = (tileX(i) + 22) + 'px';
+        $('cas-ticks').appendChild(d); ticks.push(d);
+      }
+
+      // ---- Cas9 from the kit, stretched along the DNA; lobes as two groups that can part ----
+      $('cas-body').innerHTML = Kit.CAS9_SVG;
+      const svg = $('cas-body').querySelector('svg'), NS = 'http://www.w3.org/2000/svg';
+      const W = 1200, H = 420, SX = W / 460, SY = H / 300;
+      svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('preserveAspectRatio', 'none');
+      const [pTop, pBot, pHi] = svg.querySelectorAll('path'), txt = svg.querySelector('text');
+      pHi.setAttribute('vector-effect', 'non-scaling-stroke'); pHi.setAttribute('stroke-width', '7');
+      txt.setAttribute('transform', `translate(230 0) scale(${(SY / SX).toFixed(4)} 1) translate(-230 0)`);
+      const gBot = document.createElementNS(NS, 'g'), gTop = document.createElementNS(NS, 'g');
+      gBot.id = 'cas-lobe-b'; gTop.id = 'cas-lobe-t';
+      svg.appendChild(gBot); svg.appendChild(gTop);
+      gBot.appendChild(pBot); gTop.append(pTop, pHi, txt);
+      const u = (px) => px / SY;                          // frame px (at scale 1) -> svg units, vertically
+
+      // Where things sit. Carry: Cas9 alone, scale .9, centred. Bound: scale 1, on the DNA, the lobes
+      // around the stack (top strand 470, bottom 560, guide 650), the guide under indexes 19..38.
+      const CARRY = { x: 420, y: 252, s: 0.9 };
+      const BOUND = { x: tileX(g0) - 68, y: 650 - 367, s: 1 };   // x 510, y 283
+      const GUIDE_IN = 0, GUIDE_BELOW = 422 - 182, GUIDE_BOUND = 367 - 182;   // guide's y offset in the box
+      const OPEN_T = u(-24), OPEN_B = u(190 + 24), SHUT_T = u(4), SHUT_B = u(190 - 4);
+
+      // colours as the kit writes them (tweened as values, so seeking back and forth is exact)
+      const DIM = { color: '#8d93a0', backgroundColor: 'rgba(236,235,230,0.03)', borderColor: 'rgba(236,235,230,0.11)' };
+      const PLAIN = { color: '#ecebe6', backgroundColor: 'rgba(236,235,230,0.06)', borderColor: 'rgba(236,235,230,0.18)' };
+      const PINK = { color: '#ff5c8a', backgroundColor: 'rgba(255,92,138,0.1)', borderColor: '#ff5c8a' };
+      const CYAN = { color: '#4fd1e0', backgroundColor: 'rgba(79,209,224,0.1)', borderColor: '#4fd1e0' };
+
+      const t0 = S.at(0), tTool = S.at(1), tLost = S.at(2), tLead = S.at(3), tGuide = S.at(4), tSeq = S.at(5);
+      const tPair = S.at(6), tPam = S.at(7), tAll = S.at(8), tHere = S.at(9), tCut = S.at(10);
+      const cut = tCut + 0.55 * (S.end(10) - tCut);       // as "两条链一起剪断" is said
+
+      // ---- 1. Cas9 enters from the right and is on screen from the first frame ----
+      tl.fromTo('#cas-cas', { x: CARRY.x + 760, y: CARRY.y, scale: CARRY.s }, { x: CARRY.x, y: CARRY.y, scale: CARRY.s, duration: 1.1, ease: 'expo.out' }, 0);
+      // "a pair of scissors": the lobes snip twice
+      [0, 0.5].forEach((d) => {
+        tl.fromTo('#cas-lobe-t', { y: 0 }, { y: -16, duration: 0.2, ease: 'power2.out' }, tTool + 0.15 + d);
+        tl.fromTo('#cas-lobe-t', { y: -16 }, { y: 0, duration: 0.22, ease: 'power3.in' }, tTool + 0.37 + d);
+        tl.fromTo('#cas-lobe-b', { y: 0 }, { y: 16, duration: 0.2, ease: 'power2.out' }, tTool + 0.15 + d);
+        tl.fromTo('#cas-lobe-b', { y: 16 }, { y: 0, duration: 0.22, ease: 'power3.in' }, tTool + 0.37 + d);
+      });
+      // "it does not know the way": it wanders, never at rest (x and y turn at different times)
+      const wx = [CARRY.x, CARRY.x - 190, CARRY.x + 150, CARRY.x], wy = [CARRY.y, CARRY.y + 70, CARRY.y - 40, CARRY.y + 30, CARRY.y];
+      const wEnd = tLead + 0.25, wLen = wEnd - tLost;
+      for (let k = 0; k < 3; k++) tl.fromTo('#cas-cas', { x: wx[k] }, { x: wx[k + 1], duration: wLen / 3, ease: 'sine.inOut' }, tLost + k * wLen / 3);
+      const ySteps = [0.18, 0.3, 0.3, 0.22];
+      let ty = tLost;
+      for (let k = 0; k < 4; k++) { tl.fromTo('#cas-cas', { y: wy[k] }, { y: wy[k + 1], duration: ySteps[k] * wLen, ease: 'sine.inOut' }, ty); ty += ySteps[k] * wLen; }
+      tl.fromTo('#cas-cas', { rotation: 0 }, { rotation: -4, duration: wLen * 0.4, ease: 'sine.inOut' }, tLost);
+      tl.fromTo('#cas-cas', { rotation: -4 }, { rotation: 3, duration: wLen * 0.35, ease: 'sine.inOut' }, tLost + wLen * 0.4);
+      tl.fromTo('#cas-cas', { rotation: 3 }, { rotation: 0, duration: wLen * 0.25, ease: 'sine.inOut' }, tLost + wLen * 0.75);
+      tl.fromTo('#cas-q', { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, tLost + 0.25);
+      tl.fromTo('#cas-q', { opacity: 1 }, { opacity: 0, duration: 0.3 }, tLead);
+
+      // ---- 2. the guide RNA arrives under Cas9, is named, and loads into it ----
+      tl.fromTo('#cas-guide', { x: -1500, y: GUIDE_BELOW, opacity: 0 }, { x: 0, y: GUIDE_BELOW, opacity: 1, duration: 0.7, ease: 'expo.out' }, tLead + 0.05);
+      tl.fromTo('#cas-glabel', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, tGuide + 0.2);
+      const load = tGuide + 1.5;
+      tl.fromTo('#cas-lobe-t', { y: 0 }, { y: -22, duration: 0.4, ease: 'power2.out' }, load);
+      tl.fromTo('#cas-lobe-b', { y: 0 }, { y: 22, duration: 0.4, ease: 'power2.out' }, load);
+      tl.fromTo('#cas-guide', { y: GUIDE_BELOW }, { y: GUIDE_IN, duration: 0.6, ease: 'expo.out' }, load + 0.2);
+      tl.fromTo('#cas-lobe-t', { y: -22 }, { y: 0, duration: 0.4, ease: 'power3.out' }, load + 0.75);
+      tl.fromTo('#cas-lobe-b', { y: 22 }, { y: 0, duration: 0.4, ease: 'power3.out' }, load + 0.75);
+      tl.fromTo('#cas-glabel', { y: 0 }, { y: -50, duration: 0.6, ease: 'expo.out' }, load + 0.2);
+
+      // ---- 3. Cas9 steps aside; the real NF2 sequence types in as a double strand ----
+      tl.fromTo('#cas-glabel', { opacity: 1 }, { opacity: 0, duration: 0.3 }, tSeq);
+      tl.fromTo('#cas-cas', { x: CARRY.x }, { x: 2100, duration: 0.6, ease: 'power2.in' }, tSeq);
+      tl.fromTo(top, { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.3, ease: 'expo.out', stagger: 0.035 }, tSeq + 0.15);
+      tl.fromTo(bot, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: 'expo.out', stagger: 0.035 }, tSeq + 0.35);
+      tl.fromTo('#cas-nf2', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, tSeq + 0.6);
+      tl.fromTo('#cas-credit', { opacity: 0 }, { opacity: 1, duration: 0.6 }, tSeq + 0.6);
+
+      // ---- 4. Cas9 comes back along the DNA, lobes open around it, and stops at the match ----
+      const slide = Math.max(tSeq + 1.9, tPair - 1.3);
+      tl.fromTo('#cas-cas', { scale: CARRY.s, y: CARRY.y }, { scale: BOUND.s, y: BOUND.y, duration: 0.01 }, slide - 0.02);
+      tl.fromTo('#cas-lobe-t', { y: 0 }, { y: OPEN_T, duration: 0.01 }, slide - 0.02);
+      tl.fromTo('#cas-lobe-b', { y: 0 }, { y: OPEN_B, duration: 0.01 }, slide - 0.02);
+      tl.fromTo('#cas-guide', { y: GUIDE_IN }, { y: GUIDE_BOUND, duration: 0.01 }, slide - 0.02);
+      tl.fromTo('#cas-cas', { x: 2100 }, { x: BOUND.x, duration: tPair + 0.05 - slide, ease: 'expo.out' }, slide);
+
+      // ---- 5. the guide pairs base by base with the bottom (target) strand ----
+      const pairBot = bot.slice(g0 - A, g1 - A + 1);
+      tl.fromTo(ticks, { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 1, duration: 0.25, ease: 'expo.out', stagger: 0.07 }, tPair + 0.1);
+      tl.fromTo(pairBot, DIM, { ...PINK, duration: 0.3, stagger: 0.07 }, tPair + 0.1);
+
+      // ---- 6. the PAM: NGG right after the matched stretch, on the top strand ----
+      const pam = top.slice(p0 - A, p1 + 1 - A);
+      tl.fromTo(pam, PLAIN, { ...CYAN, duration: 0.35, stagger: 0.15 }, tPam + 0.1);
+      tl.fromTo(pam, { scale: 1 }, { scale: 1.12, duration: 0.2, ease: 'power2.out', stagger: 0.15 }, tPam + 0.1);
+      tl.fromTo(pam, { scale: 1.12 }, { scale: 1, duration: 0.3, ease: 'power2.in', stagger: 0.15 }, tPam + 0.3);
+      tl.fromTo('#cas-pamline', { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: 'expo.out' }, tPam + 0.6);
+      tl.fromTo('#cas-pam', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, tPam + 0.6);
+
+      // ---- 7. "all matched": the matched bases and the PAM light once ----
+      tl.fromTo([...guide, ...pam], { scale: 1 }, { scale: 1.1, duration: 0.18, ease: 'power2.out', stagger: 0.015 }, tAll + 0.1);
+      tl.fromTo([...guide, ...pam], { scale: 1.1 }, { scale: 1, duration: 0.3, ease: 'power2.in', stagger: 0.015 }, tAll + 0.28);
+
+      // ---- 8. "right here": the lobes close; the cut site is marked ----
+      tl.fromTo('#cas-lobe-t', { y: OPEN_T }, { y: SHUT_T, duration: 0.6, ease: 'expo.out' }, tHere + 0.1);
+      tl.fromTo('#cas-lobe-b', { y: OPEN_B }, { y: SHUT_B, duration: 0.6, ease: 'expo.out' }, tHere + 0.1);
+      tl.fromTo('#cas-mark', { opacity: 0, scaleY: 0.3 }, { opacity: 1, scaleY: 1, duration: 0.5, ease: 'expo.out' }, tHere + 0.6);
+
+      // ---- 9. both strands cut between index 35 and 36: a red flash, the halves part 60 px ----
+      tl.fromTo('#cas-flash', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.12, ease: 'power2.out' }, cut);
+      tl.fromTo('#cas-flash', { opacity: 1 }, { opacity: 0, duration: 0.5, ease: 'power2.in' }, cut + 0.15);
+      tl.fromTo('#cas-mark', { opacity: 1 }, { opacity: 0, duration: 0.25 }, cut + 0.1);
+      tl.fromTo([...left(top), ...left(bot)], { x: 0 }, { x: -30, duration: 0.6, ease: 'expo.out' }, cut + 0.05);
+      tl.fromTo([...right(top), ...right(bot)], { x: 0 }, { x: 30, duration: 0.6, ease: 'expo.out' }, cut + 0.05);
+
+      // ---- 10. Cas9 and its guide leave: the cut halves stay (the seam to "frame") ----
+      const away = cut + 0.7;
+      tl.fromTo('#cas-cas', { opacity: 1 }, { opacity: 0, duration: 0.45, ease: 'power2.in' }, away);
+      tl.fromTo('#cas-cas', { y: BOUND.y }, { y: BOUND.y - 70, duration: 0.45, ease: 'power2.in' }, away);
+      tl.fromTo(ticks, { opacity: 1 }, { opacity: 0, duration: 0.3 }, away);
+      tl.fromTo(['#cas-pam', '#cas-pamline'], { opacity: 1 }, { opacity: 0, duration: 0.3 }, away);
+      // gone, not just transparent: a transformed box left under the strands changes how they composite,
+      // and the seam to frame must match it pixel for pixel
+      tl.set(['#cas-cas', '#cas-ticks', '#cas-mark', '#cas-flash', '#cas-pam', '#cas-pamline'], { display: 'none' }, away + 0.5);
+
+      window.__timelines['cas'] = tl;
+    })();
+  </script>
+</template>

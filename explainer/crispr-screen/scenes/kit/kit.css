@@ -1,0 +1,80 @@
+/* Shared look for every scene of the CRISPR screen film. Loaded before each scene; scenes use these
+   tokens and classes and never redefine them. Sizes are px at 1920x1080. One dark world throughout. */
+:root {
+  --ground: #0f1218;      /* the film's ground: blue-black */
+  --ground-2: #171b23;    /* a panel, a flask's glass, a plot's area */
+  --line: #2b313d;        /* hairlines, axes, grid */
+  --chalk: #ecebe6;       /* text and main lines */
+  --chalk-2: #8d93a0;     /* secondary text, ordinary bases, ordinary cells */
+  /* things the story tracks: each colour means one thing, everywhere */
+  --guide: #ff5c8a;       /* the guide RNA, and every barcode */
+  --pam: #4fd1e0;         /* the PAM (NGG): only the PAM */
+  --cas: #8f9bd6;         /* Cas9 protein */
+  --cas-2: #6d78b3;       /* its second lobe */
+  --nf2: #f4a62a;         /* NF2, the gene we follow: its guide, its cells, its bar in the data (= theme accent) */
+  --cut: #ff5a4e;         /* a cut, a stop codon, damage: rationed */
+  --edit: #35d07f;        /* a base editor's change (C to T): only scene base */
+  --dead: #343944;        /* a dead cell */
+  --mono: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+}
+
+/* a scene's root: full frame, dark, clipped */
+.world { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(ellipse 120% 90% at 50% 40%, #151a23 0%, var(--ground) 70%); color: var(--chalk); font-family: var(--font); }
+
+/* small heading at the top-left of a scene (a kicker), and labels */
+.kicker { position: absolute; left: 120px; top: 84px; font: 600 30px/1 var(--font); letter-spacing: .06em; color: var(--chalk-2); }
+.label { position: absolute; font: 600 34px/1.2 var(--font); color: var(--chalk); white-space: nowrap; }
+.label.s { font-size: 28px; font-weight: 500; color: var(--chalk-2); }
+.big { position: absolute; font: 700 96px/1 var(--font); color: var(--chalk); white-space: nowrap; letter-spacing: -.01em; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+/* source credit: small on purpose (exempt from the text floor) */
+.credit { position: absolute; right: 64px; top: 40px; font: 400 20px/1.3 var(--font); color: #6b7280; text-align: right; white-space: nowrap; }
+.tag-schematic { position: absolute; left: 64px; top: 40px; font: 500 20px/1 var(--font); color: #6b7280; }
+
+/* ---- sequence tiles (Kit.strand builds them): 44 px tiles on a 48 px pitch; .sm: 32 on 36 ---- */
+.strand { position: absolute; display: flex; gap: 4px; height: 56px; }
+.nt { flex: none; width: 44px; height: 56px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font: 600 32px/1 var(--mono); color: var(--chalk); background: rgba(236,235,230,.06); border: 1.5px solid rgba(236,235,230,.18); }
+.strand.sm { height: 42px; } .strand.sm .nt { width: 32px; height: 42px; font-size: 24px; border-radius: 6px; }
+.strand.dim .nt { color: var(--chalk-2); background: rgba(236,235,230,.03); border-color: rgba(236,235,230,.11); }
+.nt.gap { visibility: hidden; }
+.nt.guide { color: var(--guide); border-color: var(--guide); background: rgba(255,92,138,.10); }
+.nt.pam { color: var(--pam); border-color: var(--pam); background: rgba(79,209,224,.10); }
+.nt.ins { color: var(--nf2); border-color: var(--nf2); background: rgba(244,166,42,.14); }
+.nt.edit { color: var(--edit); border-color: var(--edit); background: rgba(53,208,127,.12); }
+.nt.bad { color: var(--cut); border-color: var(--cut); }
+/* the guide RNA as a strand of its own (Kit.strand(el, seq, {}, 'rna')): rounded, pink, no box */
+.strand.rna .nt { background: rgba(255,92,138,.16); border-color: rgba(255,92,138,.55); color: #ffd1de; border-radius: 22px; }
+
+/* ---- codons (Kit.codons builds them): three bases in one box, the amino acid under it ---- */
+.codons { position: absolute; display: flex; gap: 10px; }
+.cod { flex: none; width: 118px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.cod .b3 { width: 118px; height: 58px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font: 600 32px/1 var(--mono); letter-spacing: .08em; color: var(--chalk); background: rgba(236,235,230,.06); border: 1.5px solid rgba(236,235,230,.18); }
+.cod .aa { font: 600 30px/1 var(--mono); color: var(--chalk-2); }
+.cod .no { font: 500 20px/1 var(--mono); color: #6b7280; }
+.cod.wrong .b3 { border-color: var(--nf2); color: var(--nf2); }
+.cod.wrong .aa { color: var(--nf2); }
+.cod.stop .b3 { border-color: var(--cut); color: var(--cut); background: rgba(255,90,78,.12); }
+.cod.stop .aa { color: var(--cut); }
+
+/* ---- cells (Kit.cells builds them) ---- */
+.cellfield { position: absolute; }
+.cell { position: absolute; border-radius: 50%; background: radial-gradient(circle at 38% 34%, #2a3140 0%, #1d222c 70%); border: 2px solid #4b5466; }
+.cell .nuc { position: absolute; left: 30%; top: 30%; width: 40%; height: 40%; border-radius: 50%; background: #39414f; }
+.cell .bc { position: absolute; left: 50%; top: 50%; width: 46%; height: 12%; margin: -6% 0 0 -23%; border-radius: 3px; background: var(--guide); opacity: 0; }
+.cell.nf2 { border-color: var(--nf2); }
+.cell.nf2 .bc { background: var(--nf2); }
+.cell.dead { background: var(--dead); border-color: #2b2f37; }
+
+/* ---- a barcode chip (Kit.barcode builds it): the guide written as stripes ---- */
+.barcode { position: absolute; display: flex; gap: 3px; height: 34px; padding: 6px 10px; border-radius: 8px; background: rgba(255,92,138,.12); border: 1.5px solid var(--guide); }
+.barcode i { display: block; width: 4px; height: 100%; background: var(--guide); border-radius: 1px; }
+.barcode i.w { width: 8px; }
+.barcode.nf2 { border-color: var(--nf2); background: rgba(244,166,42,.12); }
+.barcode.nf2 i { background: var(--nf2); }
+
+/* ---- a plot area ---- */
+.plot { position: absolute; background: var(--ground-2); border: 1.5px solid var(--line); border-radius: 14px; }
+.bar { position: absolute; bottom: 0; border-radius: 3px 3px 0 0; background: var(--chalk-2); }
+.bar.nf2 { background: var(--nf2); }

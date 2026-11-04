@@ -1,0 +1,294 @@
+<template>
+  <style>
+    #count { background: radial-gradient(ellipse 120% 90% at 50% 40%, #151a23 0%, #0f1218 70%); }
+    #count .cell .bc { opacity: 1; }
+    #count-field { left: 64px; top: 80px; width: 1792px; height: 800px; }
+    #count-chips { position: absolute; left: 64px; top: 80px; width: 1792px; height: 800px; }
+    #count-chips .barcode { opacity: 0; }
+    #count-lens { position: absolute; left: 0; top: 0; opacity: 0; }
+
+    /* the pipeline: two lanes (before the drug / day 14), left to right */
+    .count-tube { position: absolute; left: 250px; width: 140px; height: 290px; opacity: 0; }
+    .count-lab { position: absolute; left: 64px; opacity: 0; }
+    .count-mini { position: absolute; border-radius: 4px; border: 1.5px solid var(--guide); opacity: 0;
+      background: repeating-linear-gradient(90deg, var(--guide) 0 3px, transparent 3px 7px), #2a1820; }
+    .count-mini.nf2 { border-color: var(--nf2); background: repeating-linear-gradient(90deg, var(--nf2) 0 3px, transparent 3px 7px), #2a2214; }
+    .count-dna { position: absolute; left: 470px; width: 360px; height: 20px; border-top: 3px solid var(--chalk-2); border-bottom: 3px solid var(--chalk-2); opacity: 0; }
+    .count-arrow { position: absolute; height: 3px; background: var(--chalk-2); transform-origin: 0 50%; opacity: 0; }
+    .count-arrow::after { content: ''; position: absolute; right: -4px; top: -7px; border-left: 14px solid var(--chalk-2); border-top: 8.5px solid transparent; border-bottom: 8.5px solid transparent; }
+    .count-stage { position: absolute; top: 452px; opacity: 0; }
+
+    /* the sequencer, which opens into the plot */
+    #count-plot { left: 120px; top: 120px; width: 460px; height: 640px; opacity: 0; transform: translate(1260px, 30px); }
+    #count-seq-label { left: 1380px; top: 172px; width: 460px; text-align: center; opacity: 0; }
+    #count-reads { position: absolute; left: 1380px; top: 236px; width: 460px; height: 490px; }
+    .count-read { position: absolute; left: 0; width: 460px; text-align: center; font: 500 22px/1 var(--mono); letter-spacing: .04em; color: var(--guide); opacity: 0; }
+    .count-read.nf2 { color: var(--nf2); }
+
+    /* the chart: same place and data as the start of scene real */
+    #count-chart { position: absolute; left: 120px; top: 120px; width: 1680px; height: 720px; }
+    #count-base { position: absolute; left: 40px; top: 619px; width: 1600px; height: 2px; background: var(--line); opacity: 0; }
+    .count-ob { position: absolute; bottom: 100px; width: 18px; height: 0; border: 2px solid var(--chalk-2); border-bottom: 0; border-radius: 3px 3px 0 0; opacity: 0; }
+    .count-fb { position: absolute; bottom: 100px; width: 18px; height: 0; border-radius: 3px 3px 0 0; background: var(--chalk-2); opacity: 0; }
+    .count-fb.nf2 { background: var(--nf2); }
+    .count-tick { position: absolute; top: 632px; width: 10px; height: 10px; border-radius: 2px; background: var(--guide); opacity: 0; }
+    .count-tick.nf2 { background: var(--nf2); }
+    #count-ylab { left: 20px; top: 14px; opacity: 0; }
+    #count-xlab { right: 24px; top: 664px; opacity: 0; }
+    .count-key { position: absolute; left: 1480px; display: flex; align-items: center; gap: 14px; opacity: 0; }
+    .count-key .label { position: static; }
+    .count-sw { width: 18px; height: 34px; border-radius: 3px 3px 0 0; }
+    .count-sw.o { border: 2px solid var(--chalk-2); border-bottom: 0; }
+    .count-sw.f { background: var(--chalk-2); }
+    .count-nf2lab { position: absolute; width: 80px; text-align: center; font: 600 30px/1 var(--mono); color: var(--nf2); opacity: 0; }
+  </style>
+
+  <div id="count" class="world" data-composition-id="count" data-width="1920" data-height="1080" data-layout-allow-overlap>
+    <div id="count-field" class="cellfield"></div>
+    <div id="count-chips" data-layout-allow-overlap></div>
+    <svg id="count-lens" width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="80" cy="80" r="60" fill="rgba(236,235,230,.07)" stroke="#ecebe6" stroke-width="5"/>
+      <line x1="124" y1="124" x2="180" y2="180" stroke="#ecebe6" stroke-width="13" stroke-linecap="round"/>
+    </svg>
+
+    <div id="count-lab-a" class="label count-lab" style="top:280px">没加药</div>
+    <div id="count-lab-b" class="label count-lab" style="top:620px">加了药</div>
+    <div id="count-pipe" data-layout-allow-overlap></div>
+    <div id="count-stage-dna" class="label count-stage" style="left:470px">基因组 DNA</div>
+    <div id="count-stage-pcr" class="label count-stage" style="left:900px">PCR</div>
+
+    <div id="count-plot" class="plot"></div>
+    <div id="count-seq-label" class="label">测序仪</div>
+    <div id="count-reads" data-layout-ignore></div>
+
+    <div id="count-chart" data-layout-allow-overlap>
+      <div id="count-base"></div>
+      <div id="count-bars" data-layout-allow-overlap></div>
+      <div id="count-ylab" class="label s">读数</div>
+      <div id="count-xlab" class="label s">向导</div>
+      <div id="count-key1" class="count-key" style="top:22px"><div class="count-sw o"></div><div class="label s">没加药</div></div>
+      <div id="count-key2" class="count-key" style="top:70px"><div class="count-sw f"></div><div class="label s">加了药</div></div>
+    </div>
+
+    <div id="count-tag" class="tag-schematic" data-layout-ignore>示意</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const make = (cls, parent, css) => { const d = document.createElement('div'); d.className = cls; if (css) d.style.cssText = css; parent.appendChild(d); return d; };
+
+      // ---- the screen's read counts (schematic, seeded). The same function is in scenes/real.html. ----
+      function screenData() {
+        const N = 60, G = 15, NF2G = 1, LUCKYG = 11, LUCKY = 39, rnd = Kit.rng(2014);
+        const gene = new Array(N).fill(-1);
+        const nf2Slots = [5, 18, 29, 50], luckySlots = [12, 39, 44, 57];
+        nf2Slots.forEach((p) => (gene[p] = NF2G));
+        luckySlots.forEach((p) => (gene[p] = LUCKYG));
+        const rest = [];
+        for (let g = 0; g < G; g++) if (g !== NF2G && g !== LUCKYG) for (let k = 0; k < 4; k++) rest.push(g);
+        for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [rest[i], rest[j]] = [rest[j], rest[i]]; }
+        let r = 0;
+        for (let p = 0; p < N; p++) if (gene[p] < 0) gene[p] = rest[r++];
+        const seen = new Array(G).fill(0), k = gene.map((g) => seen[g]++);
+        const others = [...Array(N).keys()].filter((p) => gene[p] !== NF2G && gene[p] !== LUCKYG);
+        for (let i = others.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [others[i], others[j]] = [others[j], others[i]]; }
+        const zero = others.slice(0, 8);
+        const nf2After = [470, 525, 450, 540];
+        const before = [], after = [];
+        for (let p = 0; p < N; p++) {
+          before[p] = Math.round(88 + rnd() * 66);
+          const u = rnd();
+          after[p] = gene[p] === NF2G ? nf2After[k[p]] : zero.includes(p) ? 0
+            : gene[p] === LUCKYG ? Math.round(before[p] * (0.25 + 0.3 * u)) : Math.round(before[p] * (0.12 + 0.62 * u));
+        }
+        // x in the chart box (which sits at 120,120 and is 1680 x 720; the bars stand on y = 620)
+        const countX = (p) => 50 + p * (1580 / N) + (1580 / N - 18) / 2;
+        const groupX = (p) => 50 + gene[p] * (1580 / G) + (1580 / G - 84) / 2 + k[p] * 22;
+        return { N, G, NF2G, LUCKYG, LUCKY, gene, k, zero, before, after, countX, groupX, luckyTall: 480 };
+      }
+      const D = screenData();
+
+      // ---- the field of barcoded cells (as the drug scene ends) ----
+      const FX = 64, FY = 80, FIELD = { w: 1792, h: 800, n: 78, r: 34, seed: 61 };
+      let cells = Kit.cells($('count-field'), FIELD);
+      const jr = Kit.rng(5);
+      const nf2 = cells.map((c, i) => ({ i, d: Math.hypot(c.x - 1180, (c.y - 380) * 1.25) + jr() * 70 }))
+        .sort((a, b) => a.d - b.d).slice(0, 15).map((o) => o.i);
+      cells = Kit.cells($('count-field'), Object.assign({ nf2 }, FIELD));
+
+      // each cell's barcode, written as a chip, at the cell's centre
+      const chips = cells.map((c, i) => {
+        const b = make('barcode' + (nf2.includes(i) ? ' nf2' : ''), $('count-chips'), `left:${c.x}px;top:${c.y}px`);
+        Kit.barcode(b, nf2.includes(i) ? 4 : 100 + i, 7);
+        return b;
+      });
+      gsap.set(chips, { xPercent: -50, yPercent: -50 });
+
+      // ---- the two lanes ----
+      const LANE = [300, 640];
+      const TUBE = `<path d="M 22 106 L 118 106 L 118 200 Q 118 212 110 226 L 80 276 Q 70 290 60 276 L 30 226 Q 22 212 22 200 Z" fill="rgba(236,235,230,.07)"/>
+        <path d="M 20 30 L 20 200 Q 20 214 28 228 L 58 280 Q 70 296 82 280 L 112 228 Q 120 214 120 200 L 120 30" fill="none" stroke="#8d93a0" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M 8 30 L 132 30" stroke="#8d93a0" stroke-width="7" stroke-linecap="round"/>`;
+      const pipe = $('count-pipe');
+      const tubes = LANE.map((y, L) => {
+        const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        s.setAttribute('id', 'count-tube-' + 'ab'[L]); s.setAttribute('class', 'count-tube');
+        s.setAttribute('viewBox', '0 0 140 290'); s.setAttribute('width', '140'); s.setAttribute('height', '290');
+        s.style.top = (y - 145) + 'px'; s.innerHTML = TUBE; pipe.appendChild(s);
+        return s;
+      });
+      // what each tube holds: before the drug an even mix (one NF2 guide among many); on day 14 mostly NF2
+      const MIX = [[0, 0, 1, 0, 0, 0], [1, 1, 0, 1, 1, 0]];
+      const minis = LANE.map((y, L) => MIX[L].map((a, j) =>
+        make('count-mini' + (a ? ' nf2' : ''), pipe, `left:${276 + (j % 2) * 50}px;top:${y - 145 + 120 + Math.floor(j / 2) * 26}px;width:44px;height:16px`)));
+      // genomic DNA: three pieces per lane, each with the guide written into it
+      const DNA_MIX = [[0, 1, 0], [1, 1, 0]];
+      const dna = LANE.map((y, L) => [-52, 0, 52].map((o, j) => {
+        const d = make('count-dna', pipe, `top:${y + o - 10}px`);
+        make('count-mini' + (DNA_MIX[L][j] ? ' nf2' : ''), d, 'left:140px;top:-7px;width:80px;height:28px;opacity:1');
+        return d;
+      }));
+      // PCR copies: 3 templates -> 6 -> 12 -> 24 per lane, 6 columns x 4 rows
+      const pcr = LANE.map((y, L) => Array.from({ length: 24 }, (_, i) =>
+        make('count-mini' + (DNA_MIX[L][i % 3] ? ' nf2' : ''), pipe, `left:${900 + (i % 6) * 54}px;top:${y - 50 + Math.floor(i / 6) * 26}px;width:46px;height:18px`)));
+      const arrows = LANE.map((y) => [[402, 48], [848, 36], [1236, 122]].map(([x, w]) => make('count-arrow', pipe, `left:${x}px;top:${y - 1.5}px;width:${w}px`)));
+
+      // reads coming off the sequencer: the NF2 guide (real sequence) among others
+      const rr = Kit.rng(85), ACGT = 'ACGT';
+      const reads = Array.from({ length: 14 }, (_, i) => {
+        const isNF2 = [1, 4, 5, 8, 11].includes(i);
+        const seq = isNF2 ? Kit.NF2.guide : Array.from({ length: 20 }, () => ACGT[Math.floor(rr() * 4)]).join('');
+        const d = make('count-read' + (isNF2 ? ' nf2' : ''), $('count-reads'), `top:${i * 35}px`);
+        d.textContent = seq;
+        return d;
+      });
+
+      // ---- the chart ----
+      const bars = $('count-bars');
+      const ob = [], fb = [], tk = [], nf2lab = [];
+      for (let p = 0; p < D.N; p++) {
+        const x = D.countX(p), isNF2 = D.gene[p] === D.NF2G;
+        ob.push(make('count-ob', bars, `left:${x}px`));
+        fb.push(make('count-fb' + (isNF2 ? ' nf2' : ''), bars, `left:${x}px;height:${D.before[p]}px`));
+        tk.push(make('count-tick' + (isNF2 ? ' nf2' : ''), bars, `left:${x + 4}px`));
+        if (isNF2) { const l = make('count-nf2lab', bars, `left:${x + 9 - 40}px;top:${620 - D.after[p] - 44}px`); l.textContent = 'NF2'; nf2lab.push(l); }
+      }
+
+      // ================= the timeline =================
+      // 0 我们不用一个个去看细胞: a lens hops from cell to cell
+      const T0 = S.at(0), hop = [30, 33, 37].map((n) => cells[n]);
+      const lensAt = (c) => ({ x: FX + c.x - 80, y: FY + c.y - 80 });
+      tl.fromTo('#count-lens', Object.assign({ opacity: 0, scale: 0.7 }, lensAt(hop[0])), { opacity: 1, scale: 1, duration: 0.4, ease: 'expo.out' }, T0);
+      tl.fromTo('#count-lens', lensAt(hop[0]), Object.assign({ duration: 0.45, ease: 'power2.inOut' }, lensAt(hop[1])), T0 + 0.65);
+      tl.fromTo('#count-lens', lensAt(hop[1]), Object.assign({ duration: 0.45, ease: 'power2.inOut' }, lensAt(hop[2])), T0 + 1.3);
+
+      // 1 只要数条形码: the lens goes; each cell gives way to its barcode
+      const T1 = S.at(1);
+      tl.fromTo('#count-lens', { opacity: 1 }, { opacity: 0, duration: 0.25 }, T1);
+      const dr = Kit.rng(9);
+      cells.forEach((c, i) => {
+        const d = dr() * 0.45;
+        tl.fromTo(c.el, { opacity: 1, scale: 1 }, { opacity: 0, scale: 0.75, duration: 0.4, ease: 'power2.in' }, T1 + 0.05 + d);
+        tl.fromTo(chips[i], { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.55, ease: 'expo.out' }, T1 + 0.15 + d);
+      });
+
+      // 2 把加了药的和没加药的细胞: two tubes at day 14, the drug-treated one and the untreated control
+      const T2 = S.at(2);
+      tubes.forEach((t, L) => tl.fromTo(t, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, T2 + (1 - L) * 0.5));
+      tl.fromTo('#count-lab-a', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, T2 + 0.6);
+      tl.fromTo('#count-lab-b', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, T2 + 0.3);
+      const mouth = { x: 320, y: LANE[1] - 145 + 22 };
+      const byDist = cells.map((c, i) => ({ i, d: Math.hypot(FX + c.x - mouth.x, FY + c.y - mouth.y) })).sort((a, b) => a.d - b.d);
+      byDist.forEach(({ i }, n) => {
+        const c = cells[i], at = T2 + 0.05 + (n / cells.length) * 0.6;
+        tl.fromTo(chips[i], { x: 0, y: 0, scale: 1 }, { x: mouth.x - FX - c.x, y: mouth.y - FY - c.y, scale: 0.3, duration: 0.75, ease: 'power2.in' }, at);
+        tl.fromTo(chips[i], { opacity: 1 }, { opacity: 0, duration: 0.15 }, at + 0.62);
+      });
+      minis[0].forEach((m, j) => tl.fromTo(m, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, T2 + 0.8 + j * 0.1));
+      minis[1].forEach((m, j) => tl.fromTo(m, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, T2 + 0.6 + j * 0.1));
+
+      // 3 各取一份 DNA: three pieces of genomic DNA slide out of each tube
+      const T3 = S.at(3);
+      LANE.forEach((y, L) => {
+        tl.fromTo(arrows[L][0], { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, T3);
+        dna[L].forEach((d, j) => tl.fromTo(d, { opacity: 0, x: -150 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, T3 + 0.1 + j * 0.1 + L * 0.05));
+      });
+      tl.fromTo('#count-stage-dna', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, T3 + 0.3);
+
+      // 4 用 PCR 把向导那一段扩增出来: only the guide piece is copied, doubling 3 -> 6 -> 12 -> 24
+      const T4 = S.at(4);
+      tl.fromTo('#count-stage-pcr', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, T4);
+      const GEN = [[0, 3, T4 + 0.1], [3, 6, T4 + 0.8], [6, 12, T4 + 1.45], [12, 24, T4 + 2.1]];
+      const cellXY = (i, y) => ({ x: 900 + (i % 6) * 54, y: y - 50 + Math.floor(i / 6) * 26 });
+      LANE.forEach((y, L) => {
+        tl.fromTo(arrows[L][1], { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, T4);
+        GEN.forEach(([a, b, at], g) => {
+          for (let i = a; i < b; i++) {
+            const to = cellXY(i, y);
+            const from = g === 0 ? { x: 470 + 140 + 17, y: y + [-52, 0, 52][i] - 10 + 5 } : cellXY(i - a, y);
+            tl.fromTo(pcr[L][i], { opacity: 0, x: from.x - to.x, y: from.y - to.y }, { opacity: 1, x: 0, y: 0, duration: g === 0 ? 0.6 : 0.5, ease: 'expo.out' }, at + (i - a) * 0.02);
+          }
+        });
+      });
+
+      // 5 送去测序: the copies stream into the sequencer; reads come off it
+      const T5 = S.at(5);
+      tl.fromTo('#count-plot', { opacity: 0, scale: 0.94, x: 1260, y: 30 }, { opacity: 1, scale: 1, x: 1260, y: 30, duration: 0.45, ease: 'expo.out' }, T5);
+      tl.fromTo('#count-seq-label', { opacity: 0 }, { opacity: 1, duration: 0.4 }, T5 + 0.1);
+      LANE.forEach((y, L) => {
+        tl.fromTo(arrows[L][2], { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, T5);
+        pcr[L].forEach((m, i) => {
+          const at = T5 + 0.1 + i * 0.01 + L * 0.03, c = cellXY(i, y);
+          tl.fromTo(m, { x: 0, y: 0 }, { x: 1420 - c.x, y: 470 - c.y, duration: 0.55, ease: 'power2.in' }, at);
+          tl.fromTo(m, { opacity: 1 }, { opacity: 0, duration: 0.12 }, at + 0.45);
+        });
+      });
+      reads.forEach((d, i) => tl.fromTo(d, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.35, ease: 'expo.out' }, T5 + 0.3 + i * 0.04));
+
+      // 6 每一条向导: the sequencer opens into the plot; one mark per guide
+      const T6 = S.at(6);
+      tl.fromTo(['#count-pipe', '#count-lab-a', '#count-lab-b', '#count-stage-dna', '#count-stage-pcr'], { opacity: 1 }, { opacity: 0, duration: 0.3 }, T6);
+      tl.fromTo(['#count-reads', '#count-seq-label'], { opacity: 1 }, { opacity: 0, duration: 0.2 }, T6);
+      tl.fromTo('#count-plot', { x: 1260, y: 30, width: 460, height: 640 }, { x: 0, y: 0, width: 1680, height: 720, duration: 0.7, ease: 'power3.inOut' }, T6 + 0.05);
+      tl.fromTo('#count-base', { opacity: 0 }, { opacity: 1, duration: 0.3 }, T6 + 0.5);
+      tk.forEach((t, p) => tl.fromTo(t, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)' }, T6 + 0.45 + p * 0.008));
+      tl.fromTo('#count-xlab', { opacity: 0 }, { opacity: 1, duration: 0.4 }, T6 + 0.7);
+
+      // 7 数一数出现了多少次: before the drug, every guide about as common
+      const T7 = S.at(7);
+      tl.fromTo('#count-ylab', { opacity: 0 }, { opacity: 1, duration: 0.4 }, T7);
+      ob.forEach((b, p) => tl.fromTo(b, { opacity: 0, height: 0 }, { opacity: 1, height: D.before[p], duration: 0.6, ease: 'expo.out' }, T7 + 0.05 + p * 0.014));
+      tl.fromTo('#count-key1', { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, T7 + 0.4);
+
+      // 8 大多数向导变少了: day 14, filled, drops below the outline
+      const T8 = S.at(8);
+      tl.fromTo('#count-key2', { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, T8);
+      fb.forEach((b, p) => {
+        tl.fromTo(b, { opacity: 0 }, { opacity: 1, duration: 0.2 }, T8 + p * 0.004);
+        if (D.gene[p] === D.NF2G) return;
+        const h = D.zero.includes(p) ? Math.round(D.before[p] * 0.3) : D.after[p];
+        tl.fromTo(b, { height: D.before[p] }, { height: h, duration: 0.9, ease: 'power2.inOut' }, T8 + 0.2 + p * 0.006);
+      });
+
+      // 9 有的完全消失: some go to nothing
+      const T9 = S.at(9);
+      D.zero.forEach((p, n) => {
+        tl.fromTo(fb[p], { height: Math.round(D.before[p] * 0.3) }, { height: 0, duration: 0.5, ease: 'power2.in' }, T9 + n * 0.05);
+        tl.fromTo(tk[p], { opacity: 1 }, { opacity: 0.35, duration: 0.3 }, T9 + 0.4 + n * 0.05);
+      });
+
+      // 10 少数向导 / 11 反而多了很多倍: the NF2 guides climb far above where they started
+      const T10 = S.at(10), T11 = S.at(11);
+      fb.forEach((b, p) => {
+        if (D.gene[p] !== D.NF2G) return;
+        tl.fromTo(b, { height: D.before[p] }, { height: D.after[p], duration: 1.1, ease: 'expo.out' }, T10 + 0.15 + D.k[p] * 0.08);
+      });
+      nf2lab.forEach((l, n) => tl.fromTo(l, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, T11 + n * 0.08));
+
+      window.__timelines['count'] = tl;
+    })();
+  </script>
+</template>

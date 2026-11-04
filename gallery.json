@@ -245,6 +245,27 @@
   ]
  },
  {
+  "id": "explainer",
+  "label": "Explainers",
+  "blurb": "No website and nothing recorded: animations the agent writes and times to the narration, in one world.",
+  "items": [
+   {
+    "id": "explainer/crispr-screen",
+    "title": "CRISPR 筛选：一瓶细胞，两万次实验",
+    "site": "Molecular biology",
+    "lang": "zh",
+    "url": null,
+    "request": "那你重做一个，这次换另一个原理，比如 CRISPR 进行 mutation screen。 (It followed a TaqMan SNP-genotyping explainer made the same way; this one had to be built from scratch, which was the point.)",
+    "seconds": 338.2,
+    "video": "explainer/crispr-screen/video.mp4",
+    "poster": "explainer/crispr-screen/poster.jpg",
+    "storyboard": "explainer/crispr-screen/storyboard.yaml",
+    "notes": "explainer/crispr-screen/notes.md",
+    "article": null
+   }
+  ]
+ },
+ {
   "id": "docs",
   "label": "Help-center docs",
   "blurb": "Per-step GIFs and screenshots cropped to the action, plus a ready-to-paste article.",

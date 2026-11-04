@@ -1,0 +1,359 @@
+<template>
+  <style>
+    /* step 10 · base — 改一个碱基：突变扫描.
+       Seam: the first frame is ask's last frame: only the NF2 top strand (exon2 indexes 10-43) at
+       left 146 / top 470, every tile default but exon index 23 (tile 13) amber (class ins). */
+    #base { font-family: var(--font); }
+    #base .grp { position: absolute; inset: 0; }
+    #base-strand { left: 146px; top: 470px; }
+    /* the edited base: a T tile laid over the amber C tile (tile 13), so nothing depends on a class change */
+    #base-editT { position: absolute; left: 769px; top: 469px; width: 47px; height: 59px;
+      box-sizing: border-box; background: #16241e; opacity: 0; }
+
+    #base-target { position: absolute; left: 724px; top: 532px; width: 136px; opacity: 0; }
+    #base-target i { position: absolute; left: 66px; top: 0; width: 4px; height: 30px; border-radius: 2px; background: var(--nf2); }
+    #base-target span { position: absolute; left: 0; top: 40px; width: 136px; text-align: center;
+      font: 600 34px/1 var(--font); color: var(--nf2); }
+
+    #base-editor { position: absolute; inset: 0; opacity: 0; }
+    #base-cas { position: absolute; left: 757px; top: 433px; width: 598px; height: 390px; }
+    #base-deam { position: absolute; left: 686px; top: 372px; width: 184px; height: 156px; border-radius: 50%;
+      background: radial-gradient(circle at 38% 32%, rgba(53,208,127,.42) 0%, rgba(53,208,127,.16) 72%);
+      border: 3px solid var(--edit); opacity: 0; }
+    #base-cas-label { left: 322px; top: 418px; color: var(--edit); opacity: 0; }
+    #base-cas-leader { position: absolute; left: 500px; top: 414px; width: 200px; height: 70px; opacity: 0; }
+
+    #base-nocut { position: absolute; left: 1430px; top: 282px; width: 212px; text-align: center; opacity: 0; }
+    #base-nocut span { position: absolute; left: 0; top: 130px; width: 212px; text-align: center;
+      font: 600 34px/1 var(--font); color: var(--chalk-2); }
+
+    #base-guide-label { left: 146px; top: 546px; opacity: 0; }
+    #base-pam-label { left: 1540px; top: 698px; color: var(--pam); opacity: 0; }
+    #base-win { position: absolute; left: 714px; top: 590px; width: 252px; height: 76px;
+      border: 2px dashed var(--edit); border-radius: 12px; opacity: 0; box-sizing: border-box; }
+    #base-win-label { left: 690px; top: 534px; color: var(--edit); opacity: 0; }
+    #base-ct { position: absolute; left: 700px; top: 700px; width: 190px; text-align: center;
+      font: 700 46px/1 var(--mono); color: var(--edit); opacity: 0; }
+    #base-ct-leader { position: absolute; left: 791px; top: 660px; width: 4px; height: 40px;
+      border-radius: 2px; background: var(--edit); opacity: 0; }
+
+    /* act 2: one gene, guides tiled along it */
+    #base-gene { position: absolute; left: 180px; top: 250px; width: 1560px; height: 70px; border-radius: 10px;
+      border: 1.5px solid var(--line); opacity: 0;
+      background: repeating-linear-gradient(90deg, rgba(236,235,230,.11) 0 44px, rgba(236,235,230,.035) 44px 96px); }
+    #base-gene-label { left: 180px; top: 188px; opacity: 0; }
+    #base-tick { position: absolute; }
+    #base .tick { position: absolute; top: 332px; width: 40px; height: 16px; border-radius: 6px;
+      background: rgba(255,92,138,.9); opacity: 0; }
+    #base .dot { position: absolute; top: 277px; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--edit); box-shadow: 0 0 10px rgba(53,208,127,.55); opacity: 0; }
+    #base-tick-label { left: 180px; top: 374px; opacity: 0; }
+    #base-dot-label { left: 1180px; top: 374px; color: var(--edit); opacity: 0; }
+
+    #base-chain { position: absolute; inset: 0; }
+    #base .node { position: absolute; top: 420px; width: 150px; height: 96px; border-radius: 12px;
+      background: var(--ground-2); border: 1.5px solid var(--line); opacity: 0; }
+    #base .node-l { position: absolute; top: 528px; width: 150px; text-align: center;
+      font: 500 28px/1 var(--font); color: var(--chalk-2); opacity: 0; }
+    #base .arrow { position: absolute; top: 444px; width: 50px; text-align: center;
+      font: 500 40px/1 var(--font); color: var(--chalk-2); opacity: 0; }
+    #base .pill { position: absolute; border-radius: 50%; background: var(--chalk-2); }
+    #base .read { position: absolute; height: 5px; border-radius: 3px; background: var(--chalk-2); }
+    #base-bc { left: 1142px; top: 450px; opacity: 1; }
+
+    #base-plot { position: absolute; left: 180px; top: 520px; width: 1560px; height: 340px; }
+    #base-axis { position: absolute; left: 180px; top: 859px; width: 1560px; height: 2px; background: var(--line); opacity: 0; }
+    #base-bar-label { left: 180px; top: 466px; opacity: 0; }
+
+    /* act 3: BRCA1 exons, then the map of single-base changes */
+    #base .exon { position: absolute; top: 210px; width: 100px; height: 72px; border-radius: 8px;
+      background: rgba(236,235,230,.16); border: 1.5px solid rgba(236,235,230,.38); opacity: 0; }
+    #base-exon-label { left: 190px; top: 158px; opacity: 0; }
+    #base-chip { left: 842px; top: 334px; opacity: 0; }
+    #base-chip-label { left: 1012px; top: 306px; color: var(--edit); opacity: 0; }
+    #base-exon-dot { position: absolute; left: 952px; top: 238px; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--edit); box-shadow: 0 0 10px rgba(53,208,127,.6); opacity: 0; }
+    #base-hm-label { left: 180px; top: 372px; opacity: 0; }
+    #base-hm-note { left: 780px; top: 384px; opacity: 0; }
+    #base-hm-clip { position: absolute; left: 180px; top: 432px; width: 0; height: 319px; overflow: hidden; }
+    #base-hm-clip svg { position: absolute; left: 0; top: 0; }
+    #base .key { position: absolute; top: 790px; width: 26px; height: 26px; border-radius: 5px; opacity: 0; }
+    #base .key-l { position: absolute; top: 790px; width: 170px; font: 500 28px/26px var(--font); color: var(--chalk-2); opacity: 0; }
+
+    #base-tag { opacity: 0; }
+    #base-credit-hanna, #base-credit-findlay { opacity: 0; }
+  </style>
+
+  <div id="base" class="world" data-composition-id="base" data-width="1920" data-height="1080">
+    <!-- act 1: the strand from the previous scene, and the base editor on it -->
+    <div id="base-act1" class="grp" data-layout-allow-overlap>
+      <div id="base-dna" class="grp">
+        <div id="base-strand" class="strand"></div>
+        <span id="base-editT" class="nt edit">T</span>
+        <div id="base-target"><i></i><span>目标碱基</span></div>
+      </div>
+      <div id="base-editor">
+        <div id="base-cas"></div>
+        <div id="base-deam"></div>
+      </div>
+      <svg id="base-cas-leader" viewBox="0 0 200 70" width="200" height="70">
+        <path d="M 6 26 C 70 26, 120 36, 192 44" fill="none" stroke="#35d07f" stroke-width="2.5"
+          pathLength="1" style="stroke-dasharray:1" />
+      </svg>
+      <div id="base-cas-label" class="label">碱基编辑器</div>
+      <div id="base-nocut">
+        <svg viewBox="0 0 110 110" width="110" height="110">
+          <g stroke="#8d93a0" fill="none" stroke-width="3" opacity=".75">
+            <path d="M 34 76 L 74 36" /><path d="M 34 36 L 74 76" />
+            <circle cx="30" cy="80" r="8" /><circle cx="30" cy="32" r="8" />
+          </g>
+          <circle cx="55" cy="55" r="50" fill="none" stroke="#8d93a0" stroke-width="4" />
+          <path d="M 20 90 L 90 20" stroke="#8d93a0" stroke-width="4" />
+        </svg>
+        <span>不切双链</span>
+      </div>
+      <div id="base-guide-label" class="label s">向导 RNA · 20 个碱基</div>
+      <div id="base-pam-label" class="label s">PAM · NGG</div>
+      <div id="base-win"></div>
+      <div id="base-win-label" class="label s">编辑窗口 · 第 4–8 位</div>
+      <div id="base-ct-leader"></div>
+      <div id="base-ct">C → T</div>
+    </div>
+
+    <!-- act 2: the gene, guides tiled along it, the same pipeline, the read-count bars -->
+    <div id="base-gene"></div>
+    <div id="base-gene-label" class="label">一个基因</div>
+    <div id="base-act2" class="grp" data-layout-allow-overlap>
+      <div id="base-tick" class="grp"></div>
+      <div id="base-tick-label" class="label s">向导 · 逐段排开</div>
+      <div id="base-dot-label" class="label s">每条做出一个 C→T</div>
+      <div id="base-chain">
+        <div class="node" id="base-n1" style="left:640px">
+          <i class="pill" style="left:34px;top:28px;width:12px;height:12px"></i>
+          <i class="pill" style="left:68px;top:20px;width:9px;height:9px"></i>
+          <i class="pill" style="left:98px;top:36px;width:13px;height:13px"></i>
+          <i class="pill" style="left:52px;top:62px;width:10px;height:10px"></i>
+          <i class="pill" style="left:92px;top:68px;width:9px;height:9px"></i>
+        </div>
+        <div class="node-l" id="base-n1l" style="left:640px">加药</div>
+        <div class="arrow" id="base-a1" style="left:806px">→</div>
+        <div class="node" id="base-n2" style="left:885px">
+          <i class="read" style="left:24px;top:24px;width:102px"></i>
+          <i class="read" style="left:24px;top:42px;width:74px"></i>
+          <i class="read" style="left:24px;top:60px;width:92px"></i>
+          <i class="read" style="left:24px;top:78px;width:60px"></i>
+        </div>
+        <div class="node-l" id="base-n2l" style="left:885px">测序</div>
+        <div class="arrow" id="base-a2" style="left:1051px">→</div>
+        <div class="node" id="base-n3" style="left:1130px"></div>
+        <div id="base-bc" class="barcode"></div>
+        <div class="node-l" id="base-n3l" style="left:1130px">数条形码</div>
+      </div>
+      <div id="base-plot"></div>
+      <div id="base-axis"></div>
+      <div id="base-bar-label" class="label">少数位置：更敏感或更耐药</div>
+    </div>
+
+    <!-- act 3: saturation genome editing of BRCA1 -->
+    <div id="base-act3" class="grp" data-layout-allow-overlap>
+      <div id="base-act3a" class="grp">
+        <div id="base-exons" class="grp"></div>
+        <div id="base-exon-label" class="label s">BRCA1 · 13 个外显子</div>
+        <div id="base-chip" class="strand"></div>
+        <div id="base-chip-label" class="label s">单碱基替换</div>
+        <div id="base-exon-dot"></div>
+      </div>
+      <div id="base-hm-label" class="label">BRCA1 · 3,893 个单碱基突变</div>
+      <div id="base-hm-note" class="label s">每列一个位置 · 三行＝三种替换</div>
+      <div id="base-hm-clip"></div>
+      <i class="key" id="base-k1" style="left:555px;background:#35d07f"></i>
+      <div class="key-l" id="base-k1l" style="left:593px">功能正常</div>
+      <i class="key" id="base-k2" style="left:885px;background:#8d93a0"></i>
+      <div class="key-l" id="base-k2l" style="left:923px">部分影响</div>
+      <i class="key" id="base-k3" style="left:1215px;background:#ff5a4e"></i>
+      <div class="key-l" id="base-k3l" style="left:1253px">功能丧失</div>
+    </div>
+
+    <div id="base-tag" class="tag-schematic" data-layout-ignore>示意</div>
+    <div id="base-credit-hanna" class="credit" data-layout-ignore>Hanna et al. 2021 · Cell<br>碱基编辑器筛选</div>
+    <div id="base-credit-findlay" class="credit" data-layout-ignore>Findlay et al. 2018 · Nature<br>BRCA1 · HAP1 细胞</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot, A = (k, o = 0) => S.at(k) + (o || 0);
+      const q = (s) => document.querySelector(s);
+      const NEU = { color: '#ecebe6', borderColor: 'rgba(236,235,230,.18)', backgroundColor: 'rgba(236,235,230,.06)' };
+      const GUI = { color: '#ff5c8a', borderColor: '#ff5c8a', backgroundColor: 'rgba(255,92,138,.10)' };
+      const PAM = { color: '#4fd1e0', borderColor: '#4fd1e0', backgroundColor: 'rgba(79,209,224,.10)' };
+
+      /* ---- the strand from the previous scene: NF2 exon 2, indexes 10-43 (34 tiles) ---- */
+      const seq = Kit.NF2.exon2.slice(10, 44);          // exon index 10 + i  ==  tile i
+      const tiles = Kit.strand(q('#base-strand'), seq, { 13: 'ins' });   // tile 13 = exon index 23, the C
+      const GS = Kit.NF2.guideStart - 10, GE = GS + Kit.NF2.guide.length - 1;   // tiles 9..28
+      const PS = Kit.NF2.pamStart - 10, PE = PS + Kit.NF2.pam.length - 1;       // tiles 29..31
+      const target = tiles[Kit.NF2.guideStart - 10 + 4];                 // protospacer position 5
+      const guideTiles = tiles.slice(GS, GE + 1).filter((t) => t !== target), pamTiles = tiles.slice(PS, PE + 1);
+      const editT = q('#base-editT');
+
+      /* ---- Cas9, scaled so the DNA channel sits on the strand's centre line ---- */
+      q('#base-cas').innerHTML = Kit.CAS9_SVG;
+      const casSvg = q('#base-cas svg');
+      casSvg.setAttribute('width', 598); casSvg.setAttribute('height', 390);
+
+      /* ---- act 2: guides tiled along one gene, each leaving one edit ---- */
+      const NG = 32, GX = 180, GW = 1560, pitch = GW / NG;
+      const ticks = [], dots = [];
+      const tickBox = q('#base-tick');
+      for (let i = 0; i < NG; i++) {
+        const t = document.createElement('i'); t.className = 'tick';
+        t.style.left = (GX + i * pitch + 4).toFixed(1) + 'px'; tickBox.appendChild(t); ticks.push(t);
+        const d = document.createElement('i'); d.className = 'dot';
+        d.style.left = (GX + i * pitch + 16).toFixed(1) + 'px'; tickBox.appendChild(d); dots.push(d);
+      }
+      Kit.barcode(q('#base-bc'), 31, 12);
+
+      /* ---- act 2: read counts per position (schematic, seeded; a few positions stand out) ---- */
+      const rndBar = Kit.rng(2021), tall = { 6: 248, 17: 288, 25: 209 }, bars = [], plot = q('#base-plot');
+      for (let i = 0; i < NG; i++) {
+        const h = tall[i] ?? 14 + Math.round(rndBar() * 56);
+        const b = document.createElement('i'); b.className = 'bar' + (tall[i] ? ' hi' : '');
+        b.style.cssText = `left:${(i * pitch + 9).toFixed(1)}px;width:30px;height:0px;` +
+          (tall[i] ? 'background:#35d07f;box-shadow:0 0 14px rgba(53,208,127,.35)' : 'opacity:.7');
+        plot.appendChild(b); bars.push({ el: b, h });
+      }
+
+      /* ---- act 3: BRCA1's 13 exons, and one variant chip going in ---- */
+      const exons = [], exBox = q('#base-exons');
+      for (let i = 0; i < 13; i++) {
+        const e = document.createElement('i'); e.className = 'exon';
+        e.style.left = (190 + i * 120) + 'px'; exBox.appendChild(e); exons.push(e);
+      }
+      Kit.strand(q('#base-chip'), 'TAGCT', { 2: 'edit' });
+
+      /* ---- act 3: 3,893 single-base changes as one SVG, three paths (colours 示意) ---- */
+      (function heatmap() {
+        const bands = [163, 163, 162, 162, 162, 162, 162, 162];   // 1,298 positions x 3 other bases = 3,894 - 1
+        const cell = 8, px = 9.57, py = 9.57, gap = 13, N = 3893;
+        const rnd = Kit.rng(3893), buck = { ok: [], mid: [], lof: [] };
+        let n = 0, y0 = 0;
+        for (let b = 0; b < bands.length; b++) {
+          for (let r = 0; r < 3; r++) for (let c = 0; c < bands[b]; c++) {
+            if (n >= N) continue;
+            n++;
+            const x = (c * px).toFixed(1), y = (y0 + r * py).toFixed(1), v = rnd();
+            buck[v < 0.20 ? 'lof' : v < 0.32 ? 'mid' : 'ok'].push(`M${x} ${y}h${cell}v${cell}h-${cell}z`);
+          }
+          y0 += 3 * py + gap;
+        }
+        const W = Math.round((bands[0] - 1) * px + cell), H = Math.round((bands.length - 1) * (3 * py + gap) + 2 * py + cell);
+        q('#base-hm-clip').innerHTML =
+          `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">` +
+          `<path d="${buck.ok.join('')}" fill="#35d07f" fill-opacity=".8"/>` +
+          `<path d="${buck.mid.join('')}" fill="#8d93a0" fill-opacity=".75"/>` +
+          `<path d="${buck.lof.join('')}" fill="#ff5a4e" fill-opacity=".8"/></svg>`;
+        q('#base-hm-clip').dataset.w = W;
+      })();
+
+      /* ================= timeline ================= */
+      const tl = gsap.timeline({ paused: true });
+
+      /* 0 想问某一个突变 — the amber C from the previous scene is marked */
+      tl.fromTo('#base-target', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, A(0));
+      tl.fromTo(target, { scale: 1 }, { scale: 1.14, duration: 0.45, yoyo: true, repeat: 1, ease: 'sine.inOut' }, A(0));
+
+      /* 1 可以换一种工具 — the strand settles lower, the protein arrives */
+      tl.fromTo('#base-dna', { y: 0 }, { y: 130, duration: 0.7, ease: 'expo.out' }, A(1));
+      tl.fromTo('#base-target', { opacity: 1 }, { opacity: 0, duration: 0.35 }, A(1, 0.45));
+      tl.fromTo('#base-editor', { opacity: 0, y: -210 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, A(1, 0.2));
+
+      /* 2 碱基编辑器 — the green deaminase, attached, named */
+      tl.fromTo('#base-deam', { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.6)' }, A(2));
+      tl.fromTo('#base-cas-leader path', { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.45, ease: 'none', autoRound: false }, A(2, 0.25));
+      tl.fromTo('#base-cas-leader', { opacity: 0 }, { opacity: 1, duration: 0.1 }, A(2, 0.25));
+      tl.fromTo('#base-cas-label', { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, A(2, 0.3));
+
+      /* 3 它不把 DNA 剪断 — the same guide pairs, the PAM lights, and nothing is cut */
+      tl.fromTo('#base-guide-label', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(3));
+      tl.fromTo(guideTiles, NEU, { ...GUI, duration: 0.3, stagger: 0.03 }, A(3));
+      tl.fromTo('#base-nocut', { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, A(3, 0.5));
+      tl.fromTo(pamTiles, NEU, { ...PAM, duration: 0.3, stagger: 0.06 }, A(3, 0.85));
+      tl.fromTo('#base-pam-label', { opacity: 0 }, { opacity: 1, duration: 0.35 }, A(3, 1));
+
+      /* 4 而是把一个 C 直接改成 T — the editing window, then the base itself */
+      tl.fromTo('#base-tag', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(4));
+      tl.fromTo('#base-cas', { opacity: 1 }, { opacity: 0.22, duration: 0.5 }, A(4));
+      tl.fromTo('#base-cas svg text', { opacity: 1 }, { opacity: 0, duration: 0.4 }, A(4));
+      tl.fromTo('#base-win', { opacity: 0, scaleX: 1.1 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'expo.out' }, A(4));
+      tl.fromTo('#base-win-label', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(4, 0.1));
+      tl.fromTo(editT, { opacity: 0, scale: 0.75 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'expo.out' }, A(4, 0.85));
+      tl.fromTo('#base-ct-leader', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: 'expo.out' }, A(4, 1));
+      tl.fromTo('#base-ct', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(4, 1.1));
+
+      /* 5 把向导铺满一个基因 — the site goes, the whole gene comes */
+      tl.fromTo('#base-act1', { opacity: 1 }, { opacity: 0, duration: 0.4 }, A(5));
+      tl.fromTo('#base-gene', { opacity: 0, scaleX: 0.06 }, { opacity: 1, scaleX: 1, duration: 0.7, ease: 'expo.out' }, A(5, 0.3));
+      tl.set('#base-gene', { transformOrigin: 'left center' }, 0);
+      tl.fromTo('#base-gene-label', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: 'expo.out' }, A(5, 0.55));
+      ticks.forEach((t, i) => tl.fromTo(t, { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.35, ease: 'expo.out' }, A(5, 0.75) + i * 0.02));
+      tl.fromTo('#base-tick-label', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(5, 1.0));
+
+      /* 6 每条向导做出一个点突变 — one green dot per guide */
+      dots.forEach((d, i) => tl.fromTo(d, { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.3, ease: 'expo.out' }, A(6) + i * 0.028));
+      tl.fromTo('#base-dot-label', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(6, 0.5));
+
+      /* 7-10 加药，测序，数条形码，和刚才一样 — the gene makes room, then the same pipeline */
+      tl.fromTo(['#base-gene', '#base-gene-label', '#base-tick', '#base-tick-label', '#base-dot-label'],
+        { y: 130 }, { y: 0, duration: 0.7, ease: 'expo.out' }, A(7, -0.35));
+      tl.fromTo(['#base-n1', '#base-n1l'], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(7));
+      tl.fromTo('#base-a1', { opacity: 0 }, { opacity: 1, duration: 0.3 }, A(8, -0.15));
+      tl.fromTo(['#base-n2', '#base-n2l'], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(8));
+      tl.fromTo('#base-a2', { opacity: 0 }, { opacity: 1, duration: 0.3 }, A(9, 0.1));
+      tl.fromTo(['#base-n3', '#base-n3l'], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(9, 0.25));
+      tl.fromTo('#base-bc', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'expo.out' }, A(9, 0.4));
+      tl.fromTo(['#base-n1', '#base-n2', '#base-n3'], { borderColor: '#2b313d' }, { borderColor: '#8d93a0', duration: 0.5, stagger: 0.08 }, A(10));
+
+      /* 11 2021 年 — whose experiment this is */
+      tl.fromTo('#base-credit-hanna', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(11));
+
+      /* 12 有人这样找到了改变药效的点突变 — counts per position; a few positions stand out */
+      tl.fromTo('#base-chain', { opacity: 1 }, { opacity: 0, duration: 0.35 }, A(12));
+      tl.fromTo('#base-axis', { opacity: 0 }, { opacity: 1, duration: 0.3 }, A(12, 0.25));
+      bars.forEach((b, i) => tl.fromTo(b.el, { height: 0 }, { height: b.h, duration: 0.4, ease: 'expo.out' }, A(12, 0.4) + i * 0.022));
+      tl.fromTo('#base-bar-label', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, A(12, 1.5));
+
+      /* 13 另一种做法 — the bars go, the gene stays and travels up */
+      tl.fromTo('#base-act2', { opacity: 1 }, { opacity: 0, duration: 0.4 }, A(13));
+      tl.fromTo('#base-gene-label', { opacity: 1 }, { opacity: 0, duration: 0.3 }, A(13));
+      tl.fromTo('#base-credit-hanna', { opacity: 1 }, { opacity: 0, duration: 0.3 }, A(13));
+      tl.fromTo('#base-act3a', { y: 150 }, { y: 150, duration: 0.01 }, 0);
+      tl.fromTo('#base-gene', { y: 0 }, { y: 110, duration: 0.7, ease: 'expo.out' }, A(13, 0.15));
+      exons.forEach((e, i) => tl.fromTo(e, { opacity: 0, scaleY: 0.3 }, { opacity: 1, scaleY: 1, duration: 0.35, ease: 'expo.out' }, A(13, 0.45) + i * 0.03));
+      tl.fromTo('#base-exon-label', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(13, 0.6));
+
+      /* 14 是把突变直接换进基因里 — 13 exons, and one base swapped in */
+      tl.fromTo('#base-gene', { height: 70, y: 110 }, { height: 10, y: 141, duration: 0.5, ease: 'expo.out' }, A(14));
+      tl.fromTo('#base-chip', { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, A(14, 0.2));
+      tl.fromTo('#base-chip-label', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(14, 0.5));
+      tl.fromTo('#base-chip', { opacity: 1, y: 0 }, { opacity: 0, y: -88, duration: 0.6, ease: 'expo.in' }, A(14, 1.4));
+      tl.fromTo('#base-exon-dot', { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'expo.out' }, A(14, 1.9));
+
+      /* 15 2018 年 — whose experiment this is */
+      tl.fromTo('#base-credit-findlay', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(15));
+
+      /* 16 BRCA1 关键区域的 3893 个单碱基突变 — the map fills in */
+      tl.fromTo('#base-chip-label', { opacity: 1 }, { opacity: 0, duration: 0.3 }, A(16));
+      tl.fromTo('#base-act3a', { y: 150 }, { y: 0, duration: 0.7, ease: 'expo.out' }, A(16));
+      tl.fromTo('#base-gene', { y: 141 }, { y: -9, duration: 0.7, ease: 'expo.out' }, A(16));
+      tl.fromTo('#base-hm-label', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, A(16, 0.2));
+      tl.fromTo('#base-hm-note', { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(16, 0.3));
+      tl.fromTo('#base-hm-clip', { width: 0 }, { width: +q('#base-hm-clip').dataset.w, duration: 3.6, ease: 'power2.out' }, A(16, 0.35));
+
+      /* 17 逐个测了一遍 — what the colours mean */
+      tl.fromTo(['#base-k1', '#base-k1l', '#base-k2', '#base-k2l', '#base-k3', '#base-k3l'],
+        { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.07, ease: 'expo.out' }, A(17, -0.5));
+
+      window.__timelines['base'] = tl;
+    })();
+  </script>
+</template>

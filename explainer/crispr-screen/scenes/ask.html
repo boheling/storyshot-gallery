@@ -1,0 +1,316 @@
+<template>
+  <style>
+    /* step 9 · ask · 局限：能问什么问题. Off-target → paralogs → the pooled flask's per-cell readouts → cells talking
+       (unseen) → a whole gene removed vs one base changed. Ends on the seam to base: the NF2 top strand
+       (exon 2 indexes 10-43) at left 146, top 470, tile 13 (exon index 23, a C) amber, nothing else. */
+    #ask .ask-layer { position: absolute; inset: 0; }
+
+    /* off-target: the guide on a look-alike site with 2 mismatches */
+    #ask-g { left: 410px; top: 360px; }
+    #ask-d { left: 410px; top: 470px; }
+    #ask-glab { left: 236px; top: 366px; color: var(--guide); }
+    #ask-dlab { left: 196px; top: 476px; }
+    #ask-mm { left: 566px; top: 556px; color: var(--cut); }
+    #ask-otlab { left: 1158px; top: 556px; }
+    #ask-cut { position: absolute; left: 1222px; top: 456px; width: 4px; height: 84px; border-radius: 2px; background: var(--cut);
+      box-shadow: 0 0 18px 2px rgba(255,90,78,.7); transform-origin: 50% 0; }
+    #ask-burst { position: absolute; left: 1169px; top: 443px; width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--cut); opacity: 0; }
+
+    /* paralogs A and A' */
+    #ask .ask-gene { position: absolute; width: 900px; height: 48px; transform-origin: 0 50%; }
+    #ask .ask-gene .ln { position: absolute; left: 0; right: 0; top: 22px; height: 4px; border-radius: 2px; background: var(--chalk-2); }
+    #ask .ask-gene .ex { position: absolute; top: 0; height: 48px; border-radius: 6px; background: rgba(141,147,160,.38); border: 2px solid var(--chalk-2); }
+    #ask-ga { left: 300px; top: 270px; }
+    #ask-gb { left: 300px; top: 550px; }
+    #ask .ask-gname { position: absolute; font: 700 52px/1 var(--font); color: var(--chalk); }
+    #ask-la { left: 206px; top: 268px; }
+    #ask-lb { left: 196px; top: 548px; }
+    #ask-acut { position: absolute; left: 616px; top: 256px; width: 5px; height: 76px; border-radius: 3px; background: var(--cut);
+      box-shadow: 0 0 16px rgba(255,90,78,.85); transform-origin: 50% 0; }
+    #ask-aburst { position: absolute; left: 563px; top: 239px; width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--cut); opacity: 0; }
+    #ask-sock { position: absolute; left: 1400px; top: 340px; width: 260px; height: 220px; border-radius: 26px; border: 3px dashed var(--chalk-2); }
+    #ask-socklab { left: 1494px; top: 284px; }
+    #ask .ask-prot { position: absolute; width: 130px; height: 130px; border-radius: 50%; background: rgba(141,147,160,.3); border: 2.5px solid var(--chalk);
+      display: flex; align-items: center; justify-content: center; font: 700 46px/1 var(--font); color: var(--chalk); }
+    #ask-pa { left: 1465px; top: 385px; }
+    #ask-pb { left: 1240px; top: 509px; }
+    #ask-aalab { left: 1306px; top: 596px; }
+
+    /* the pooled flask */
+    #ask-flask { position: absolute; left: 140px; top: 170px; }
+    #ask-fllab { left: 140px; top: 112px; }
+    #ask-field { left: 200px; top: 222px; width: 1220px; height: 590px; }
+    #ask-field .bc { opacity: 1; }
+    #ask .ask-dead { position: absolute; inset: -2px; border-radius: 50%; background: var(--dead); border: 2px solid #2b2f37; opacity: 0; }
+    #ask .ask-ring { position: absolute; border-radius: 50%; border: 2px dashed rgba(236,235,230,.55); }
+    #ask .ask-glow { position: absolute; inset: -4px; border-radius: 50%; border: 3px solid #e8f4ff; box-shadow: 0 0 26px 8px rgba(200,230,255,.55), inset 0 0 18px rgba(200,230,255,.5); opacity: 0; }
+    #ask .ask-tag { position: absolute; height: 52px; padding: 0 18px; border-radius: 12px; border: 2px solid var(--chalk); background: rgba(15,18,24,.92);
+      font: 600 30px/48px var(--font); color: var(--chalk); white-space: nowrap; }
+
+    /* two cells signalling */
+    #ask-s1 { left: 470px; top: 370px; width: 300px; height: 300px; }
+    #ask-s2 { left: 1150px; top: 370px; width: 300px; height: 300px; }
+    #ask-s1 .bc, #ask-s2 .bc { opacity: 1; }
+    #ask .ask-dot { position: absolute; width: 18px; height: 18px; border-radius: 3px; background: var(--chalk); transform: rotate(45deg); }
+    #ask-eye { position: absolute; left: 836px; top: 262px; }
+    #ask-nosee { left: 934px; top: 270px; font-size: 40px; }
+
+    /* a whole gene vs one base */
+    #ask-nf2 { left: 146px; top: 160px; color: var(--nf2); }
+    #ask-ko { left: 246px; top: 160px; }
+    #ask-bar { position: absolute; left: 146px; top: 230px; width: 1628px; height: 44px; transform-origin: 0 50%; }
+    #ask-bar .ln { position: absolute; left: 0; right: 0; top: 20px; height: 4px; border-radius: 2px; background: rgba(244,166,42,.6); }
+    #ask-bar .ex { position: absolute; top: 0; height: 44px; border-radius: 5px; background: rgba(244,166,42,.32); border: 2px solid var(--nf2); }
+    #ask-strike { position: absolute; left: 126px; top: 249px; width: 1668px; height: 6px; border-radius: 3px; background: var(--cut);
+      box-shadow: 0 0 14px rgba(255,90,78,.8); transform-origin: 0 50%; }
+    #ask-strand { left: 146px; top: 470px; }
+    #ask-one { left: 712px; top: 398px; width: 160px; text-align: center; }
+    #ask-ne { position: absolute; left: 1080px; top: 326px; font: 700 80px/1 var(--font); color: var(--chalk); }
+  </style>
+
+  <div id="ask" class="world" data-composition-id="ask" data-width="1920" data-height="1080">
+    <div id="ask-tag" class="tag-schematic" data-layout-ignore>示意</div>
+
+    <!-- 1. off-target: a look-alike site elsewhere, 2 mismatches, cut anyway -->
+    <div id="ask-ot" class="ask-layer" data-layout-allow-overlap>
+      <div id="ask-glab" class="label">向导 RNA</div>
+      <div id="ask-g" class="strand"></div>
+      <div id="ask-dlab" class="label">别处的 DNA</div>
+      <div id="ask-d" class="strand"></div>
+      <div id="ask-cut"></div>
+      <div id="ask-burst"></div>
+      <div id="ask-mm" class="label">2 个错配</div>
+      <div id="ask-otlab" class="label">脱靶切割</div>
+    </div>
+
+    <!-- 2. paralogs: knock out A, A' covers -->
+    <div id="ask-aa" class="ask-layer" data-layout-allow-overlap>
+      <svg id="ask-conn" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0" data-layout-ignore>
+        <path id="ask-ca" d="M 1212 294 C 1320 294, 1380 420, 1462 446" fill="none" stroke="#8d93a0" stroke-width="3" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" pathLength="1"/>
+        <path id="ask-cb2" d="M 1212 574 C 1320 574, 1380 480, 1462 456" fill="none" stroke="#8d93a0" stroke-width="3" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" pathLength="1"/>
+      </svg>
+      <div id="ask-la" class="ask-gname">A</div>
+      <div id="ask-ga" class="ask-gene"></div>
+      <div id="ask-lb" class="ask-gname">A′</div>
+      <div id="ask-gb" class="ask-gene"></div>
+      <div id="ask-acut"></div>
+      <div id="ask-aburst"></div>
+      <div id="ask-socklab" class="label">功能</div>
+      <div id="ask-sock"></div>
+      <div id="ask-pa" class="ask-prot">A</div>
+      <div id="ask-pb" class="ask-prot">A′</div>
+      <div id="ask-aalab" class="label">看起来 A 不重要</div>
+    </div>
+
+    <!-- 3. the pooled flask: each cell's own readout -->
+    <div id="ask-fl" class="ask-layer" data-layout-allow-overlap>
+      <div id="ask-fllab" class="label s">混池 · 每个细胞一条向导</div>
+      <svg id="ask-flask" width="1680" height="700" viewBox="0 0 1680 700">
+        <path d="M 36 3 H 1300 Q 1337 3 1337 40 V 210 L 1458 268 H 1556 V 422 H 1458 L 1337 480 V 650 Q 1337 687 1300 687 H 36 Q 3 687 3 650 V 40 Q 3 3 36 3 Z"
+          fill="rgba(236,235,230,0.035)" stroke="rgba(236,235,230,0.38)" stroke-width="3"/>
+        <rect x="1554" y="246" width="98" height="198" rx="14" fill="#2b313d" stroke="rgba(236,235,230,0.38)" stroke-width="3"/>
+      </svg>
+      <div id="ask-field" class="cellfield"></div>
+      <div id="ask-rings"></div>
+      <div id="ask-tags"></div>
+    </div>
+
+    <!-- 4. two cells signalling to each other: not visible to a pooled screen -->
+    <div id="ask-sig" class="ask-layer" data-layout-allow-overlap>
+      <div id="ask-siggrp" class="ask-layer">
+        <svg id="ask-lanes" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0" data-layout-ignore>
+          <path d="M 790 488 H 1120 M 1130 552 H 800" stroke="rgba(236,235,230,.28)" stroke-width="2" stroke-dasharray="8 10" fill="none"/>
+          <path d="M 1120 478 L 1138 488 L 1120 498 Z M 800 542 L 782 552 L 800 562 Z" fill="rgba(236,235,230,.45)"/>
+        </svg>
+        <div id="ask-s1" class="cell"><div class="nuc"></div><div class="bc"></div></div>
+        <div id="ask-s2" class="cell"><div class="nuc"></div><div class="bc"></div></div>
+        <div id="ask-dots"></div>
+      </div>
+      <svg id="ask-eye" width="84" height="64" viewBox="0 0 84 64">
+        <path d="M 6 32 Q 42 -6 78 32 Q 42 70 6 32 Z" fill="none" stroke="#ecebe6" stroke-width="4"/>
+        <circle cx="42" cy="32" r="11" fill="#ecebe6"/>
+        <path d="M 14 58 L 70 6" stroke="#0f1218" stroke-width="10" stroke-linecap="round"/>
+        <path d="M 14 58 L 70 6" stroke="#ecebe6" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <div id="ask-nosee" class="label">看不到</div>
+    </div>
+
+    <!-- 5. a whole gene knocked out vs one base changed; the strand is the seam to base -->
+    <div id="ask-ws" class="ask-layer" data-layout-allow-overlap>
+      <div id="ask-nf2" class="label">NF2</div>
+      <div id="ask-ko" class="label">敲除</div>
+      <div id="ask-bar"></div>
+      <div id="ask-strike"></div>
+      <div id="ask-ne">≠</div>
+      <div id="ask-one" class="label">1 个碱基</div>
+    </div>
+    <div id="ask-strand" class="strand"></div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot, K = window.Kit;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (s) => document.querySelector(s);
+      const E = 'expo.out';
+      const fadeIn = (sel, t, from = {}, d = 0.6) => tl.fromTo(sel, { opacity: 0, ...from }, { opacity: 1, x: 0, y: 0, scale: 1, duration: d, ease: E }, t);
+      const fadeOut = (sel, t, to = {}, d = 0.35) => tl.fromTo(sel, { opacity: 1 }, { opacity: 0, duration: d, ease: 'power2.in', ...to }, t);
+      // tile colours as inline styles (a class cannot be tweened on a seeked timeline)
+      const TILE = {
+        def: { color: '#ecebe6', borderColor: 'rgba(236,235,230,0.18)', backgroundColor: 'rgba(236,235,230,0.06)' },
+        guide: { color: '#ff5c8a', borderColor: '#ff5c8a', backgroundColor: 'rgba(255,92,138,0.10)' },
+        bad: { color: '#ff5a4e', borderColor: '#ff5a4e', backgroundColor: 'rgba(255,90,78,0.12)' },
+        pam: { color: '#4fd1e0', borderColor: '#4fd1e0', backgroundColor: 'rgba(79,209,224,0.10)' },
+        ins: { color: '#f4a62a', borderColor: '#f4a62a', backgroundColor: 'rgba(244,166,42,0.14)' },
+      };
+      const recolour = (el, from, to, t, d = 0.25) => tl.fromTo(el, { ...TILE[from] }, { ...TILE[to], duration: d, ease: 'power1.out' }, t);
+
+      // ---------------- 1. off-target. The guide (NF2's, as RNA) on a look-alike site elsewhere (示意):
+      // mismatches at guide positions 3 and 8 (PAM-distal), then an NGG PAM, so Cas9 can still cut.
+      const GUIDE = 'ACCUCUUUGAUUUGGUGUGC', SITE = 'ACGTCTTAGATTTGGTGTGC' + 'TGG', MM = [2, 7];
+      const g = K.strand($('#ask-g'), GUIDE, {}, 'rna');
+      const d = K.strand($('#ask-d'), SITE);
+      const t0 = S.at('剪错地方', -0.2);
+      d.slice(0, 20).forEach((tile, i) => recolour(tile, 'def', MM.includes(i) ? 'bad' : 'guide', t0 + 0.03 * i));
+      MM.forEach((i) => tl.fromTo(g[i], { borderColor: 'rgba(255,92,138,0.55)' }, { borderColor: '#ff5a4e', duration: 0.25 }, t0 + 0.03 * i));
+      d.slice(20).forEach((tile, k) => recolour(tile, 'def', 'pam', t0 + 0.62 + 0.04 * k));
+      const tCut = t0 + 0.9;
+      tl.fromTo('#ask-cut', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: 'power3.out' }, tCut);
+      tl.fromTo('#ask-burst', { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 1.5, duration: 0.6, ease: 'power2.out', immediateRender: false }, tCut + 0.05);
+      tl.fromTo(d.slice(0, 17), { x: 0 }, { x: -12, duration: 0.45, ease: E }, tCut + 0.1);
+      tl.fromTo(d.slice(17), { x: 0 }, { x: 12, duration: 0.45, ease: E }, tCut + 0.1);
+      fadeIn('#ask-mm', t0 + 0.7, { y: 10 }, 0.4);
+      fadeIn('#ask-otlab', tCut + 0.15, { y: 10 }, 0.4);
+      fadeOut('#ask-ot', S.at('相似的基因', 0.3), { y: -20 }, 0.3);
+
+      // ---------------- 2. two similar genes: knock out A, A' takes over its job
+      const exA = [[0, 90], [170, 70], [300, 120], [490, 60], [620, 110], [800, 100]];
+      const exB = [[0, 80], [160, 80], [300, 110], [480, 70], [620, 100], [790, 110]];
+      const gene = (el, ex) => { el.innerHTML = '<div class="ln"></div>' + ex.map(([x, w]) => `<div class="ex" style="left:${x}px;width:${w}px"></div>`).join(''); };
+      gene($('#ask-ga'), exA); gene($('#ask-gb'), exB);
+      const tA = S.at('相似的基因', 0.45);
+      tl.fromTo(['#ask-ga', '#ask-gb'], { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: E, stagger: 0.12 }, tA);
+      fadeIn(['#ask-la', '#ask-lb'], tA, { x: -16 }, 0.5);
+      fadeIn(['#ask-sock', '#ask-socklab'], tA + 0.2, {}, 0.5);
+      fadeIn('#ask-pa', tA + 0.35, { scale: 0.5 }, 0.5);
+      fadeIn('#ask-pb', tA + 0.45, { scale: 0.5 }, 0.5);
+      tl.fromTo('#ask-ca', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', autoRound: false }, tA + 0.3);
+      // the cut on A: A's protein is gone
+      const tK = tA + 1.05;
+      tl.fromTo('#ask-acut', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: 'power3.out' }, tK);
+      tl.fromTo('#ask-aburst', { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 1.5, duration: 0.6, ease: 'power2.out', immediateRender: false }, tK + 0.05);
+      tl.fromTo(['#ask-ga', '#ask-la'], { opacity: 1 }, { opacity: 0.35, duration: 0.4 }, tK + 0.2);
+      fadeOut('#ask-ca', tK + 0.2, {}, 0.3);
+      tl.fromTo('#ask-pa', { scale: 1, opacity: 1 }, { scale: 0.3, opacity: 0, duration: 0.4, ease: 'power2.in' }, tK + 0.25);
+      // ... and A' fills in
+      const tR = tK + 0.85;
+      tl.fromTo('#ask-pb', { x: 0, y: 0 }, { x: 225, y: -124, duration: 0.7, ease: E }, tR);
+      tl.fromTo('#ask-cb2', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', autoRound: false }, tR + 0.25);
+      fadeIn('#ask-aalab', S.at('失真'), { y: 12 }, 0.5);
+      fadeOut('#ask-aa', S.at('另外'), { y: -20 }, 0.35);
+
+      // ---------------- 3. the pooled flask: what each cell can report about itself
+      const cells = K.cells($('#ask-field'), { w: 1220, h: 590, n: 32, r: 46, seed: 11, nf2: [19] });
+      const fx = 200, fy = 222;
+      cells.forEach((c) => { const k = document.createElement('div'); k.className = 'ask-dead'; c.el.appendChild(k); c.dead = k; });
+      const tF = S.at('混在一瓶', -0.25);
+      fadeIn('#ask-flask', tF, { scale: 0.94 }, 0.6);
+      fadeIn('#ask-fllab', tF + 0.2, { y: 10 }, 0.5);
+      tl.fromTo(cells.map((c) => c.el), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: E, stagger: 0.015 }, tF + 0.2);
+      // each cell, on its own
+      const rings = cells.map((c, i) => {
+        const r = document.createElement('div'), rr = c.r + 12;
+        r.id = `ask-ring${i}`; r.className = 'ask-ring';
+        r.style.cssText = `left:${fx + c.x - rr}px;top:${fy + c.y - rr}px;width:${2 * rr}px;height:${2 * rr}px`;
+        $('#ask-rings').appendChild(r); return r;
+      });
+      const order = Array.from({ length: rings.length }, (_, i) => i).sort((a, b) => ((a * 37) % 32) - ((b * 37) % 32));
+      tl.fromTo(order.map((i) => rings[i]), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.35, ease: E, stagger: 0.025 }, S.at('自己的事', 0.1));
+      fadeOut('#ask-rings', S.at('活不活', -0.1), {}, 0.3);
+      const tag = (id, text, c, t, dy = -1) => {
+        const el = document.createElement('div');
+        el.id = id; el.className = 'ask-tag'; el.textContent = text;
+        $('#ask-tags').appendChild(el);
+        const w = el.getBoundingClientRect().width || 40 + 30 * text.length;
+        el.style.left = `${fx + c.x - w / 2}px`;
+        el.style.top = `${dy < 0 ? fy + c.y - c.r - 62 : fy + c.y + c.r + 10}px`;
+        fadeIn(el, t, { y: 14 }, 0.45);
+        return el;
+      };
+      // alive or not: some cells die
+      const tLive = S.at('活不活');
+      [2, 5, 9, 15, 17, 20, 24, 27, 31].forEach((i, k) => {
+        tl.fromTo(cells[i].dead, { opacity: 0 }, { opacity: 1, duration: 0.5 }, tLive + 0.03 * k);
+        tl.fromTo(cells[i].el, { scale: 1 }, { scale: 0.8, duration: 0.6, ease: 'power2.out' }, tLive + 0.03 * k);
+      });
+      tag('ask-tlive', '存活', cells[0], tLive + 0.3);
+      // growth: the NF2 cell becomes a clump
+      const tGrow = S.at('长得快不快'), n0 = cells[19];
+      [[76, -74], [76, 74], [-76, 74]].forEach(([dx, dy], k) => {
+        const el = document.createElement('div'), r = 34;
+        el.id = `ask-kid${k}`; el.className = 'cell nf2';
+        el.style.cssText = `left:${fx + n0.x + dx - r}px;top:${fy + n0.y + dy - r}px;width:${2 * r}px;height:${2 * r}px`;
+        el.innerHTML = '<div class="nuc"></div><div class="bc" style="opacity:1"></div>';
+        $('#ask-tags').before(el);
+        tl.fromTo(el, { opacity: 0, x: -dx, y: -dy, scale: 0.3 }, { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.55, ease: E }, tGrow + 0.1 + 0.15 * k);
+      });
+      tag('ask-tgrow', '生长', n0, tGrow + 0.2);
+      // a fluorescent marker: some cells light up, a sorter can pick them
+      const tMark = S.at('标记');
+      [6, 13, 22, 29].forEach((i, k) => {
+        const gl = document.createElement('div'); gl.className = 'ask-glow'; cells[i].el.appendChild(gl);
+        tl.fromTo(gl, { opacity: 0 }, { opacity: 1, duration: 0.4 }, tMark - 0.1 + 0.1 * k);
+      });
+      tag('ask-tmark', '荧光标记 · 分选', cells[22], tMark + 0.3);
+      fadeOut('#ask-fl', S.at('互相影响'), {}, 0.35);
+
+      // ---------------- 4. two cells signalling to each other
+      const tSig = S.at('互相影响', 0.25);
+      fadeIn('#ask-s1', tSig, { x: -60 }, 0.6);
+      fadeIn('#ask-s2', tSig + 0.1, { x: 60 }, 0.6);
+      fadeIn('#ask-lanes', tSig + 0.4, {}, 0.4);
+      for (let k = 0; k < 4; k++) {
+        for (const [lane, y, x0, x1] of [[0, 479, 790, 1112], [1, 543, 1112, 790]]) {
+          const dot = document.createElement('div');
+          dot.id = `ask-dot${lane}${k}`; dot.className = 'ask-dot'; dot.style.left = `${x0}px`; dot.style.top = `${y}px`;
+          $('#ask-dots').appendChild(dot);
+          const t = tSig + 0.5 + 0.3 * k + 0.15 * lane;
+          tl.fromTo(dot, { opacity: 0 }, { opacity: 1, duration: 0.15 }, t);
+          tl.fromTo(dot, { x: 0 }, { x: x1 - x0, duration: 1.1, ease: 'none', repeat: 1 }, t);
+        }
+      }
+      const tNo = S.at('看不到');
+      tl.fromTo('#ask-siggrp', { opacity: 1 }, { opacity: 0.3, duration: 0.45 }, tNo);
+      fadeIn(['#ask-eye', '#ask-nosee'], tNo + 0.05, { y: 14 }, 0.5);
+      fadeOut('#ask-sig', S.at('最后'), {}, 0.35);
+
+      // ---------------- 5. a whole gene knocked out, vs one base changed in it
+      const EX = [[0, 46], [96, 34], [190, 40], [300, 36], [384, 30], [470, 44], [560, 34], [650, 40], [760, 30], [850, 46],
+        [934, 32], [1020, 40], [1112, 34], [1204, 38], [1310, 36], [1420, 40], [1528, 100]];
+      $('#ask-bar').innerHTML = '<div class="ln"></div>' + EX.map(([x, w]) => `<div class="ex" style="left:${x}px;width:${w}px"></div>`).join('');
+      const tG = S.at('整个基因', -0.15);
+      fadeIn('#ask-nf2', tG, { x: -14 }, 0.5);
+      tl.fromTo('#ask-bar', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.7, ease: E }, tG);
+      const tKO = S.at('整个基因', 0.7);
+      tl.fromTo('#ask-strike', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'power2.out' }, tKO);
+      tl.fromTo('#ask-bar', { opacity: 1 }, { opacity: 0.4, duration: 0.5 }, tKO + 0.2);
+      fadeIn('#ask-ko', tKO + 0.2, { x: -12 }, 0.45);
+      // the strand: Kit.NF2.exon2 indexes 10-43; tile 13 = exon index 23 (a C) lights amber
+      const tiles = K.strand($('#ask-strand'), K.NF2.exon2.slice(10, 44), { 13: 'ins' });
+      const tS = S.at('点突变', -0.1);
+      tl.fromTo(tiles, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, ease: E, stagger: 0.014 }, tS);
+      const tOne = S.at('点突变', 0.8);
+      recolour(tiles[13], 'def', 'ins', tOne, 0.3);
+      tl.fromTo(tiles[13], { scale: 1 }, { scale: 1.2, duration: 0.25, ease: 'power2.out' }, tOne);
+      tl.fromTo(tiles[13], { scale: 1.2 }, { scale: 1, duration: 0.4, ease: 'power2.inOut' }, tOne + 0.25);
+      fadeIn('#ask-one', tOne + 0.1, { y: 10 }, 0.45);
+      const tNe = S.at('不是一回事');
+      fadeIn('#ask-ne', tNe, { scale: 0.6 }, 0.4);
+      // the seam: everything but the strand leaves
+      const tEnd = Math.min(tNe + 0.45, S.duration - 0.8);
+      fadeOut(['#ask-ws', '#ask-tag'], tEnd, {}, 0.4);
+
+      window.__timelines['ask'] = tl;
+    })();
+  </script>
+</template>
