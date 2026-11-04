@@ -1,0 +1,227 @@
+<template>
+  <style>
+    #frame-top { left: 146px; top: 470px; }
+    #frame-bot { left: 146px; top: 560px; }
+    /* the kit's dim strand would hide a pink tile: say it again for this strand */
+    #frame-bot .nt.guide { color: var(--guide); border-color: var(--guide); background: rgba(255,92,138,.10); }
+    #frame-nf2 { left: 146px; top: 404px; }
+    #frame-nf2 b { color: var(--nf2); font-weight: 700; }
+    .frame-one { position: absolute; left: 1394px; }
+    #frame-gw { top: 470px; } #frame-cw { top: 560px; }
+    .frame-face { position: absolute; top: 462px; width: 4px; height: 162px; border-radius: 2px; background: var(--cut); box-shadow: 0 0 14px rgba(255,90,78,.8); }
+    #frame-faceL { left: 1360px; } #frame-faceR { left: 1418px; }
+    #frame-plus { left: 1398px; top: 402px; color: var(--nf2); }
+    #frame-alt { left: 146px; top: 690px; }
+    .frame-hole { position: absolute; top: 690px; width: 44px; height: 56px; border-radius: 8px; border: 2px dashed var(--cut); }
+    #frame-minus { left: 1700px; top: 697px; color: var(--cut); }
+    /* the codon row scrolls under a soft edge, so nothing rests in the side margins */
+    #frame-reelmask { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 130px, #000 1790px, transparent 1920px); mask-image: linear-gradient(to right, transparent 0, #000 130px, #000 1790px, transparent 1920px); }
+    #frame-reel { position: absolute; left: 0; top: 0; width: 1920px; height: 1px; }
+    #frame-wt, #frame-ins { left: 146px; top: 470px; }
+    #frame-reader { position: absolute; left: 0; top: 462px; width: 134px; height: 146px; margin-left: -67px; border: 3px solid var(--chalk); border-radius: 14px; }
+    #frame-countwrap { position: absolute; left: 64px; top: -14px; width: 0; height: 0; }
+    #frame-countwrap .label { left: -170px; bottom: 0; width: 340px; text-align: center; }
+    #frame-stoplab { color: var(--cut); }
+    /* the two proteins */
+    .frame-bar { position: absolute; left: 210px; height: 64px; border-radius: 8px; }
+    #frame-b1 { top: 352px; width: 1500px; background: rgba(244,166,42,.85); transform-origin: 0 50%; }
+    #frame-b2ghost { top: 552px; width: 1500px; border: 2px dashed rgba(236,235,230,.22); background: transparent; }
+    #frame-b2 { top: 552px; width: 212px; background: rgba(244,166,42,.85); transform-origin: 0 50%; border-radius: 8px 0 0 8px; }
+    #frame-b2end { position: absolute; left: 418px; top: 544px; width: 6px; height: 80px; border-radius: 3px; background: var(--cut); transform-origin: 50% 50%; }
+    #frame-b1lab { left: 210px; top: 296px; }
+    #frame-b2lab { left: 210px; top: 496px; }
+    .label .frame-n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+    #frame-title { left: 210px; top: 690px; }
+    #frame-title b { color: var(--nf2); }
+  </style>
+  <div id="frame" class="world" data-composition-id="frame" data-width="1920" data-height="1080">
+    <div id="frame-tag" class="tag-schematic" data-layout-ignore>示意</div>
+    <div id="frame-credit" class="credit" data-layout-ignore>Ensembl GRCh38 · ENST00000338641</div>
+    <div id="frame-nf2" class="label"><b>NF2</b><span id="frame-nf2x"> · 第 2 外显子</span></div>
+    <div id="frame-dna" data-layout-allow-overlap>
+      <div id="frame-top" class="strand"></div>
+      <div id="frame-bot" class="strand"></div>
+      <div id="frame-gw" class="frame-one"><span id="frame-g" class="nt ins">G</span></div>
+      <div id="frame-cw" class="frame-one"><span id="frame-c" class="nt ins">C</span></div>
+      <div id="frame-faceL" class="frame-face"></div>
+      <div id="frame-faceR" class="frame-face"></div>
+    </div>
+    <div id="frame-plus" class="label">+1</div>
+    <div id="frame-altwrap" data-layout-allow-overlap>
+      <div id="frame-alt" class="strand"></div>
+      <div id="frame-h1" class="frame-hole"></div>
+      <div id="frame-h2" class="frame-hole"></div>
+    </div>
+    <div id="frame-minus" class="label">−2</div>
+    <div id="frame-reelmask" data-layout-allow-overflow>
+      <div id="frame-reel" data-layout-allow-overflow data-layout-allow-overlap>
+        <div id="frame-wt" class="codons"></div>
+        <div id="frame-ins" class="codons"></div>
+      </div>
+    </div>
+    <div id="frame-reader" data-layout-allow-overflow>
+      <div id="frame-countwrap">
+        <div id="frame-count" class="label">第 <span class="num">51</span> 组</div>
+        <div id="frame-stoplab" class="label">第 85 组 · 终止</div>
+      </div>
+    </div>
+    <div id="frame-b1lab" class="label">原来 · <span class="frame-n">595</span> 个氨基酸</div>
+    <div id="frame-b1" class="frame-bar"></div>
+    <div id="frame-b2lab" class="label">多一个 G · <span class="frame-n">84</span> 个氨基酸（14%）</div>
+    <div id="frame-b2ghost" class="frame-bar"></div>
+    <div id="frame-b2" class="frame-bar"></div>
+    <div id="frame-b2end"></div>
+    <div id="frame-title" class="big"><b>NF2</b> 敲除</div>
+  </div>
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const N = Kit.NF2, A = 10, B = 44, X0 = 146, PITCH = 48;
+      const tileX = (i) => X0 + (i - A) * PITCH;
+      const g0 = N.guideStart, g1 = N.guideStart + N.guide.length - 1, p0 = N.pamStart, p1 = p0 + N.pam.length - 1;
+      const DIM = { color: '#8d93a0', backgroundColor: 'rgba(236,235,230,0.03)', borderColor: 'rgba(236,235,230,0.11)' };
+      const PLAIN = { color: '#ecebe6', backgroundColor: 'rgba(236,235,230,0.06)', borderColor: 'rgba(236,235,230,0.18)' };
+      const PINK = { color: '#ff5c8a', backgroundColor: 'rgba(255,92,138,0.1)', borderColor: '#ff5c8a' };
+      const CYAN = { color: '#4fd1e0', backgroundColor: 'rgba(79,209,224,0.1)', borderColor: '#4fd1e0' };
+
+      // ---- the seam: cas's last frame, rebuilt exactly (same strands, same px, halves 60 px apart) ----
+      const seq = N.exon2.slice(A, B);
+      const top = Kit.strand($('frame-top'), seq);
+      const bot = Kit.strand($('frame-bot'), Kit.comp(seq), {}, 'dim');
+      const L = (arr) => arr.slice(0, N.cut - A), R = (arr) => arr.slice(N.cut - A);
+      const pam = top.slice(p0 - A, p1 + 1 - A), paired = bot.slice(g0 - A, g1 + 1 - A);
+      gsap.set([...top, ...bot], { opacity: 1 });             // cas leaves an inline opacity: 1 from its typing
+      gsap.set([...L(top), ...L(bot)], { x: -30 });
+      gsap.set([...R(top), ...R(bot)], { x: 30 });
+      gsap.set(pam, CYAN);
+      gsap.set(paired, PINK);
+
+      // the other outcome, a few bases lost: indexes 35 and 36 gone (shown as holes, then closed)
+      const altSeq = [...seq].map((c, k) => (k + A === 35 || k + A === 36 ? ' ' : c)).join('');
+      const alt = Kit.strand($('frame-alt'), altSeq, {}, 'dim');
+      $('frame-h1').style.left = tileX(35) + 'px'; $('frame-h2').style.left = tileX(36) + 'px';
+
+      // ---- codons: as written (46..57), and after the +1 G (46..85; from 51 every codon is read wrong) ----
+      const wt = Kit.codons($('frame-wt'), N.wt.slice(0, 12));
+      const ins = Kit.codons($('frame-ins'), N.ins, { wrongFrom: 51 });
+      const wtK = (k) => wt[k - 46], insK = (k) => ins[k - 46];
+      const codL = (k) => X0 + (k - 46) * 128;             // codon box left, in the reel (pitch 118 + 10)
+      gsap.set(ins.slice(0, 5), { opacity: 0 });              // 46..50 are the same in both rows: shown by wt
+      // the codon numbers are the kit's small grey index under each box (the reader's label says the number)
+      document.querySelectorAll('#frame .cod .no').forEach((el) => el.setAttribute('data-layout-ignore', ''));
+
+      const t = (k, o = 0) => S.at(k, o);
+      const BRK = t(0), FIX = t(1), ROUGH = t(2), PLUS = t(3), MINUS = t(4), THREE = t(5), ONE = t(6), WRONG = t(7);
+      const G = t(8), TO85 = t(9), STOP = t(10), FULL = t(11), SHORT = t(12), GENE = t(13);
+
+      // initial states of things that arrive later
+      tl.fromTo(['#frame-g', '#frame-c'], { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo('.frame-face', { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+
+      // ---- 0. "DNA is broken": the two cut faces glow red ----
+      tl.fromTo('.frame-face', { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' }, BRK + 0.1);
+
+      // ---- 1. "the cell repairs it at once": the guide/PAM colours go, the ends draw together ----
+      tl.fromTo(paired, PINK, { ...DIM, duration: 0.6 }, FIX);
+      tl.fromTo(pam, CYAN, { ...PLAIN, duration: 0.6 }, FIX);
+      tl.fromTo([...L(top), ...L(bot), '#frame-faceL'], { x: -30 }, { x: -12, duration: 1.0, ease: 'power2.inOut' }, FIX + 0.2);
+      tl.fromTo([...R(top), ...R(bot), '#frame-faceR'], { x: 30 }, { x: 12, duration: 1.0, ease: 'power2.inOut' }, FIX + 0.2);
+
+      // ---- 2. "the fastest repair is rough": the ends are pulled in and fumble ----
+      const ends = [top[35 - A], bot[35 - A]], ends2 = [top[36 - A], bot[36 - A]];
+      tl.fromTo([...L(top), ...L(bot), '#frame-faceL'], { x: -12 }, { x: 0, duration: 0.5, ease: 'expo.out' }, ROUGH + 0.1);
+      tl.fromTo([...R(top), ...R(bot), '#frame-faceR'], { x: 12 }, { x: 52, duration: 0.5, ease: 'expo.out' }, ROUGH + 0.1);
+      [[-9, 7], [8, -6], [-5, 4]].forEach(([a, b], k) => {
+        tl.fromTo(ends, { rotation: k ? [-9, 8][k - 1] : 0 }, { rotation: a, duration: 0.22, ease: 'sine.inOut' }, ROUGH + 0.3 + k * 0.22);
+        tl.fromTo(ends2, { rotation: k ? [7, -6][k - 1] : 0 }, { rotation: b, duration: 0.22, ease: 'sine.inOut' }, ROUGH + 0.3 + k * 0.22);
+      });
+      tl.fromTo(ends, { rotation: -5 }, { rotation: 0, duration: 0.3 }, ROUGH + 0.96);
+      tl.fromTo(ends2, { rotation: 4 }, { rotation: 0, duration: 0.3 }, ROUGH + 0.96);
+
+      // ---- 3. "often one base extra": a G (a copy of the base by the cut) fills the gap; C opposite ----
+      tl.fromTo('#frame-g', { opacity: 0, y: -90 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, PLUS + 0.1);
+      tl.fromTo('#frame-c', { opacity: 0, y: 90 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, PLUS + 0.25);
+      tl.fromTo([...R(top), ...R(bot)], { x: 52 }, { x: 48, duration: 0.4, ease: 'power2.out' }, PLUS + 0.45);
+      tl.fromTo('.frame-face', { opacity: 1 }, { opacity: 0, duration: 0.3 }, PLUS + 0.4);
+      tl.fromTo('#frame-plus', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, PLUS + 0.5);
+
+      // ---- 4. "or a few lost": a second outcome, two bases gone, closes up ----
+      tl.fromTo([alt, '.frame-hole'], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, MINUS);
+      tl.fromTo(alt.slice(37 - A), { x: 0 }, { x: -96, duration: 0.5, ease: 'expo.inOut' }, MINUS + 0.7);
+      tl.fromTo('.frame-hole', { scaleX: 1, opacity: 1 }, { scaleX: 0, opacity: 0, duration: 0.4, ease: 'power2.in' }, MINUS + 0.7);
+      tl.fromTo('#frame-minus', { opacity: 0, x: 96 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.inOut' }, MINUS + 0.7);
+
+      // ---- 5. "read three bases at a time": the strand regroups into codons (as written) ----
+      tl.fromTo([alt, '#frame-minus', '#frame-plus'], { opacity: 1 }, { opacity: 0, duration: 0.3 }, THREE);
+      tl.fromTo([...bot, '#frame-c'], { y: 0, opacity: 1 }, { y: 40, opacity: 0, duration: 0.5, ease: 'power2.in' }, THREE);
+      tl.fromTo('#frame-g', { y: 0 }, { y: -90, duration: 0.5, ease: 'expo.out' }, THREE + 0.1);
+      tl.fromTo('#frame-g', { x: 0 }, { x: -24, duration: 0.5, ease: 'expo.out' }, THREE + 0.1);
+      tl.fromTo(R(top), { x: 48 }, { x: 0, duration: 0.5, ease: 'expo.out' }, THREE + 0.1);
+      const RG = THREE + 0.75;
+      top.forEach((el, k) => {
+        const i = k + A;
+        if (i < 21) { tl.fromTo(el, { x: 0, opacity: 1 }, { x: -40, opacity: 0, duration: 0.35, ease: 'power2.in' }, THREE + 0.1); return; }
+        const c = 39 + Math.floor(i / 3), j = i % 3, to = codL(c) + 59 - 22 + (j - 1) * 40 - tileX(i);
+        tl.fromTo(el, { x: 0, scale: 1 }, { x: to, scale: 0.9, duration: 0.6, ease: 'expo.out' }, RG + (c - 46) * 0.03);
+        tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.25 }, RG + 0.4 + (c - 46) * 0.03);
+      });
+      tl.fromTo(wt.slice(0, 8), { opacity: 0 }, { opacity: 1, duration: 0.3, stagger: 0.03 }, RG + 0.4);
+      tl.fromTo(wt.slice(8), { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out', stagger: 0.05 }, RG + 0.45);
+      const gJoin = codL(51) - 5 - 22;                       // between codon 50 and 51
+      tl.fromTo('#frame-g', { x: -24 }, { x: gJoin - 1394, duration: 0.6, ease: 'expo.out' }, RG);
+
+      // ---- 6. "one base extra": the G drops in between codon 50 and 51 ----
+      tl.fromTo(wt.slice(5), { x: 0 }, { x: 48, duration: 0.4, ease: 'power2.out' }, ONE + 0.05);
+      tl.fromTo('#frame-g', { x: gJoin - 1394 }, { x: gJoin + 24 - 1394, duration: 0.4, ease: 'power2.out' }, ONE + 0.05);
+      tl.fromTo('#frame-g', { y: -90 }, { y: 0, duration: 0.45, ease: 'back.out(1.6)' }, ONE + 0.35);
+
+      // ---- 7. "every group after it is read wrong": from codon 51 the row re-reads, amber ----
+      for (let k = 51; k <= 58; k++) {
+        const d = WRONG + 0.1 + (k - 51) * 0.13;
+        if (k <= 57) {
+          tl.fromTo(wtK(k), { opacity: 1 }, { opacity: 0, duration: 0.3 }, d);
+          tl.fromTo(wtK(k), { x: 48 }, { x: 0, duration: 0.5, ease: 'expo.out' }, d);
+        }
+        tl.fromTo(insK(k), { opacity: 0, x: 48 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, d);
+      }
+      tl.fromTo('#frame-g', { opacity: 1 }, { opacity: 0, duration: 0.3 }, WRONG + 0.1);
+      tl.fromTo('#frame-g', { x: gJoin + 24 - 1394 }, { x: codL(51) + 59 - 22 - 22 - 1394, duration: 0.5, ease: 'expo.out' }, WRONG + 0.1);
+      tl.fromTo(ins.slice(13), { opacity: 0 }, { opacity: 1, duration: 0.01 }, WRONG + 1.2);
+
+      // ---- 8-9. "a G extra in NF2 ... read to codon 85": a reader runs from 51 while the row scrolls ----
+      const c51 = codL(51) + 59, shift = -(76 - 46) * 128, c85 = codL(85) + 59 + shift;
+      tl.fromTo('#frame-reader', { x: c51, opacity: 0, scale: 1.15 }, { x: c51, opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out' }, G + 0.2);
+      const run0 = G + 0.8, run1 = Math.max(run0 + 2, TO85 + 0.9);
+      const counter = { n: 51 }, num = $('frame-count').querySelector('.num');
+      tl.fromTo('#frame-reel', { x: 0 }, { x: shift, duration: run1 - run0, ease: 'power2.inOut' }, run0);
+      tl.fromTo('#frame-nf2x', { opacity: 1 }, { opacity: 0, duration: 0.4 }, run0 + 0.4);   // codons 81+ are in exon 3
+      tl.fromTo('#frame-reader', { x: c51 }, { x: c85, duration: run1 - run0, ease: 'power2.inOut' }, run0);
+      tl.fromTo(counter, { n: 51 }, { n: 85, duration: run1 - run0, ease: 'power2.inOut', onUpdate: () => { num.textContent = Math.round(counter.n); } }, run0);
+
+      // ---- 10. "hits a stop signal": codon 85, TGA, red 终止 ----
+      tl.fromTo(insK(85), { scale: 1 }, { scale: 1.16, duration: 0.25, ease: 'power2.out' }, STOP + 0.1);
+      tl.fromTo(insK(85), { scale: 1.16 }, { scale: 1, duration: 0.4, ease: 'power2.inOut' }, STOP + 0.35);
+      tl.fromTo('#frame-reader', { borderColor: '#ecebe6' }, { borderColor: '#ff5a4e', duration: 0.3 }, STOP + 0.1);
+      tl.fromTo('#frame-count', { opacity: 1 }, { opacity: 0, duration: 0.2 }, STOP + 0.1);
+      tl.fromTo('#frame-stoplab', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, STOP + 0.2);
+
+      // ---- 11. "a protein of 595 amino acids": the row gives way to the full protein ----
+      tl.fromTo(['#frame-reel', '#frame-reader', '#frame-nf2'], { opacity: 1 }, { opacity: 0, duration: 0.4 }, FULL);
+      tl.fromTo('#frame-b1lab', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, FULL + 0.3);
+      tl.fromTo('#frame-b1', { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: 'expo.out' }, FULL + 0.4);
+
+      // ---- 12. "only the first short piece is left": 84 of 595 (14%), ending at the stop ----
+      tl.fromTo('#frame-b2ghost', { opacity: 0 }, { opacity: 1, duration: 0.4 }, SHORT);
+      tl.fromTo('#frame-b2lab', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, SHORT + 0.1);
+      tl.fromTo('#frame-b2', { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: 'expo.out' }, SHORT + 0.2);
+      tl.fromTo('#frame-b2end', { opacity: 0, scaleY: 0.3 }, { opacity: 1, scaleY: 1, duration: 0.4, ease: 'expo.out' }, SHORT + 0.55);
+
+      // ---- 13. "this gene is knocked out" ----
+      tl.fromTo('#frame-title', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, GENE);
+
+      window.__timelines['frame'] = tl;
+    })();
+  </script>
+</template>

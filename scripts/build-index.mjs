@@ -1,6 +1,6 @@
 // Scan <type>/<example>/ folders and write gallery.json for index.html.
 // Each example folder: video.mp4, poster.jpg, storyboard.yaml, notes.md, optional meta.json
-// ({ title, site, url }) and steps/ (docs: GIFs, PNGs, README.md).
+// ({ title, site, url }), steps/ (docs: GIFs, PNGs, README.md) and scenes/ (explainers: the scene files).
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -10,6 +10,7 @@ const TYPES = [
   { id: 'promo', label: 'Promos', blurb: 'Short and tightly cut: one message, a browser frame on a backdrop, music.' },
   { id: 'tutorial', label: 'Tutorials', blurb: 'Paced to follow along: one narrated action per step, the camera following each click, a second example, a recap.' },
   { id: 'course', label: 'Lessons', blurb: 'Explain the why: concept cards, the idea shown live, a question to check understanding.' },
+  { id: 'explainer', label: 'Explainers', blurb: 'No website and nothing recorded: animations the agent writes and times to the narration, in one world.' },
   { id: 'docs', label: 'Help-center docs', blurb: 'Per-step GIFs and screenshots cropped to the action, plus a ready-to-paste article.' },
 ];
 const seconds = (f) => { try { return Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f]).toString().trim()); } catch { return null; } };

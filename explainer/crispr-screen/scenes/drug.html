@@ -1,0 +1,235 @@
+<template>
+  <style>
+    #drug .drug-chip { position: absolute; }
+    #drug-zoom { position: absolute; left: 150px; top: 96px; width: 780px; height: 780px; }
+    #drug-field { left: 0; top: 0; width: 780px; height: 780px; }
+    #drug .drug-cover { position: absolute; inset: -2px; border-radius: 50%; background: var(--dead); border: 2px solid #2b2f37; opacity: 0; }
+    #drug .drug-big { position: absolute; }
+    #drug .drug-big .chr { fill: none; stroke: #8d93a0; stroke-width: 17; stroke-linecap: round; }
+    #drug .drug-tag { position: absolute; font: 600 28px/1 var(--mono); color: var(--chalk-2); padding: 6px 12px; border-radius: 8px; border: 1.5px solid #4b5466; background: rgba(15,18,24,.92); white-space: nowrap; }
+    #drug .drug-tag.nf2 { color: var(--nf2); border-color: var(--nf2); }
+    #drug-ring { position: absolute; border-radius: 50%; border: 3px solid var(--nf2); box-shadow: 0 0 18px rgba(244,166,42,.6); }
+    #drug .drug-pill { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #c9ccd4; box-shadow: 0 0 8px rgba(236,235,230,.5); }
+    #drug-track { position: absolute; left: 1040px; top: 196px; width: 760px; height: 10px; border-radius: 5px; background: #2b313d; }
+    #drug-ticks { position: absolute; left: 1040px; top: 214px; width: 762px; height: 12px; background: repeating-linear-gradient(to right, #4b5466 0 2px, transparent 2px 54.2857px); }
+    #drug-fill { position: absolute; left: 1040px; top: 196px; width: 760px; height: 10px; border-radius: 5px; background: var(--chalk-2); transform-origin: 0 50%; }
+    #drug-mark { position: absolute; left: 1032px; top: 193px; width: 16px; height: 16px; border-radius: 50%; background: var(--chalk); }
+  </style>
+  <div id="drug" class="world" data-composition-id="drug" data-width="1920" data-height="1080">
+    <svg width="0" height="0" style="position:absolute"><defs>
+      <radialGradient id="drug-cg" cx="38%" cy="34%" r="70%"><stop offset="0" stop-color="#2a3140"/><stop offset="0.7" stop-color="#1d222c"/></radialGradient>
+    </defs></svg>
+    <div id="drug-tag" class="tag-schematic" data-layout-ignore>示意</div>
+    <div id="drug-credit0" class="credit" data-layout-ignore>Joung et al. 2017 · Nat Protoc</div>
+    <div id="drug-credit1" class="credit" data-layout-ignore>Shalem et al. 2014 · Science</div>
+
+    <!-- lib's last frame: the barcoded survivors and the tally -->
+    <div id="drug-zoom" data-layout-allow-overlap data-layout-allow-overflow>
+      <div id="drug-field" class="cellfield"></div>
+      <div id="drug-clone" class="cellfield" style="left:0;top:0;width:780px;height:780px"></div>
+      <div id="drug-pills" style="position:absolute;left:0;top:0;width:780px;height:780px"></div>
+      <div id="drug-tags" data-layout-allow-overflow style="position:absolute;left:0;top:0;width:780px;height:780px"></div>
+    </div>
+
+    <!-- zoomed in: one cell, its chromosome, the guide written into it -->
+    <div id="drug-lchr" class="label" style="left:300px;top:452px">染色体</div>
+    <div id="drug-lins" class="label" style="left:1330px;top:330px;color:#ff5c8a">插入的向导 DNA</div>
+    <svg id="drug-lead" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0">
+      <path id="drug-lead1" d="M420 474 L812 474" stroke="#8d93a0" stroke-width="2" fill="none"/>
+      <path id="drug-lead2" d="M1340 382 L980 466" stroke="#ff5c8a" stroke-width="2" fill="none"/>
+    </svg>
+    <div id="drug-chips" style="position:absolute;inset:0"></div>
+    <div id="drug-lbc" class="label" style="left:960px;top:134px">条形码</div>
+
+    <!-- the treatment -->
+    <div id="drug-d0" class="label s" style="left:1040px;top:146px">第 0 天</div>
+    <div id="drug-d14" class="label s" style="left:1800px;top:146px">第 14 天</div>
+    <div id="drug-track"></div>
+    <div id="drug-ticks"></div>
+    <div id="drug-fill"></div>
+    <div id="drug-mark"></div>
+    <div id="drug-vem" class="label" style="left:1040px;top:262px">维莫非尼 2 µM</div>
+    <div id="drug-nchip" style="position:absolute;left:1160px;top:420px"></div>
+    <div id="drug-few" class="big" style="left:1040px;top:560px;font-size:80px">几百</div>
+    <div id="drug-many" class="big" style="left:1230px;top:560px;font-size:80px;color:var(--nf2)">→ 成千上万</div>
+  </div>
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const mk = (tag, cls, css, parent, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (css) d.style.cssText = css; if (html) d.innerHTML = html; parent.appendChild(d); return d; };
+      const E = 'expo.out';
+      const show = (t, el, from = {}, dur = 0.6) => tl.fromTo(el, { opacity: 0, ...from }, { opacity: 1, x: 0, y: 0, scale: 1, duration: dur, ease: E }, t);
+      const hide = (t, el, to = {}, dur = 0.35) => tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: dur, ease: 'power2.in', ...to }, t);
+
+      // ---------- the seam: lib.html's last frame, rebuilt exactly (same grid, same survivors) ----------
+      function grid100(el) {
+        const rnd = Kit.rng(11), out = [];
+        for (let i = 0; i < 100; i++) {
+          const cx = (i % 10 + 0.5) * 78 + (rnd() - 0.5) * 18, cy = (Math.floor(i / 10) + 0.5) * 78 + (rnd() - 0.5) * 18, rr = 27 * (0.9 + rnd() * 0.2);
+          const d = document.createElement('div');
+          d.className = 'cell';
+          d.style.cssText = `left:${(cx - rr).toFixed(1)}px;top:${(cy - rr).toFixed(1)}px;width:${(2 * rr).toFixed(1)}px;height:${(2 * rr).toFixed(1)}px`;
+          d.innerHTML = '<div class="nuc"></div><div class="bc"></div>';
+          el.appendChild(d);
+          out.push({ el: d, x: cx, y: cy, r: rr });
+        }
+        return out;
+      }
+      const all = grid100($('drug-field'));
+      const singles = [1, 6, 13, 19, 20, 25, 27, 38, 44, 46, 50, 57, 59, 62, 71, 77, 83, 86, 89, 92, 94, 98];
+      const doubles = [8, 32, 65, 90];
+      const got = [...singles, ...doubles];
+      all.forEach((c, i) => { if (!got.includes(i)) c.el.remove(); });
+      const cells = {};
+      got.forEach((i) => {
+        const c = all[i]; cells[i] = c;
+        c.bc = c.el.querySelector('.bc'); c.bc.style.opacity = 1;
+        if (doubles.includes(i)) { const b2 = c.bc.cloneNode(); c.el.appendChild(b2); c.bc.style.marginTop = '-15%'; b2.style.marginTop = '4%'; }
+        c.cover = mk('div', 'drug-cover', '', c.el);
+      });
+
+      // ---------- 0: zoom into one cell; the guide sits in its chromosome ----------
+      const ZC = cells[57], Z = 600 / (2 * ZC.r);
+      const zx = 960 - 150 - Z * ZC.x, zy = 470 - 96 - Z * ZC.y;
+      hide(S.at(0), '#drug-credit0', {}, 0.3);
+      tl.fromTo('#drug-zoom', { x: 0, y: 0, scale: 1 }, { x: zx, y: zy, scale: Z, duration: 1.2, ease: 'power3.inOut', transformOrigin: '0 0', force3D: false }, S.at(0));
+      const cellSVG = (inserted) => `<svg viewBox="0 0 600 600" width="100%" height="100%" style="position:absolute;left:0;top:0;overflow:visible">
+        <circle cx="300" cy="300" r="295" fill="url(#drug-cg)" stroke="#4b5466" stroke-width="8"/>
+        <circle cx="300" cy="300" r="170" fill="#262c37" stroke="#4b5466" stroke-width="5"/>
+        <path class="chr" d="M196 226 C226 198 262 250 300 222 S368 204 398 234"/>
+        <path class="chr" d="M206 386 C244 412 288 366 330 392 S392 404 408 372"/>
+        <g class="drug-hl"${inserted ? '' : ' transform="translate(32 0)"'}><path class="chr" d="M158 307 C190 291 230 313 268 300"/></g>
+        <g class="drug-hr"${inserted ? '' : ' transform="translate(-32 0)"'}><path class="chr" d="M332 300 C370 287 410 313 442 295"/></g>
+        <rect class="drug-seg" x="266" y="289" width="68" height="22" rx="11" fill="#ff5c8a"/>
+      </svg>`;
+      const zoom = $('drug-zoom');
+      const mom = mk('div', 'drug-big', `left:${ZC.x - ZC.r}px;top:${ZC.y - ZC.r}px;width:${2 * ZC.r}px;height:${2 * ZC.r}px`, zoom, cellSVG(false));
+      tl.fromTo(mom, { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(0, 0.8));
+      tl.fromTo(ZC.el, { opacity: 1 }, { opacity: 0, duration: 0.2 }, S.at(0, 1.1));
+      const hl = mom.querySelector('.drug-hl'), hr = mom.querySelector('.drug-hr'), seg = mom.querySelector('.drug-seg');
+      tl.fromTo(hl, { x: 32 }, { x: 0, duration: 0.55, ease: E }, S.at(0, 1.4));
+      tl.fromTo(hr, { x: -32 }, { x: 0, duration: 0.55, ease: E }, S.at(0, 1.4));
+      gsap.set(seg, { svgOrigin: '300 300' });
+      tl.fromTo(seg, { scaleX: 4.06, scaleY: 3.27, svgOrigin: '300 300' }, { scaleX: 1, scaleY: 1, duration: 0.6, ease: E, svgOrigin: '300 300' }, S.at(0, 1.3));
+      show(S.at(0, 1.5), '#drug-lchr', { x: -20 }, 0.5);
+      tl.fromTo('#drug-lead1', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(0, 1.5));
+      show(S.at(0, 1.9), '#drug-lins', { x: 20 }, 0.5);
+      tl.fromTo('#drug-lead2', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(0, 1.9));
+
+      // ---------- 1: it divides; both daughters keep it ----------
+      hide(S.at(1), ['#drug-lchr', '#drug-lins', '#drug-lead1', '#drug-lead2'], {}, 0.25);
+      const dr = ZC.r * 0.75;
+      const kids = [-1, 1].map((s) => {
+        const k = mk('div', 'drug-big', `left:${ZC.x - dr}px;top:${ZC.y - dr}px;width:${2 * dr}px;height:${2 * dr}px`, zoom, cellSVG(true));
+        tl.fromTo(k, { opacity: 0, x: 0 }, { opacity: 1, x: s * 33, duration: 0.8, ease: E }, S.at(1, 0.1));
+        return k;
+      });
+      tl.fromTo(mom, { scaleX: 1, scaleY: 1 }, { scaleX: 1.12, scaleY: 0.92, duration: 0.2, ease: 'power2.out' }, S.at(1));
+      tl.fromTo(mom, { opacity: 1 }, { opacity: 0, duration: 0.25 }, S.at(1, 0.12));
+
+      // ---------- 2: the inserted guide is the cell's barcode ----------
+      const chips = $('drug-chips');
+      const bcs = [-1, 1].map((s, j) => {
+        const b = mk('div', 'barcode drug-chip', '', chips); Kit.barcode(b, 5);
+        const w = 135, cx = 960 + s * 33 * Z, cy = 150;
+        b.style.left = (cx - w / 2) + 'px'; b.style.top = (cy - 17) + 'px';
+        tl.fromTo(b, { opacity: 0, y: 474 - cy, scale: 0.3 }, { opacity: 1, y: 0, scale: 1.5, duration: 0.7, ease: E }, S.at(2, 0.1 + j * 0.15));
+        return b;
+      });
+      gsap.set('#drug-lbc', { xPercent: -50 });
+      show(S.at(2, 0.6), '#drug-lbc', { y: 12 }, 0.5);
+
+      // ---------- 3: zoom back out; each barcode names the gene its cell lost ----------
+      hide(S.at(3), [...bcs, '#drug-lbc'], {}, 0.3);
+      tl.fromTo('#drug-zoom', { x: zx, y: zy, scale: Z }, { x: 0, y: 0, scale: 1, duration: 0.95, ease: 'power3.inOut', transformOrigin: '0 0', force3D: false }, S.at(3));
+      const pair = [-1, 1].map((s) => {
+        const d = mk('div', 'cell', `left:${ZC.x + s * 33 - dr}px;top:${ZC.y - dr}px;width:${2 * dr}px;height:${2 * dr}px`, $('drug-field'), '<div class="nuc"></div><div class="bc" style="opacity:1"></div>');
+        const cov = mk('div', 'drug-cover', '', d);
+        tl.fromTo(d, { opacity: 0 }, { opacity: 1, duration: 0.25 }, S.at(3, 0.65));
+        return { el: d, cover: cov, x: ZC.x + s * 33, y: ZC.y, r: dr };
+      });
+      tl.fromTo(kids, { opacity: 1 }, { opacity: 0, duration: 0.25 }, S.at(3, 0.7));
+      const NF = cells[44];
+      const tagOf = (c, name, cls = '') => mk('div', 'drug-tag ' + cls, `left:${c.x}px;top:${c.y - c.r - 50}px`, $('drug-tags'), name);
+      const tags = [
+        { c: cells[13], name: 'OR4F5' }, { c: { x: ZC.x, y: ZC.y, r: dr + 4 }, name: 'ALB' },
+        { c: cells[71], name: 'TTN' }, { c: cells[89], name: 'OR2T4' },
+      ].map((t) => tagOf(t.c, t.name));
+      const nfTag = tagOf(NF, 'NF2', 'nf2');
+      gsap.set([...tags, nfTag], { xPercent: -50 });
+      tl.fromTo(NF.el, { borderColor: '#4b5466' }, { borderColor: '#f4a62a', duration: 0.4 }, S.at(3, 0.95));
+      tl.fromTo(NF.bc, { backgroundColor: '#ff5c8a' }, { backgroundColor: '#f4a62a', duration: 0.4 }, S.at(3, 0.95));
+      [nfTag, ...tags].forEach((t, k) => tl.fromTo(t, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, S.at(3, 0.95 + k * 0.12)));
+
+      // ---------- 4-6: add the drug, 2 uM vemurafenib, for 14 days ----------
+      show(S.at(4), ['#drug-d0', '#drug-track', '#drug-ticks', '#drug-mark'], { y: 10 }, 0.5);
+      gsap.set('#drug-d14', { xPercent: -100 });
+      { const rnd = Kit.rng(5);
+        for (let i = 0; i < 60; i++) {
+          const x = 20 + rnd() * 740, y = 20 + rnd() * 740;
+          const p = mk('div', 'drug-pill', `left:${x}px;top:${y}px`, $('drug-pills'));
+          const t = S.at(4, 0.1 + rnd() * 0.7);
+          tl.fromTo(p, { y: -220 - rnd() * 120, opacity: 0 }, { y: 0, opacity: 0.9, duration: 0.55, ease: 'power2.in' }, t);
+          tl.fromTo(p, { opacity: 0.9, scale: 1 }, { opacity: 0, scale: 2.2, duration: 0.35 }, t + 0.55);
+        } }
+      show(S.at(5), '#drug-vem', { y: 12 }, 0.5);
+      show(S.at(5), '#drug-credit1', {}, 0.5);
+      show(S.at(6), '#drug-d14', { y: 10 }, 0.5);
+      tl.fromTo('#drug-fill', { scaleX: 0 }, { scaleX: 1, duration: S.at(12) - S.at(6), ease: 'none', transformOrigin: '0% 50%' }, S.at(6));
+      tl.fromTo('#drug-mark', { x: 0 }, { x: 760, duration: S.at(12) - S.at(6), ease: 'none' }, S.at(6));
+
+      // ---------- 7-8: most cells stop growing and die ----------
+      const dying = [...got.filter((i) => i !== 44 && i !== 57).map((i) => cells[i]), ...pair];
+      const rd = Kit.rng(9);
+      dying.forEach((c) => {
+        const t = S.at(7, 0.1 + rd() * 1.3);
+        tl.fromTo(c.cover, { opacity: 0 }, { opacity: 1, duration: 0.5 }, t);
+        tl.fromTo(c.el, { scale: 1 }, { scale: 0.68, duration: 0.6, ease: 'power2.out' }, t);
+        tl.fromTo(c.el, { scale: 0.68, opacity: 1 }, { scale: 0.52, opacity: 0.75, duration: 0.6 }, S.at(8, rd() * 0.5));
+      });
+      tl.fromTo(tags, { opacity: 1 }, { opacity: 0.4, duration: 0.5 }, S.at(7, 0.6));
+      tl.fromTo(tags, { opacity: 0.4 }, { opacity: 0, duration: 0.4 }, S.at(9));
+
+      // ---------- 9-10: but the one that lost NF2 ----------
+      const ring = mk('div', '', `left:${NF.x - NF.r - 12}px;top:${NF.y - NF.r - 12}px;width:${2 * NF.r + 24}px;height:${2 * NF.r + 24}px`, $('drug-tags'));
+      ring.id = 'drug-ring';
+      tl.fromTo(ring, { scale: 1.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: E }, S.at(9));
+      tl.fromTo(nfTag, { scale: 1 }, { scale: 1.3, duration: 0.5, ease: E }, S.at(10));
+      tl.fromTo(NF.el, { scale: 1 }, { scale: 1.15, duration: 0.5, ease: E }, S.at(10));
+
+      // ---------- 11-15: it keeps dividing: 1, 2, 4, 8 ... the clone fills the field ----------
+      hide(S.at(11), ring, {}, 0.3);
+      // the NF2 tag moves out to the side, where its barcode chip will land
+      const tagTo = { x: 1040 - 150 - NF.x, y: 420 - 96 - (NF.y - NF.r - 50) };
+      tl.fromTo(nfTag, { x: 0, y: 0, scale: 1.3 }, { x: tagTo.x + 0, y: tagTo.y, scale: 1, duration: 0.7, ease: 'power3.inOut', xPercent: 0 }, S.at(11));
+      const dead = dying.map((c) => ({ x: c.x, y: c.y, r: c.r * 0.52 }));
+      const spots = [];
+      { const rnd = Kit.rng(21);
+        for (let k = 0; k < 21; k++) for (let j = 0; j < 18; j++) {
+          const x = 24 + j * 44 + (k % 2) * 22 + (rnd() - 0.5) * 8, y = 22 + k * 37 + (rnd() - 0.5) * 8, r = 18.5 * (0.92 + rnd() * 0.16);
+          if (x < r + 2 || x > 780 - r - 2 || y > 780 - r - 2) continue;
+          if (dead.some((d) => Math.hypot(d.x - x, d.y - y) < d.r + r + 4)) continue;
+          if (Math.hypot(NF.x - x, NF.y - y) < NF.r * 1.15 + r + 3) continue;
+          spots.push({ x, y, r, d: Math.hypot(NF.x - x, NF.y - y) + rnd() * 40 });
+        } }
+      spots.sort((a, b) => a.d - b.d);
+      const clone = spots.map((s) => mk('div', 'cell nf2', `left:${(s.x - s.r).toFixed(1)}px;top:${(s.y - s.r).toFixed(1)}px;width:${(2 * s.r).toFixed(1)}px;height:${(2 * s.r).toFixed(1)}px`, $('drug-clone'), '<div class="nuc"></div><div class="bc" style="opacity:1"></div>'));
+      const gens = [[1, S.at(11, 0.15)], [3, S.at(11, 0.6)], [7, S.at(11, 1.05)], [15, S.at(11, 1.5)], [31, S.at(12, 0.1)], [63, S.at(13, 0.1)], [127, S.at(14, 0.1)], [clone.length, S.at(15, 0.05)]];
+      let from = 0;
+      gens.forEach(([upto, t]) => {
+        const g = clone.slice(from, upto); from = upto;
+        tl.fromTo(g, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: E, stagger: Math.min(0.02, 0.9 / g.length) }, t);
+      });
+      tl.fromTo('#drug-d14', { color: '#8d93a0' }, { color: '#ecebe6', duration: 0.3 }, S.at(12));
+      // 13: the cells that carry this guide: its barcode chip, beside the NF2 tag
+      const nchip = $('drug-nchip'); nchip.className = 'barcode nf2'; Kit.barcode(nchip, 44);
+      tl.fromTo(nchip, { opacity: 0, scale: 0.4, x: -40 }, { opacity: 1, scale: 1.3, x: 0, duration: 0.6, ease: E, transformOrigin: '0% 50%' }, S.at(13));
+      show(S.at(14), '#drug-few', { y: 16 }, 0.55);
+      show(S.at(15), '#drug-many', { x: -30 }, 0.6);
+
+      window.__timelines['drug'] = tl;
+    })();
+  </script>
+</template>

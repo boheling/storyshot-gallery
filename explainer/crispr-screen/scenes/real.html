@@ -1,0 +1,314 @@
+<template>
+  <style>
+    #real { background: radial-gradient(ellipse 120% 90% at 50% 40%, #151a23 0%, #0f1218 70%); }
+
+    /* the chart, exactly as scene count leaves it */
+    #real-plot { left: 120px; top: 120px; width: 1680px; height: 720px; }
+    #real-chart { position: absolute; left: 120px; top: 120px; width: 1680px; height: 720px; }
+    #real-base { position: absolute; left: 40px; top: 619px; width: 1600px; height: 2px; background: var(--line); }
+    .real-ob { position: absolute; bottom: 100px; width: 18px; border: 2px solid var(--chalk-2); border-bottom: 0; border-radius: 3px 3px 0 0; }
+    .real-fb { position: absolute; bottom: 100px; width: 18px; border-radius: 3px 3px 0 0; background: var(--chalk-2); }
+    .real-fb.nf2 { background: var(--nf2); }
+    .real-tick { position: absolute; top: 632px; width: 10px; height: 10px; border-radius: 2px; background: var(--guide); }
+    .real-tick.nf2 { background: var(--nf2); }
+    #real-ylab { left: 20px; top: 14px; }
+    #real-xlab { right: 24px; top: 664px; }
+    .real-key { position: absolute; left: 1480px; display: flex; align-items: center; gap: 14px; }
+    .real-key .label { position: static; }
+    .real-sw { width: 18px; height: 34px; border-radius: 3px 3px 0 0; }
+    .real-sw.o { border: 2px solid var(--chalk-2); border-bottom: 0; }
+    .real-sw.f { background: var(--chalk-2); }
+    .real-nf2lab { position: absolute; width: 80px; text-align: center; font: 600 30px/1 var(--mono); color: var(--nf2); }
+
+    /* the lucky guide and its clone */
+    #real-mark { position: absolute; opacity: 0; }
+    #real-clone .cell .bc { opacity: 1; }
+    #real-clone .cell { opacity: 0; }
+
+    /* grouping by gene */
+    .real-brk { position: absolute; top: 652px; width: 88px; height: 10px; border: 2px solid #4b5466; border-top: 0; opacity: 0; }
+    .real-glab { position: absolute; top: 672px; width: 140px; text-align: center; font: 600 32px/1 var(--mono); color: var(--chalk-2); opacity: 0; }
+    #real-glab-nf2 { color: var(--nf2); }
+    #real-gene { position: absolute; left: 400px; top: 102px; width: 720px; height: 110px; opacity: 0; }
+    #real-gene-lab { left: 0; top: 33px; font-size: 30px; }
+    #real-gene-line { position: absolute; left: 160px; top: 66px; width: 560px; height: 4px; border-radius: 2px; background: var(--chalk-2); transform-origin: 0 50%; }
+    .real-exon { position: absolute; top: 52px; width: 30px; height: 32px; border-radius: 4px; background: #2b313d; border: 1.5px solid var(--chalk-2); }
+    .real-g { position: absolute; top: 24px; width: 40px; height: 16px; border-radius: 8px; background: rgba(244,166,42,.25); border: 2px solid var(--nf2); opacity: 0; }
+    .real-cut { position: absolute; top: 46px; width: 4px; height: 44px; border-radius: 2px; background: var(--cut); opacity: 0; }
+    .real-frac { position: absolute; width: 120px; text-align: center; font: 600 40px/1 var(--mono); opacity: 0; }
+    #real-frac-nf2 { color: var(--nf2); }
+    #real-frac-luck { color: var(--chalk-2); }
+    .real-strike { position: absolute; height: 3px; background: var(--chalk); transform-origin: 0 50%; opacity: 0; }
+    .real-ok { position: absolute; opacity: 0; }
+
+    /* the list of hits */
+    .real-row { position: absolute; left: 680px; height: 72px; display: flex; align-items: center; gap: 26px; }
+    .real-gene { font: 600 72px/1 var(--mono); color: var(--chalk); white-space: nowrap; opacity: 0; }
+    #real-li-nf2 { color: var(--nf2); transform-origin: 0 0; }
+    #real-ul { position: absolute; left: 680px; top: 254px; width: 130px; height: 5px; border-radius: 3px; background: var(--nf2); transform-origin: 0 50%; opacity: 0; }
+    .real-tag { font: 500 28px/1 var(--font); color: var(--chalk-2); border: 1.5px solid #5a6273; border-radius: 8px; padding: 8px 14px; white-space: nowrap; opacity: 0; }
+    #real-bracket { position: absolute; left: 630px; top: 170px; opacity: 0; }
+    .real-arrow { position: absolute; left: 970px; width: 90px; height: 3px; background: var(--chalk-2); transform-origin: 0 50%; opacity: 0; }
+    .real-arrow::after { content: ''; position: absolute; right: -4px; top: -7px; border-left: 14px solid var(--chalk-2); border-top: 8.5px solid transparent; border-bottom: 8.5px solid transparent; }
+    .real-dish { position: absolute; left: 1100px; width: 100px; height: 100px; border-radius: 50%; background: var(--ground-2); border: 2px solid #5a6273; box-shadow: inset 0 0 0 6px rgba(236,235,230,.035); opacity: 0; }
+    .real-dish .cell { opacity: 0; }
+    .real-drop { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #d6d8de; opacity: 0; }
+    #real-drug { left: 1000px; top: 110px; width: 300px; text-align: center; opacity: 0; }
+    #real-credit { opacity: 0; }
+    #real-head { left: 680px; top: 116px; opacity: 0; }
+  </style>
+
+  <div id="real" class="world" data-composition-id="real" data-width="1920" data-height="1080" data-layout-allow-overlap>
+    <div id="real-plot" class="plot"></div>
+    <div id="real-chart" data-layout-allow-overlap>
+      <div id="real-base"></div>
+      <div id="real-bars" data-layout-allow-overlap></div>
+      <div id="real-ylab" class="label s">读数</div>
+      <div id="real-xlab" class="label s">向导</div>
+      <div id="real-key1" class="real-key" style="top:22px"><div class="real-sw o"></div><div class="label s">加药前</div></div>
+      <div id="real-key2" class="real-key" style="top:70px"><div class="real-sw f"></div><div class="label s">第 14 天</div></div>
+      <svg id="real-mark" width="26" height="18" viewBox="0 0 26 18"><path d="M 1 1 L 25 1 L 13 17 Z" fill="#ecebe6"/></svg>
+      <div id="real-clone" data-layout-allow-overlap></div>
+      <div id="real-gene">
+        <div id="real-gene-lab" class="label"><span style="color:var(--nf2);font-family:var(--mono)">NF2</span> 基因</div>
+        <div id="real-gene-line"></div>
+      </div>
+      <div id="real-frac-nf2" class="real-frac">4/4</div>
+      <div id="real-frac-luck" class="real-frac">1/4</div>
+      <div id="real-strike-frac" class="real-strike"></div>
+      <div id="real-strike-glab" class="real-strike"></div>
+      <svg id="real-ok-chart" class="real-ok" width="44" height="44" viewBox="0 0 44 44"><path d="M 6 23 L 17 34 L 38 10" fill="none" stroke="#ecebe6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <div id="real-list" data-layout-allow-overlap></div>
+    <div id="real-ul"></div>
+    <svg id="real-bracket" width="30" height="636" viewBox="0 0 30 636"><path d="M 26 3 L 6 3 L 6 633 L 26 633" fill="none" stroke="#8d93a0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" pathLength="1" style="stroke-dasharray:1 1.2;stroke-dashoffset:1.1"/></svg>
+    <div id="real-drug" class="label">+ 维莫非尼</div>
+    <div id="real-head" class="label s">筛选结果</div>
+
+    <div id="real-tag" class="tag-schematic" data-layout-ignore>示意</div>
+    <div id="real-credit" class="credit" data-layout-ignore>Shalem et al. 2014 · Science</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const make = (cls, parent, css) => { const d = document.createElement('div'); d.className = cls; if (css) d.style.cssText = css; parent.appendChild(d); return d; };
+
+      // ---- the screen's read counts (schematic, seeded). The same function is in scenes/count.html. ----
+      function screenData() {
+        const N = 60, G = 15, NF2G = 1, LUCKYG = 11, LUCKY = 39, rnd = Kit.rng(2014);
+        const gene = new Array(N).fill(-1);
+        const nf2Slots = [5, 18, 29, 50], luckySlots = [12, 39, 44, 57];
+        nf2Slots.forEach((p) => (gene[p] = NF2G));
+        luckySlots.forEach((p) => (gene[p] = LUCKYG));
+        const rest = [];
+        for (let g = 0; g < G; g++) if (g !== NF2G && g !== LUCKYG) for (let k = 0; k < 4; k++) rest.push(g);
+        for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [rest[i], rest[j]] = [rest[j], rest[i]]; }
+        let r = 0;
+        for (let p = 0; p < N; p++) if (gene[p] < 0) gene[p] = rest[r++];
+        const seen = new Array(G).fill(0), k = gene.map((g) => seen[g]++);
+        const others = [...Array(N).keys()].filter((p) => gene[p] !== NF2G && gene[p] !== LUCKYG);
+        for (let i = others.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [others[i], others[j]] = [others[j], others[i]]; }
+        const zero = others.slice(0, 8);
+        const nf2After = [470, 525, 450, 540];
+        const before = [], after = [];
+        for (let p = 0; p < N; p++) {
+          before[p] = Math.round(88 + rnd() * 66);
+          const u = rnd();
+          after[p] = gene[p] === NF2G ? nf2After[k[p]] : zero.includes(p) ? 0
+            : gene[p] === LUCKYG ? Math.round(before[p] * (0.25 + 0.3 * u)) : Math.round(before[p] * (0.12 + 0.62 * u));
+        }
+        // x in the chart box (which sits at 120,120 and is 1680 x 720; the bars stand on y = 620)
+        const countX = (p) => 50 + p * (1580 / N) + (1580 / N - 18) / 2;
+        const groupX = (p) => 50 + gene[p] * (1580 / G) + (1580 / G - 84) / 2 + k[p] * 22;
+        return { N, G, NF2G, LUCKYG, LUCKY, gene, k, zero, before, after, countX, groupX, luckyTall: 480 };
+      }
+      const D = screenData();
+      const groupMid = (g) => 50 + g * (1580 / D.G) + (1580 / D.G) / 2;
+
+      // ---- the chart at count's last frame ----
+      const bars = $('real-bars'), ob = [], fb = [], tk = [], nf2lab = [];
+      for (let p = 0; p < D.N; p++) {
+        const x = D.countX(p), isNF2 = D.gene[p] === D.NF2G;
+        ob.push(make('real-ob', bars, `left:${x}px;height:${D.before[p]}px`));
+        fb.push(make('real-fb' + (isNF2 ? ' nf2' : ''), bars, `left:${x}px;height:${D.after[p]}px`));
+        tk.push(make('real-tick' + (isNF2 ? ' nf2' : ''), bars, `left:${x + 4}px;opacity:${D.zero.includes(p) ? 0.35 : 1}`));
+        if (isNF2) { const l = make('real-nf2lab', bars, `left:${x + 9 - 40}px;top:${620 - D.after[p] - 44}px`); l.textContent = 'NF2'; nf2lab.push(l); }
+      }
+      const L = D.LUCKY, lx = D.countX(L);
+
+      // the marker over the lucky guide
+      const markTop0 = 620 - Math.max(D.before[L], D.after[L]) - 30, markTop1 = 620 - D.luckyTall - 30;
+      Object.assign($('real-mark').style, { left: (lx - 4) + 'px', top: markTop0 + 'px' });
+
+      // its clone: one cell that divides 1 -> 2 -> 4 -> 8 beside the bar's new top
+      const clone = $('real-clone'), CR = 20;
+      const cj = Kit.rng(39), clonePos = Array.from({ length: 8 }, (_, i) => ({ x: lx + 52 + (i % 4) * 46 + (cj() - 0.5) * 8 + (Math.floor(i / 4) ? 20 : 0), y: 620 - D.luckyTall + 18 + Math.floor(i / 4) * 44 + (cj() - 0.5) * 10 }));
+      const cloneCells = clonePos.map((c) => {
+        const d = make('cell', clone, `left:${c.x - CR}px;top:${c.y - CR}px;width:${2 * CR}px;height:${2 * CR}px`);
+        d.innerHTML = '<div class="nuc"></div><div class="bc"></div>';
+        return d;
+      });
+
+      // brackets and the two named groups
+      const chart = $('real-chart');
+      const brk = Array.from({ length: D.G }, (_, g) => make('real-brk', chart, `left:${groupMid(g) - 44}px`));
+      const glabNF2 = make('real-glab', chart, `left:${groupMid(D.NF2G) - 70}px`); glabNF2.id = 'real-glab-nf2'; glabNF2.textContent = 'NF2';
+      const glabLuck = make('real-glab', chart, `left:${groupMid(D.LUCKYG) - 70}px`); glabLuck.id = 'real-glab-luck'; glabLuck.textContent = 'OR4F5';
+
+      // the NF2 gene, cut by its four guides in four places (schematic)
+      const gene = $('real-gene'), exons = [], gs = [], cuts = [];
+      for (let e = 0; e < 8; e++) exons.push(make('real-exon', gene, `left:${180 + e * 68}px`));
+      [0, 2, 5, 7].forEach((e) => {
+        const cx = 180 + e * 68 + 15;
+        gs.push(make('real-g', gene, `left:${cx - 20}px`));
+        cuts.push(make('real-cut', gene, `left:${cx - 2}px`));
+      });
+
+      // 4/4 and 1/4 over the groups, the tick and the strike lines
+      const nf2Top = 620 - Math.max(...D.after.filter((_, p) => D.gene[p] === D.NF2G));
+      Object.assign($('real-frac-nf2').style, { left: (groupMid(D.NF2G) - 60) + 'px', top: (nf2Top - 56) + 'px' });
+      Object.assign($('real-ok-chart').style, { left: (groupMid(D.NF2G) + 44) + 'px', top: (nf2Top - 62) + 'px' });
+      const luckTop = 620 - D.luckyTall;
+      Object.assign($('real-frac-luck').style, { left: (groupMid(D.LUCKYG) - 60) + 'px', top: (luckTop - 56) + 'px' });
+      Object.assign($('real-strike-frac').style, { left: (groupMid(D.LUCKYG) - 44) + 'px', top: (luckTop - 35) + 'px', width: '88px' });
+      Object.assign($('real-strike-glab').style, { left: (groupMid(D.LUCKYG) - 56) + 'px', top: '687px', width: '112px' });
+
+      // ---- the list (real hits, Shalem et al. 2014; no ranks) ----
+      const ROWS = [['NF2', 176], ['CUL3', 280], ['TADA2B', 384], ['TADA1', 488], ['NF1', 616, true], ['MED12', 720, true]];
+      const list = $('real-list'), names = [], tags = [], arrows = [], dishes = [], dishCells = [], drops = [], oks = [];
+      ROWS.forEach(([name, top, known], i) => {
+        const row = make('real-row', list, `top:${top}px`);
+        row.id = 'real-row-' + name.toLowerCase();
+        const n = make('real-gene', row); n.textContent = name; n.id = 'real-li-' + name.toLowerCase(); names.push(n);
+        if (known) { const t = make('real-tag', row); t.textContent = '已知'; tags.push(t); }
+      });
+      // a dish for each new hit: its gene knocked out alone, then the drug
+      const dr = Kit.rng(33);
+      const SPOTS = [[0, 0]].concat(Array.from({ length: 8 }, (_, a) => [27 * Math.cos(a * Math.PI / 4 + 0.3), 27 * Math.sin(a * Math.PI / 4 + 0.3)]));
+      ROWS.slice(0, 4).forEach(([name, top], i) => {
+        const cy = top + 36;
+        arrows.push(make('real-arrow', $('real'), `top:${cy - 1.5}px`));
+        const d = make('real-dish', $('real'), `top:${cy - 50}px`); d.id = 'real-dish-' + i; dishes.push(d);
+        dishCells.push(SPOTS.map(([x, y]) => {
+          const r = 10 + dr() * 2, c = make('cell' + (i === 0 ? ' nf2' : ''), d, `left:${48 + x + (dr() - 0.5) * 4 - r}px;top:${48 + y + (dr() - 0.5) * 4 - r}px;width:${2 * r}px;height:${2 * r}px`);
+          c.innerHTML = '<div class="nuc"></div>';
+          return c;
+        }));
+        drops.push(Array.from({ length: 5 }, () => make('real-drop', d, `left:${20 + dr() * 54}px;top:${20 + dr() * 54}px`)));
+        const ok = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        ok.setAttribute('class', 'real-ok'); ok.setAttribute('width', '44'); ok.setAttribute('height', '44'); ok.setAttribute('viewBox', '0 0 44 44');
+        ok.innerHTML = '<path d="M 6 23 L 17 34 L 38 10" fill="none" stroke="#ecebe6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>';
+        ok.style.left = '1226px'; ok.style.top = (cy - 22) + 'px'; ok.id = 'real-ok-' + i;
+        $('real').appendChild(ok); oks.push(ok);
+      });
+
+      // ================= the timeline =================
+      // 0 可一条向导变多: point at one ordinary guide
+      const R0 = S.at(0);
+      tl.fromTo('#real-mark', { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, R0 + 0.1);
+      tl.fromTo(ob[L], { borderColor: '#8d93a0' }, { borderColor: '#ecebe6', duration: 0.3 }, R0 + 0.1);
+      tl.fromTo(fb[L], { backgroundColor: '#8d93a0' }, { backgroundColor: '#c3c7cf', duration: 0.3 }, R0 + 0.1);
+
+      // 1 也可能只是运气: it shoots up alone
+      const R1 = S.at(1);
+      tl.fromTo(fb[L], { height: D.after[L] }, { height: D.luckyTall, duration: 0.8, ease: 'expo.out' }, R1);
+      tl.fromTo('#real-mark', { y: 0 }, { y: markTop1 - markTop0, duration: 0.8, ease: 'expo.out' }, R1);
+
+      // 2 某个细胞碰巧先长了起来: one cell that happened to grow first, dividing
+      const R2 = S.at(2);
+      tl.fromTo('#real-mark', { opacity: 1 }, { opacity: 0, duration: 0.25 }, R2);
+      [[0, 1], [1, 2], [2, 4], [4, 8]].forEach(([a, b], g) => {
+        for (let i = a; i < b; i++) {
+          const from = g === 0 ? { x: -40, y: 0 } : { x: clonePos[i - a].x - clonePos[i].x, y: clonePos[i - a].y - clonePos[i].y };
+          tl.fromTo(cloneCells[i], { opacity: 0, scale: g === 0 ? 0.4 : 0.7, x: from.x, y: from.y }, { opacity: 1, scale: 1, x: 0, y: 0, duration: 0.45, ease: 'expo.out' }, R2 + 0.1 + g * 0.42);
+        }
+      });
+
+      // 3 所以每个基因有好几条向导: the bars regroup, four per gene
+      const R3 = S.at(3);
+      tl.fromTo(cloneCells, { opacity: 1 }, { opacity: 0, duration: 0.3 }, R3);
+      tl.fromTo(nf2lab, { opacity: 1 }, { opacity: 0, duration: 0.25 }, R3);
+      tl.fromTo(ob[L], { borderColor: '#ecebe6' }, { borderColor: '#8d93a0', duration: 0.3 }, R3);
+      tl.fromTo(fb[L], { backgroundColor: '#c3c7cf' }, { backgroundColor: '#8d93a0', duration: 0.3 }, R3);
+      for (let p = 0; p < D.N; p++) {
+        const dx = D.groupX(p) - D.countX(p), at = R3 + 0.3 + (p % 15) * 0.012;
+        tl.fromTo([ob[p], fb[p], tk[p]], { x: 0 }, { x: dx, duration: 1.1, ease: 'power3.inOut' }, at);
+      }
+      brk.forEach((b, g) => tl.fromTo(b, { opacity: 0 }, { opacity: 1, duration: 0.4 }, R3 + 1.4 + g * 0.02));
+      tl.fromTo([glabNF2, glabLuck], { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, R3 + 1.6);
+
+      // 4 剪在不同位置: NF2's four guides cut the gene in four places
+      const R4 = S.at(4);
+      tl.fromTo('#real-gene', { opacity: 0 }, { opacity: 1, duration: 0.3 }, R4);
+      tl.fromTo('#real-gene-line', { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: 'expo.out' }, R4);
+      gs.forEach((g, n) => {
+        tl.fromTo(g, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, R4 + 0.3 + n * 0.18);
+        tl.fromTo(cuts[n], { opacity: 0, scaleY: 0.3 }, { opacity: 1, scaleY: 1, duration: 0.25, ease: 'expo.out' }, R4 + 0.5 + n * 0.18);
+      });
+
+      // 5 几条都变多: NF2 4 of 4; the lucky gene 1 of 4
+      const R5 = S.at(5);
+      tl.fromTo('#real-gene', { opacity: 1 }, { opacity: 0, duration: 0.3 }, R5);
+      tl.fromTo('#real-frac-nf2', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, R5 + 0.1);
+      tl.fromTo('#real-frac-luck', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, R5 + 0.6);
+
+      // 6 这个基因才算数: NF2 counts; the lucky one is struck out
+      const R6 = S.at(6);
+      tl.fromTo('#real-ok-chart', { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(2)' }, R6);
+      tl.fromTo(['#real-strike-frac', '#real-strike-glab'], { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.35, ease: 'expo.out' }, R6 + 0.35);
+      const luckBars = [];
+      for (let p = 0; p < D.N; p++) if (D.gene[p] === D.LUCKYG) luckBars.push(ob[p], fb[p]);
+      tl.fromTo([...luckBars, '#real-frac-luck', glabLuck], { opacity: 1 }, { opacity: 0.3, duration: 0.4 }, R6 + 0.45);
+
+      // 7 这次排在最前面的: the chart goes; NF2 leaves it for the list (real data from here, so no 示意)
+      const R7 = S.at(7);
+      tl.fromTo(['#real-plot', '#real-chart'], { opacity: 1 }, { opacity: 0, duration: 0.45 }, R7);
+      tl.fromTo('#real-tag', { opacity: 1 }, { opacity: 0, duration: 0.3 }, R7);
+      tl.fromTo('#real-credit', { opacity: 0 }, { opacity: 1, duration: 0.5 }, R7 + 0.3);
+      tl.fromTo('#real-head', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, R7 + 0.6);
+      // from the group label under the chart (32 px, centred at x = chart + groupMid) to the list (72 px)
+      const srcX = 120 + groupMid(D.NF2G) - 3 * 0.6 * 32 / 2, srcY = 120 + 672;
+      tl.fromTo('#real-li-nf2', { opacity: 0 }, { opacity: 1, duration: 0.2 }, R7 + 0.1);
+      tl.fromTo('#real-li-nf2', { x: srcX - 680, y: srcY - 176, scale: 32 / 72 }, { x: 0, y: 0, scale: 1, duration: 1.0, ease: 'power3.inOut' }, R7 + 0.15);
+
+      // 8 有 NF2 / 9 CUL3 / 10 TADA2B 和 TADA1
+      tl.fromTo('#real-ul', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'expo.out' }, S.at(8));
+      const land = (el, at) => tl.fromTo(el, { opacity: 0, x: 48 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, at);
+      land(names[1], S.at(9));
+      land(names[2], S.at(10));
+      land(names[3], S.at(10, 0.95));
+
+      // 11 早就知道的 NF1 和 MED12 (tagged as known) / 12 也在其中: one set
+      const R11 = S.at(11);
+      land(names[4], R11 + 1.0); land(tags[0], R11 + 1.25);
+      land(names[5], R11 + 2.2); land(tags[1], R11 + 2.45);
+      tl.fromTo('#real-bracket', { opacity: 0 }, { opacity: 1, duration: 0.2 }, S.at(12));
+      tl.fromTo('#real-bracket path', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.7, ease: 'power2.inOut', autoRound: false }, S.at(12));
+
+      // 13 最后 / 14 再把它们一个一个单独敲掉: each new hit in a dish of its own
+      arrows.forEach((a, i) => tl.fromTo(a, { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, S.at(13) + i * 0.08));
+      const R14 = S.at(14);
+      tl.fromTo('#real-tag', { opacity: 0 }, { opacity: 1, duration: 0.3 }, R14);
+      dishes.forEach((d, i) => {
+        const at = R14 + 0.1 + i * 0.42;
+        tl.fromTo(d, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out' }, at);
+        tl.fromTo([0, 3, 5, 7].map((j) => dishCells[i][j]), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'expo.out' }, at + 0.15);
+      });
+
+      // 15 确认细胞真的不怕药了: the drug goes in, the cells keep dividing, a tick each
+      const R15 = S.at(15);
+      tl.fromTo('#real-drug', { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, R15);
+      drops.forEach((ds, i) => ds.forEach((d, j) =>
+        tl.fromTo(d, { opacity: 0, y: -70 }, { opacity: 0.75, y: 0, duration: 0.5, ease: 'power2.in' }, R15 + 0.15 + i * 0.05 + j * 0.04)));
+      dishCells.forEach((cs, i) => [1, 2, 4, 6, 8].forEach((j, n) =>
+        tl.fromTo(cs[j], { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'expo.out' }, R15 + 0.75 + i * 0.06 + n * 0.07)));
+      oks.forEach((o, i) => tl.fromTo(o, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(2)' }, R15 + 1.25 + i * 0.12));
+
+      window.__timelines['real'] = tl;
+    })();
+  </script>
+</template>

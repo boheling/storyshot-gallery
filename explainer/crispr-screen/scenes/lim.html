@@ -1,0 +1,356 @@
+<template>
+  <style>
+    /* step 8 · lim · 局限：剪断不等于敲掉. Three limits, one diagram at a time, a "1 2 3" index top-left. */
+    #lim .lim-layer { position: absolute; inset: 0; }
+    /* the index */
+    #lim-index { position: absolute; left: 120px; top: 72px; display: flex; gap: 14px; }
+    #lim .lim-idx { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--chalk-2); color: var(--chalk-2);
+      display: flex; align-items: center; justify-content: center; font: 600 30px/1 var(--mono); }
+    #lim .lim-topic { position: absolute; left: 344px; top: 82px; font: 600 34px/1.1 var(--font); color: var(--chalk); white-space: nowrap; }
+
+    /* (1) the codon row with a 3-base deletion */
+    #lim .cod { position: relative; }
+    #lim .lim-no2 { position: absolute; left: 0; right: 0; top: 108px; text-align: center; }
+    #lim-row { left: 325px; top: 320px; }
+    #lim-nf2 { left: 196px; top: 328px; color: var(--nf2); }
+    #lim-cut { position: absolute; left: 958px; top: 306px; width: 4px; height: 126px; border-radius: 2px; background: var(--cut);
+      box-shadow: 0 0 18px 2px rgba(255,90,78,.7); transform-origin: 50% 0; }
+    #lim-burst { position: absolute; left: 905px; top: 314px; width: 110px; height: 110px; border-radius: 50%;
+      border: 3px solid var(--cut); box-shadow: 0 0 30px rgba(255,90,78,.6); opacity: 0; }
+    #lim-reader { position: absolute; left: 319px; top: 312px; width: 130px; height: 114px; border-radius: 14px; border: 3px solid var(--chalk); }
+    #lim-bars { position: absolute; left: 325px; top: 560px; width: 1420px; height: 230px; }
+    #lim .lim-bar { position: absolute; left: 0; height: 40px; border-radius: 6px; background: var(--nf2); transform-origin: 0 50%; }
+    #lim-b1 { top: 52px; width: 1270px; }
+    #lim-b2 { top: 182px; width: 1268px; }
+    #lim-bl1 { left: 0; top: 0; }
+    #lim-bl2 { left: 0; top: 130px; }
+    #lim-notch { position: absolute; left: 104px; top: 172px; width: 6px; height: 60px; border-radius: 3px; background: var(--cut);
+      box-shadow: 0 0 12px rgba(255,90,78,.8); }
+    #lim-check { position: absolute; left: 1296px; top: 166px; }
+
+    /* (2) copies of a region, a cut on every copy */
+    #lim-c2 { left: 150px; top: 340px; width: 340px; height: 340px; }
+    #lim .lim-dead { position: absolute; inset: -2px; border-radius: 50%; background: var(--dead); border: 2px solid #2b2f37; opacity: 0; }
+    #lim-c2chr { position: absolute; left: 135px; top: 164px; width: 70px; height: 12px; border-radius: 6px; background: var(--chalk); }
+    #lim-c2lab { left: 150px; top: 704px; width: 340px; text-align: center; }
+    #lim-panel { left: 600px; top: 150px; width: 1220px; height: 700px; }
+    #lim .lim-bands { background: repeating-linear-gradient(90deg, #4b5466 0 58px, #353c4a 58px 82px, #5b6479 82px 120px, #353c4a 120px 146px); background-size: 1140px 100%; }
+    #lim-chr { position: absolute; left: 40px; top: 100px; width: 1140px; height: 48px; border-radius: 24px; transform-origin: 0 50%; }
+    #lim-reg { position: absolute; left: 396px; top: 92px; width: 408px; height: 64px; border-radius: 14px; border: 3px solid var(--chalk); }
+    #lim .lim-copy { position: absolute; left: 400px; width: 400px; height: 34px; }
+    #lim .lim-half { position: absolute; top: 0; width: 200px; height: 34px; }
+    #lim .lim-half.l { left: 0; border-radius: 17px 0 0 17px; background-position: -360px 0; }
+    #lim .lim-half.r { left: 200px; border-radius: 0 17px 17px 0; background-position: -560px 0; }
+    #lim-chrcut { position: absolute; left: 597px; top: 88px; width: 6px; height: 72px; border-radius: 3px; background: var(--cut);
+      box-shadow: 0 0 16px rgba(255,90,78,.8); transform-origin: 50% 0; }
+    #lim-chrburst { position: absolute; left: 545px; top: 69px; width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--cut); opacity: 0; }
+    #lim-harm { left: 720px; top: 30px; color: var(--chalk); }
+    #lim-guide { position: absolute; left: 510px; top: 18px; width: 180px; height: 50px; border-radius: 25px; background: rgba(255,92,138,.16);
+      border: 2px solid var(--guide); color: var(--guide); font: 600 30px/46px var(--font); text-align: center; }
+    #lim-vline { position: absolute; left: 599px; top: 70px; width: 2px; height: 560px; transform-origin: 50% 0;
+      background: repeating-linear-gradient(180deg, rgba(255,90,78,.45) 0 8px, transparent 8px 18px); }
+    #lim .lim-ccut { position: absolute; left: 597px; width: 6px; height: 42px; border-radius: 4px; background: var(--cut); box-shadow: 0 0 14px rgba(255,90,78,.85); }
+    #lim-amp { left: 60px; top: 330px; }
+    #lim-ampsub { left: 60px; top: 384px; }
+    #lim-tgt { position: absolute; left: 836px; top: 372px; width: 350px; height: 60px; }
+    #lim .lim-tgtx { position: absolute; left: 0; top: 0; padding: 0 18px; height: 56px; border-radius: 12px; border: 1.5px solid var(--chalk-2);
+      background: rgba(15,18,24,.6); font: 600 30px/53px var(--font); color: var(--chalk); white-space: nowrap; }
+
+    /* (3) the cut lights p53 */
+    #lim .lim-bigcell { position: absolute; border-radius: 50%; background: radial-gradient(circle at 38% 34%, #2a3140 0%, #1d222c 70%); border: 2px solid #4b5466; }
+    #lim .lim-nucl { position: absolute; border-radius: 50%; background: #39414f; }
+    #lim .lim-dna { position: absolute; height: 6px; border-radius: 3px; background: #aab0bd; }
+    #lim .lim-gap { position: absolute; width: 6px; border-radius: 3px; background: var(--cut); box-shadow: 0 0 14px rgba(255,90,78,.9); }
+    #lim .lim-p53 { position: absolute; border-radius: 30px; border: 2px solid #4b5466; color: var(--chalk-2); display: flex; align-items: center;
+      justify-content: center; font: 700 32px/1 var(--mono); }
+    #lim-pa { left: 380px; top: 290px; width: 440px; height: 440px; }
+    #lim-pb { left: 1230px; top: 340px; width: 340px; height: 340px; }
+    #lim .lim-ring { position: absolute; }
+    #lim-ringa { left: 320px; top: 230px; width: 560px; height: 560px; }
+    #lim-ringb { left: 1195px; top: 305px; width: 410px; height: 410px; }
+    #lim-pause { position: absolute; left: 568px; top: 216px; width: 64px; height: 64px; border-radius: 50%; background: var(--ground-2);
+      border: 2px solid var(--chalk); }
+    #lim-pause i { position: absolute; top: 17px; width: 9px; height: 30px; border-radius: 2px; background: var(--chalk); }
+    #lim-pauselab { left: 650px; top: 196px; }
+    #lim-laba { left: 400px; top: 796px; width: 400px; text-align: center; }
+    #lim-labb { left: 1200px; top: 796px; width: 400px; text-align: center; }
+    #lim .lim-dau { position: absolute; width: 200px; height: 200px; }
+  </style>
+
+  <div id="lim" class="world" data-composition-id="lim" data-width="1920" data-height="1080">
+    <div id="lim-tag" class="tag-schematic" data-layout-ignore style="opacity:1">示意</div>
+    <div id="lim-cr2" class="credit" data-layout-ignore>Aguirre et al. 2016 · Cancer Discov</div>
+    <div id="lim-cr3" class="credit" data-layout-ignore>Haapaniemi et al. 2018; Ihry et al. 2018 · Nat Med</div>
+
+    <div id="lim-index"><div id="lim-i1" class="lim-idx">1</div><div id="lim-i2" class="lim-idx">2</div><div id="lim-i3" class="lim-idx">3</div></div>
+    <div id="lim-t1" class="lim-topic">读码框</div>
+    <div id="lim-t2" class="lim-topic">拷贝数</div>
+    <div id="lim-t3" class="lim-topic">p53</div>
+
+    <!-- (1) codon row: Kit.NF2.wt 46-56, then codon 50 (GTG) is lost = Kit.NF2.del3 -->
+    <div id="lim-d1" class="lim-layer" data-layout-allow-overlap>
+      <div id="lim-rowbox" class="lim-layer">
+        <div id="lim-nf2" class="label">NF2</div>
+        <div id="lim-row" class="codons"></div>
+        <div id="lim-cut"></div>
+        <div id="lim-burst"></div>
+        <div id="lim-reader"></div>
+      </div>
+      <div id="lim-bars">
+        <div id="lim-bl1" class="label">原本 · <span class="num">595</span> 个氨基酸</div>
+        <div id="lim-b1" class="lim-bar"></div>
+        <div id="lim-bl2" class="label">缺 GTG · <span class="num">594</span> 个氨基酸</div>
+        <div id="lim-b2" class="lim-bar"></div>
+        <div id="lim-notch"></div>
+        <svg id="lim-check" width="72" height="72" viewBox="0 0 72 72"><path id="lim-checkp" d="M 10 38 L 28 56 L 62 14" fill="none" stroke="#ecebe6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" pathLength="1" style="stroke-dasharray:1 1.2;stroke-dashoffset:1.1"/></svg>
+      </div>
+    </div>
+
+    <!-- (2) an amplified region: one guide, many cuts, the cell stops -->
+    <div id="lim-d2" class="lim-layer" data-layout-allow-overlap>
+      <svg id="lim-wedge" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0" data-layout-ignore>
+        <path d="M 356 504 L 600 152 M 356 516 L 600 848" stroke="#8d93a0" stroke-width="2" stroke-dasharray="6 8" fill="none" opacity=".7"/>
+      </svg>
+      <div id="lim-c2" class="cell"><div class="nuc"></div><div id="lim-c2chr"></div><div id="lim-c2dead" class="lim-dead"></div></div>
+      <div id="lim-c2lab" class="label s">癌细胞</div>
+      <div id="lim-panel" class="plot">
+        <div id="lim-chr" class="lim-bands"></div>
+        <div id="lim-reg"></div>
+        <div id="lim-copies"></div>
+        <div id="lim-chrcut"></div>
+        <div id="lim-chrburst"></div>
+        <div id="lim-harm" class="label">DNA 损伤</div>
+        <div id="lim-vline"></div>
+        <div id="lim-guide">向导</div>
+        <div id="lim-ccuts"></div>
+        <div id="lim-amp" class="label">扩增区</div>
+        <div id="lim-ampsub" class="label s">拷贝数高</div>
+        <div id="lim-tgt"><div id="lim-tgt1" class="lim-tgtx">目标：基因 X</div><div id="lim-tgt2" class="lim-tgtx">目标：不表达的基因</div></div>
+      </div>
+    </div>
+
+    <!-- (3) a cut lights p53: the p53-normal cell pauses, a p53-lost cell keeps dividing -->
+    <div id="lim-d3" class="lim-layer" data-layout-allow-overlap>
+      <div id="lim-ga" class="lim-layer">
+      <div id="lim-ringa" class="lim-ring"><svg width="560" height="560" viewBox="0 0 560 560"><circle cx="280" cy="280" r="262" fill="none" stroke="#8d93a0" stroke-width="3" stroke-dasharray="18 14"/><path d="M 528 262 L 542 290 L 556 262 Z" fill="#8d93a0"/></svg></div>
+      <div id="lim-pa" class="lim-bigcell">
+        <div id="lim-pan" class="lim-nucl" style="left:110px;top:110px;width:220px;height:220px">
+          <div id="lim-pal1" class="lim-dna" style="left:20px;top:98px;width:90px"></div>
+          <div id="lim-pal2" class="lim-dna" style="left:20px;top:118px;width:90px"></div>
+          <div id="lim-par1" class="lim-dna" style="left:110px;top:98px;width:90px"></div>
+          <div id="lim-par2" class="lim-dna" style="left:110px;top:118px;width:90px"></div>
+          <div id="lim-pagap" class="lim-gap" style="left:107px;top:88px;height:42px"></div>
+        </div>
+        <svg id="lim-parrow" width="440" height="440" viewBox="0 0 440 440" style="position:absolute;left:0;top:0">
+          <path id="lim-parrowp" d="M 226 206 C 250 160, 290 140, 320 104" fill="none" stroke="#ecebe6" stroke-width="4" stroke-linecap="round" pathLength="1" style="stroke-dasharray:1 1.2;stroke-dashoffset:1.1"/>
+        </svg>
+        <div id="lim-pap53" class="lim-p53" style="left:286px;top:40px;width:116px;height:56px">p53</div>
+      </div>
+      <div id="lim-pause"><i style="left:18px"></i><i style="left:37px"></i></div>
+      <div id="lim-pauselab" class="label">细胞周期暂停</div>
+      <div id="lim-laba" class="label">p53 正常</div>
+      </div>
+
+      <div id="lim-ringb" class="lim-ring"><svg width="410" height="410" viewBox="0 0 410 410"><circle cx="205" cy="205" r="195" fill="none" stroke="#8d93a0" stroke-width="3" stroke-dasharray="18 14"/><path d="M 386 188 L 400 214 L 414 188 Z" fill="#8d93a0"/></svg></div>
+      <div id="lim-daus"></div>
+      <div id="lim-pb" class="lim-bigcell">
+        <div class="lim-nucl" style="left:85px;top:85px;width:170px;height:170px">
+          <div id="lim-pbl1" class="lim-dna" style="left:16px;top:74px;width:69px"></div>
+          <div id="lim-pbl2" class="lim-dna" style="left:16px;top:92px;width:69px"></div>
+          <div id="lim-pbr1" class="lim-dna" style="left:85px;top:74px;width:69px"></div>
+          <div id="lim-pbr2" class="lim-dna" style="left:85px;top:92px;width:69px"></div>
+          <div id="lim-pbgap" class="lim-gap" style="left:82px;top:64px;height:40px"></div>
+        </div>
+        <div id="lim-pbp53" class="lim-p53" style="left:196px;top:30px;width:104px;height:52px;text-decoration:line-through;opacity:.55">p53</div>
+      </div>
+      <div id="lim-labb" class="label">p53 失活</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot, K = window.Kit;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (s) => document.querySelector(s);
+      const E = 'expo.out';
+      const IN = { opacity: 0 }, ON = { opacity: 1 };
+      const fadeIn = (sel, t, from = {}, d = 0.6) => tl.fromTo(sel, { ...IN, ...from }, { ...ON, x: 0, y: 0, scale: 1, duration: d, ease: E }, t);
+      const fadeOut = (sel, t, to = {}, d = 0.35) => tl.fromTo(sel, { ...ON }, { opacity: 0, duration: d, ease: 'power2.in', ...to }, t);
+
+      // ---------------- the index: 1 2 3 land, then each lights as its limit starts
+      const IDLE = { backgroundColor: 'rgba(236,235,230,0)', color: '#8d93a0', borderColor: '#8d93a0' };
+      const LIT = { backgroundColor: '#ecebe6', color: '#0f1218', borderColor: '#ecebe6' };
+      tl.fromTo(['#lim-i1', '#lim-i2', '#lim-i3'], { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.55, ease: E, stagger: 0.14 }, S.at(0, 0.2));
+      const light = (k, t) => {
+        tl.fromTo(`#lim-i${k}`, IDLE, { ...LIT, duration: 0.35, ease: 'power2.out' }, t);
+        fadeIn(`#lim-t${k}`, t + 0.1, { x: -16 }, 0.5);
+        if (k > 1) { tl.fromTo(`#lim-i${k - 1}`, LIT, { ...IDLE, duration: 0.3 }, t); fadeOut(`#lim-t${k - 1}`, t, {}, 0.25); }
+      };
+      light(1, S.at('第一'));
+      light(2, S.at('第二'));
+      light(3, S.at('第三'));
+
+      // ---------------- (1) the codon row: NF2 codons 46-56 (Kit.NF2.wt), then codon 50 is lost (Kit.NF2.del3)
+      const cods = K.codons($('#lim-row'), K.NF2.wt.slice(0, 11));
+      cods.forEach((c) => c.querySelector('.no').setAttribute('data-layout-ignore', ''));
+      // after the deletion, codons 51-56 are numbered 50-55, as Kit.NF2.del3 numbers them
+      const del3 = K.NF2.del3;
+      const no2 = cods.slice(5).map((c, k) => {
+        const d = document.createElement('div');
+        d.className = 'no lim-no2'; d.setAttribute('data-layout-ignore', '');
+        d.textContent = del3[4 + k] ? del3[4 + k][0] : 50 + k;
+        c.appendChild(d); return d;
+      });
+      const left = cods.slice(0, 5), right = cods.slice(5, 10), lost = cods[4];
+      tl.fromTo('#lim-row, #lim-nf2', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, 0);
+      tl.fromTo('#lim-rowbox', { y: 110 }, { y: 0, duration: 0.7, ease: E }, S.at('蛋白只少', -0.1));
+      tl.fromTo(cods[10], { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo(no2, { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+
+      // the cut: between codon 50 and 51 (exon index 35 | 36), the halves part
+      const tCut = S.at('剪断不等于');
+      tl.fromTo('#lim-cut', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.35, ease: 'power3.out' }, tCut);
+      tl.fromTo('#lim-burst', { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 1.5, duration: 0.6, ease: 'power2.out', immediateRender: false }, tCut + 0.1);
+      tl.fromTo(left, { x: 0 }, { x: -14, duration: 0.5, ease: E }, tCut + 0.15);
+      tl.fromTo(right, { x: 0 }, { x: 14, duration: 0.5, ease: E }, tCut + 0.15);
+
+      // three bases lost: codon 50 (GTG) turns red and lifts out, the gap closes, the frame holds
+      const tDel = S.at('少掉三个');
+      tl.fromTo(lost.querySelector('.b3'), { color: '#ecebe6', borderColor: 'rgba(236,235,230,0.18)', backgroundColor: 'rgba(236,235,230,0.06)' },
+        { color: '#ff5a4e', borderColor: '#ff5a4e', backgroundColor: 'rgba(255,90,78,0.12)', duration: 0.25 }, tDel);
+      tl.fromTo(lost.querySelector('.aa'), { color: '#8d93a0' }, { color: '#ff5a4e', duration: 0.25 }, tDel);
+      tl.fromTo(lost, { y: 0, opacity: 1 }, { y: -150, opacity: 0.55, duration: 0.6, ease: E }, tDel + 0.3);
+      fadeOut('#lim-cut', tDel + 0.3, {}, 0.25);
+      tl.fromTo(left.slice(0, 4), { x: -14 }, { x: 0, duration: 0.6, ease: E }, tDel + 0.6);
+      tl.fromTo(right, { x: 14 }, { x: -128, duration: 0.7, ease: E }, tDel + 0.6);
+      tl.fromTo(cods[10], { opacity: 0, x: 0 }, { opacity: 1, x: -128, duration: 0.7, ease: E }, tDel + 0.6);
+      tl.fromTo(cods.slice(5).map((c) => c.querySelector('.no:not(.lim-no2)')), { opacity: 1 }, { opacity: 0, duration: 0.3 }, tDel + 1.1);
+      tl.fromTo(no2, { opacity: 0 }, { opacity: 1, duration: 0.4 }, tDel + 1.2);
+
+      // the frame holds: a reader runs 46 -> 55 and every amino acid reads as before
+      const tRead = S.at('读法没乱'), order = [0, 1, 2, 3, 5, 6, 7, 8, 9, 10];
+      tl.fromTo('#lim-reader', { opacity: 0, x: 0 }, { opacity: 1, duration: 0.2 }, tRead);
+      tl.fromTo('#lim-reader', { x: 0 }, { x: 9 * 128, duration: 1.1, ease: 'power1.inOut' }, tRead + 0.1);
+      tl.fromTo(order.map((i) => cods[i].querySelector('.aa')), { color: '#8d93a0' }, { color: '#ecebe6', duration: 0.2, stagger: 0.12 }, tRead + 0.1);
+      fadeOut('#lim-reader', tRead + 1.3, {}, 0.3);
+      tl.fromTo(lost, { opacity: 0.55 }, { opacity: 0.3, duration: 0.4 }, tRead + 1.3);
+
+      // the protein: 595 vs 594 amino acids, one lost at position 50
+      const tPro = S.at('蛋白只少');
+      fadeIn('#lim-bl1', tPro, { y: 16 }, 0.5);
+      tl.fromTo('#lim-b1', { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: E }, tPro + 0.05);
+      fadeIn('#lim-bl2', tPro + 0.4, { y: 16 }, 0.5);
+      tl.fromTo('#lim-b2', { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: E }, tPro + 0.45);
+      tl.fromTo('#lim-notch', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.4, ease: 'back.out(2)' }, tPro + 0.9);
+      // ... and it may still work
+      tl.fromTo('#lim-checkp', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', autoRound: false }, S.at('照样能用'));
+      fadeOut('#lim-d1', S.at('第二'), { y: -24 }, 0.35);
+
+      // ---------------- (2) an amplified region: one guide cuts every copy; the cell stops
+      const t2 = S.at('第二', 0.4);
+      fadeIn('#lim-c2', t2, { scale: 0.8 }, 0.6);
+      fadeIn('#lim-c2lab', t2 + 0.2, { y: 12 }, 0.5);
+      fadeIn('#lim-panel', t2 + 0.15, { x: 30 }, 0.6);
+      fadeIn('#lim-wedge', t2 + 0.3, {}, 0.5);
+      tl.fromTo('#lim-chr', { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: E }, t2 + 0.35);
+
+      const tHarm = S.at('本身就有伤害', 0.35);
+      tl.fromTo('#lim-chrcut', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: 'power3.out' }, tHarm);
+      tl.fromTo('#lim-chrburst', { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 1.6, duration: 0.6, ease: 'power2.out', immediateRender: false }, tHarm + 0.05);
+      fadeIn('#lim-harm', tHarm + 0.3, { x: -12 }, 0.5);
+
+      // the region is there many times over: copies stack under it
+      const tAmp = S.at('复制了很多份');
+      const copies = [];
+      for (let k = 0; k < 9; k++) {
+        const c = document.createElement('div');
+        c.id = `lim-copy${k}`; c.className = 'lim-copy'; c.style.top = `${180 + 50 * k}px`;
+        c.innerHTML = '<div class="lim-half l lim-bands"></div><div class="lim-half r lim-bands"></div>';
+        $('#lim-copies').appendChild(c); copies.push(c);
+      }
+      fadeOut('#lim-harm', tAmp, {}, 0.3);
+      fadeIn('#lim-cr2', tAmp, {}, 0.4);
+      fadeIn('#lim-reg', tAmp, { scale: 1.08 }, 0.5);
+      copies.forEach((c, k) => tl.fromTo(c, { opacity: 0, y: -(80 + 50 * k) }, { opacity: 1, y: 0, duration: 0.55, ease: E }, tAmp + 0.3 + 0.16 * k));
+      fadeIn('#lim-amp', tAmp + 0.9, { x: -14 }, 0.5);
+      fadeIn('#lim-ampsub', tAmp + 1.1, { x: -14 }, 0.5);
+
+      // one guide, a cut on every copy
+      const tMany = S.at('很多个断口');
+      fadeIn('#lim-guide', tMany, { y: -20, scale: 0.8 }, 0.5);
+      tl.fromTo('#lim-vline', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.6, ease: 'power2.out' }, tMany + 0.35);
+      const ccuts = copies.map((c, k) => {
+        const m = document.createElement('div');
+        m.id = `lim-ccut${k}`; m.className = 'lim-ccut'; m.style.top = `${180 + 50 * k - 4}px`;
+        $('#lim-ccuts').appendChild(m); return m;
+      });
+      ccuts.forEach((m, k) => {
+        const t = tMany + 0.5 + 0.11 * k, [l, r] = copies[k].children;
+        tl.fromTo(m, { opacity: 0, scaleY: 0.2 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: 'back.out(2.5)' }, t);
+        tl.fromTo(l, { x: 0 }, { x: -7, duration: 0.4, ease: E }, t);
+        tl.fromTo(r, { x: 0 }, { x: 7, duration: 0.4, ease: E }, t);
+      });
+
+      // the cell stops growing: grey, it shrinks
+      const tStop = S.at('停止生长');
+      tl.fromTo('#lim-c2dead', { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power2.out' }, tStop);
+      tl.fromTo('#lim-c2', { scale: 1 }, { scale: 0.86, duration: 0.8, ease: 'power2.out' }, tStop);
+      tl.fromTo('#lim-c2chr', { opacity: 1 }, { opacity: 0.25, duration: 0.6 }, tStop);
+
+      // whatever the target is, the same: the tag flips, the cell stays grey
+      const tAny = S.at('什么基因无关');
+      fadeIn('#lim-tgt1', tAny, { x: -16 }, 0.5);
+      fadeOut('#lim-tgt1', tAny + 0.9, {}, 0.25);
+      fadeIn('#lim-tgt2', tAny + 1.0, { y: 14 }, 0.45);
+      fadeOut('#lim-d2', S.at('第三'), { y: -24 }, 0.35);
+      fadeOut('#lim-cr2', S.at('第三'), {}, 0.3);
+
+      // ---------------- (3) the cut lights p53; the cell pauses
+      const t3 = S.at('第三', 0.35);
+      fadeIn('#lim-pa', t3, { scale: 0.82 }, 0.6);
+      fadeIn('#lim-ringa', t3 + 0.1, { scale: 0.9 }, 0.6);
+      const tP = S.at('激活');
+      tl.fromTo('#lim-ringa', { rotation: 0 }, { rotation: 230, duration: tP + 1.0 - t3, ease: 'none' }, t3);
+      tl.fromTo('#lim-ringa', { rotation: 230 }, { rotation: 262, duration: 0.5, ease: 'power2.out', immediateRender: false }, tP + 1.0);
+      // the cut
+      tl.fromTo('#lim-pagap', { opacity: 0, scaleY: 0.2 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: 'power3.out' }, tP);
+      tl.fromTo(['#lim-pal1', '#lim-pal2'], { x: 0 }, { x: -7, duration: 0.4, ease: E }, tP);
+      tl.fromTo(['#lim-par1', '#lim-par2'], { x: 0 }, { x: 7, duration: 0.4, ease: E }, tP);
+      fadeIn('#lim-cr3', tP, {}, 0.4);
+      // ... lights p53
+      tl.fromTo('#lim-parrowp', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.45, ease: 'power2.out', autoRound: false }, tP + 0.35);
+      tl.fromTo('#lim-pap53', { backgroundColor: 'rgba(236,235,230,0)', color: '#8d93a0', borderColor: '#4b5466', boxShadow: '0 0 0px 0px rgba(236,235,230,0)' },
+        { backgroundColor: '#ecebe6', color: '#0f1218', borderColor: '#ecebe6', boxShadow: '0 0 34px 6px rgba(236,235,230,0.45)', duration: 0.4, ease: 'power2.out' }, tP + 0.75);
+      // ... and the cell cycle pauses
+      fadeIn('#lim-pause', tP + 1.3, { scale: 0.4 }, 0.5);
+      fadeIn('#lim-pauselab', tP + 1.45, { x: -14 }, 0.5);
+
+      // p53-normal vs p53 lost: the second cell is cut too, but keeps cycling and divides
+      const tN = S.at('p53 正常');
+      tl.fromTo('#lim-ga', { x: 360 }, { x: 0, duration: 0.7, ease: E }, tN);
+      fadeIn('#lim-laba', tN + 0.2, { y: 12 }, 0.5);
+      fadeIn('#lim-pb', tN + 0.25, { scale: 0.8 }, 0.6);
+      fadeIn('#lim-ringb', tN + 0.3, { scale: 0.9 }, 0.6);
+      fadeIn('#lim-labb', tN + 0.45, { y: 12 }, 0.5);
+      tl.fromTo('#lim-pbgap', { opacity: 0 }, { opacity: 1, duration: 0.2 }, tN + 0.7);
+      tl.fromTo('#lim-pbgap', { opacity: 1 }, { opacity: 0, duration: 0.4 }, tN + 1.3);
+      const tDiv = S.at('更不容易');
+      tl.fromTo('#lim-ringb', { rotation: 0 }, { rotation: 300, duration: tDiv + 0.3 - (tN + 0.3), ease: 'none' }, tN + 0.3);
+      fadeOut('#lim-ringb', tDiv + 0.1, {}, 0.3);
+      fadeOut('#lim-pbp53', tDiv, {}, 0.2);
+      // B divides into four
+      const C = [[1290, 400], [1510, 400], [1290, 620], [1510, 620]];
+      tl.fromTo('#lim-pb', { x: 0, y: 0, scale: 1 }, { x: C[0][0] - 1400, y: C[0][1] - 510, scale: 200 / 340, duration: 0.6, ease: E }, tDiv + 0.15);
+      C.slice(1).forEach(([cx, cy], k) => {
+        const d = document.createElement('div');
+        d.id = `lim-dau${k}`; d.className = 'lim-bigcell lim-dau';
+        d.style.left = `${cx - 100}px`; d.style.top = `${cy - 100}px`;
+        d.innerHTML = '<div class="lim-nucl" style="left:50px;top:50px;width:100px;height:100px"><div class="lim-dna" style="left:10px;top:44px;width:80px;height:4px"></div><div class="lim-dna" style="left:10px;top:54px;width:80px;height:4px"></div></div>';
+        $('#lim-daus').appendChild(d);
+        tl.fromTo(d, { opacity: 0, x: 1400 - cx, y: 510 - cy, scale: 0.4 }, { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.65, ease: E }, tDiv + 0.2 + 0.12 * k);
+      });
+
+      window.__timelines['lim'] = tl;
+    })();
+  </script>
+</template>

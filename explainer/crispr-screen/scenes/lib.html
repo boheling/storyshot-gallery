@@ -1,0 +1,290 @@
+<template>
+  <style>
+    #lib .lib-chip { position: absolute; }
+    #lib-rna { left: 482px; top: 402px; }
+    #lib-genes, #lib-genes-g { position: absolute; left: 120px; top: 160px; width: 960px; height: 678px; background-size: 6px 6px;
+      background-image: linear-gradient(to right, #0f1218 1px, transparent 1px), linear-gradient(to bottom, #0f1218 1px, transparent 1px); }
+    #lib-genes { background-color: #4a5160; }
+    #lib-genes-g { background-color: #ff5c8a; }
+    #lib-nf2sq { position: absolute; width: 6px; height: 6px; background: var(--nf2); box-shadow: 0 0 10px 3px rgba(244,166,42,.8); }
+    #lib-zoom { position: absolute; left: 0; top: 0; }
+    #lib-rows { position: absolute; left: 1150px; top: 282px; width: 660px; height: 214px; border-radius: 14px; border: 1.5px solid #3a4150; background: rgba(23,27,35,.85); }
+    #lib .lib-sq { position: absolute; width: 30px; height: 30px; border-radius: 4px; background: #4a5160; }
+    #lib .lib-unit { font: 600 36px/1 var(--font); color: var(--chalk-2); letter-spacing: 0; }
+    #lib .lib-virus { position: absolute; width: 150px; height: 150px; }
+    #lib-flask { position: absolute; left: 410px; top: 330px; width: 1100px; height: 520px; }
+    #lib-field { left: 150px; top: 96px; width: 780px; height: 780px; }
+    #lib .lib-drop { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 2.5px solid #8d93a0; background: radial-gradient(circle, #ff5c8a 0 32%, rgba(236,235,230,.08) 34%); }
+    #lib .lib-ring { position: absolute; border-radius: 50%; border: 3px solid var(--guide); box-shadow: 0 0 14px rgba(255,92,138,.55); }
+    #lib .lib-cover { position: absolute; inset: -2px; border-radius: 50%; background: var(--dead); border: 2px solid #2b2f37; opacity: 0; }
+    #lib .lib-row { position: absolute; left: 1040px; height: 80px; width: 760px; }
+    #lib .lib-row .cell { left: 0; top: 8px; width: 64px; height: 64px; }
+    #lib .lib-row .lib-n { position: absolute; left: 96px; top: 4px; font: 700 72px/1 var(--mono); color: var(--chalk); }
+    #lib .lib-row .lib-t { position: absolute; left: 196px; top: 26px; font: 500 30px/1 var(--font); color: var(--chalk-2); white-space: nowrap; }
+    #lib-wash { position: absolute; left: 136px; top: 82px; width: 808px; height: 808px; border-radius: 24px; background: rgba(160,170,190,.13); border: 1.5px solid rgba(236,235,230,.22); }
+  </style>
+  <div id="lib" class="world" data-composition-id="lib" data-width="1920" data-height="1080">
+    <div id="lib-tag" class="tag-schematic" data-layout-ignore>示意</div>
+    <div id="lib-credit1" class="credit" data-layout-ignore>Shalem et al. 2014 · Science</div>
+    <div id="lib-credit2" class="credit" data-layout-ignore>Joung et al. 2017 · Nat Protoc</div>
+
+    <!-- beat 0-2: one guide becomes a library -->
+    <div id="lib-rna-lab" class="label" style="left:960px;top:318px">向导 RNA</div>
+    <div id="lib-rna" class="strand"></div>
+    <div id="lib-chips" style="position:absolute;inset:0"></div>
+    <div id="lib-gecko" class="label" style="left:120px;top:92px">GeCKO 文库 · 2014</div>
+
+    <!-- beat 3-5: 18,080 genes, 3-4 guides each, 64,751 guides -->
+    <div id="lib-genes"></div>
+    <div id="lib-genes-g"></div>
+    <div id="lib-nf2sq"></div>
+    <svg id="lib-zoom" width="1920" height="1080" viewBox="0 0 1920 1080">
+      <rect id="lib-zbox" x="533" y="458" width="22" height="34" rx="3" fill="none" stroke="#ecebe6" stroke-width="2"/>
+      <path id="lib-zwedge" d="M555 458 L1150 282 M555 492 L1150 496" fill="none" stroke="#8d93a0" stroke-width="1.5" stroke-dasharray="6 6"/>
+    </svg>
+    <div id="lib-rows" data-layout-allow-overlap></div>
+    <div id="lib-ngenes" class="big num" style="left:1150px;top:150px">18,080 <span class="lib-unit">个基因</span></div>
+    <div id="lib-per" class="label s" style="left:1150px;top:516px">每个基因 3–4 条</div>
+    <div id="lib-nguides" class="big num" style="left:1150px;top:590px">64,751 <span class="lib-unit">条向导</span></div>
+
+    <!-- beat 6-7: lentivirus, a flask of cells -->
+    <div id="lib-viruses" style="position:absolute;inset:0"></div>
+    <div id="lib-vlab" class="label" style="left:1580px;top:250px">慢病毒</div>
+    <svg id="lib-flask" viewBox="0 0 1100 520" width="1100" height="520"></svg>
+    <div id="lib-flab" class="label" style="left:560px;top:272px">A375 黑色素瘤细胞</div>
+
+    <!-- beat 8-14: 100 cells at MOI 0.3 -->
+    <div id="lib-wash"></div>
+    <div id="lib-field" class="cellfield"></div>
+    <div id="lib-drops" style="position:absolute;inset:0"></div>
+    <div id="lib-washlab" class="label" style="left:1040px;top:690px">抗生素</div>
+    <div id="lib-n100" class="label" style="left:1040px;top:150px">100 个细胞</div>
+    <div id="lib-moi" class="label s" style="left:1040px;top:204px">按 MOI 0.3 计算</div>
+    <div id="lib-rowA" class="lib-row" style="top:300px" data-layout-allow-overlap></div>
+    <div id="lib-rowB" class="lib-row" style="top:420px" data-layout-allow-overlap></div>
+    <div id="lib-rowC" class="lib-row" style="top:540px" data-layout-allow-overlap></div>
+  </div>
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const mk = (tag, cls, css, parent, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (css) d.style.cssText = css; if (html) d.innerHTML = html; parent.appendChild(d); return d; };
+      const E = 'expo.out';
+      const show = (t, el, from = {}, dur = 0.6) => tl.fromTo(el, { opacity: 0, ...from }, { opacity: 1, x: 0, y: 0, scale: 1, duration: dur, ease: E }, t);
+      const hide = (t, el, to = {}, dur = 0.35) => tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: dur, ease: 'power2.in', ...to }, t);
+
+      // one guide written as a barcode chip, drawn as a single element (stripes = one gradient)
+      function chip(seed, { k = 1, n = 14, nf2 = false } = {}) {
+        const rnd = Kit.rng(seed), col = nf2 ? '#f4a62a' : '#ff5c8a', bg = nf2 ? 'rgba(244,166,42,.12)' : 'rgba(255,92,138,.12)';
+        let x = 8 * k; const st = [];
+        for (let i = 0; i < n; i++) { const w = (rnd() < 0.35 ? 8 : 4) * k; st.push(`transparent ${x.toFixed(1)}px`, `${col} ${x.toFixed(1)}px ${(x + w).toFixed(1)}px`, `transparent ${(x + w).toFixed(1)}px`); x += w + 3 * k; }
+        const W = x - 3 * k + 8 * k + 3, H = 34 * k, b = Math.max(1, 1.5 * k);
+        const d = document.createElement('div');
+        d.className = 'lib-chip';
+        d.style.cssText = `width:${W.toFixed(1)}px;height:${H.toFixed(1)}px;border-radius:${(7 * k).toFixed(1)}px;border:${b.toFixed(1)}px solid ${col};` +
+          `background:linear-gradient(to right,${st.join(',')}) 0 ${(6 * k).toFixed(1)}px / 100% ${(H - 12 * k - 2 * b).toFixed(1)}px no-repeat ${bg};`;
+        d._w = W; d._h = H;
+        return d;
+      }
+
+      // 100 cells on a 10 x 10 grid (78 px pitch) in the kit's cell look; drug.html builds the same grid
+      function grid100(el) {
+        const rnd = Kit.rng(11), out = [];
+        for (let i = 0; i < 100; i++) {
+          const cx = (i % 10 + 0.5) * 78 + (rnd() - 0.5) * 18, cy = (Math.floor(i / 10) + 0.5) * 78 + (rnd() - 0.5) * 18, rr = 27 * (0.9 + rnd() * 0.2);
+          const d = document.createElement('div');
+          d.className = 'cell';
+          d.style.cssText = `left:${(cx - rr).toFixed(1)}px;top:${(cy - rr).toFixed(1)}px;width:${(2 * rr).toFixed(1)}px;height:${(2 * rr).toFixed(1)}px`;
+          d.innerHTML = '<div class="nuc"></div><div class="bc"></div>';
+          el.appendChild(d);
+          out.push({ el: d, x: cx, y: cy, r: rr });
+        }
+        return out;
+      }
+
+      // ---------- 0: the guide RNA from the last scene, folded into a chip ----------
+      Kit.strand($('lib-rna'), 'ACCUCUUUGAUUUGGUGUGC', {}, 'rna');
+      gsap.set('#lib-rna-lab', { xPercent: -50 });
+      const chips = $('lib-chips');
+      const c0 = chip(3, { k: 2.4 }); chips.appendChild(c0);
+      c0.style.left = (960 - c0._w / 2) + 'px'; c0.style.top = (430 - c0._h / 2) + 'px';
+      gsap.set('#lib-rna', { scale: 1.3 });
+      tl.fromTo('#lib-rna', { scaleX: 1.3, scaleY: 1.3, opacity: 1 }, { scaleX: 0.3, scaleY: 1, opacity: 0, duration: 0.45, ease: 'power2.in' }, S.at(0));
+      hide(S.at(1), '#lib-rna-lab', {}, 0.3);
+      tl.fromTo(c0, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: E }, S.at(0, 0.3));
+
+      // ---------- 1: one becomes a whole set ----------
+      const lib = [];
+      for (let r = 0; r < 12; r++) for (let c = 0; c < 17; c++) {
+        const cx = 960 + 104 * (c - 8), cy = 430 + 56 * (r - 5);
+        if (c === 8 && r === 5) continue;
+        const d = chip(100 + r * 17 + c, { k: 0.6 }); chips.appendChild(d);
+        d.style.left = (cx - d._w / 2) + 'px'; d.style.top = (cy - d._h / 2) + 'px';
+        const dist = Math.hypot((c - 8) * 1.0, (r - 5) * 1.6);
+        tl.fromTo(d, { x: 960 - cx, y: 430 - cy, scale: 2, opacity: 0 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.7, ease: E }, S.at(1, 0.15 + dist * 0.11));
+        lib.push(d);
+      }
+      tl.fromTo(c0, { scale: 1 }, { scale: 0.25, duration: 0.6, ease: E }, S.at(1));
+      show(S.at(2), '#lib-gecko', { y: 20 });
+      show(S.at(2), '#lib-credit1', {}, 0.5);
+
+      // ---------- 3: 18,080 genes (160 x 113 squares = 18,080) ----------
+      tl.fromTo([c0, ...lib], { opacity: 1 }, { opacity: 0, scale: 0.4, duration: 0.4, ease: 'power2.in', stagger: { each: 0.0015, from: 'random' } }, S.at(3));
+      tl.fromTo('#lib-genes', { clipPath: 'inset(0% 0% 100% 0%)', opacity: 1 }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9, ease: 'power2.out' }, S.at(3, 0.25));
+      show(S.at(3, 0.3), '#lib-ngenes', { x: 40 });
+
+      // ---------- 4: one gene, 3-4 guides (NF2 amber) ----------
+      const nf2sq = $('lib-nf2sq'); nf2sq.style.left = (120 + 70 * 6) + 'px'; nf2sq.style.top = (160 + 52 * 6) + 'px';
+      tl.fromTo(nf2sq, { scale: 8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: E }, S.at(4));
+      tl.fromTo('#lib-zbox', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(4, 0.3));
+      tl.fromTo('#lib-zwedge', { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(4, 0.4));
+      const rows = $('lib-rows');
+      const spec = [{ n: 3, nf2: false }, { n: 4, nf2: true, name: 'NF2' }, { n: 4, nf2: false }];
+      spec.forEach((s, i) => {
+        const y = 20 + i * 64;
+        const sq = mk('div', 'lib-sq', `left:22px;top:${y + 1}px;${s.nf2 ? 'background:#f4a62a' : ''}`, rows);
+        if (s.name) mk('div', '', `position:absolute;left:66px;top:${y - 1}px;font:700 32px/1.1 var(--mono);color:#f4a62a`, rows, s.name);
+        const parts = [sq];
+        for (let g = 0; g < s.n; g++) {
+          const d = chip(900 + i * 10 + g, { k: 0.92, n: 13, nf2: s.nf2 }); rows.appendChild(d);
+          d.style.left = (148 + g * 124) + 'px'; d.style.top = (y + 16 - d._h / 2) + 'px';
+          tl.fromTo(d, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, S.at(4, 0.7 + i * 0.12 + g * 0.08));
+        }
+      });
+      show(S.at(4, 0.45), '#lib-rows', { scale: 0.96 }, 0.5);
+      show(S.at(4, 1.3), '#lib-per', { y: 12 }, 0.5);
+
+      // ---------- 5: 64,751 guides in all ----------
+      tl.fromTo('#lib-genes-g', { clipPath: 'inset(0% 100% 0% 0%)', opacity: 0.85 }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.0, ease: 'power2.inOut' }, S.at(5));
+      show(S.at(5, 0.2), '#lib-nguides', { x: 40 });
+
+      // ---------- 6: packed into lentivirus ----------
+      const out6 = ['#lib-ngenes', '#lib-per', '#lib-nguides', '#lib-rows', '#lib-zoom', '#lib-nf2sq', '#lib-gecko', '#lib-credit1'];
+      hide(S.at(6), out6);
+      tl.fromTo(['#lib-genes', '#lib-genes-g'], { scale: 1, opacity: 1 }, { scale: 0.25, opacity: 0, duration: 0.55, ease: 'power3.in', transformOrigin: '50% 50%' }, S.at(6));
+      show(S.at(6), '#lib-tag', {}, 0.4);
+      function virusSVG(seed) {
+        const rnd = Kit.rng(seed), rot = Math.round((rnd() - 0.5) * 70);
+        let sp = '', kn = '';
+        for (let i = 0; i < 14; i++) {
+          const a = (i / 14) * Math.PI * 2 + rnd() * 0.12, c = Math.cos(a), s = Math.sin(a);
+          sp += `M${(52 * c).toFixed(1)} ${(52 * s).toFixed(1)}L${(63 * c).toFixed(1)} ${(63 * s).toFixed(1)}`;
+          kn += `M${(67 * c - 4.5).toFixed(1)} ${(67 * s).toFixed(1)}a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0`;
+        }
+        return `<svg viewBox="-75 -75 150 150" width="150" height="150">
+          <circle r="52" fill="rgba(236,235,230,.05)" stroke="#8d93a0" stroke-width="3"/>
+          <path d="${sp}" stroke="#8d93a0" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="${kn}" fill="#8d93a0"/>
+          <g transform="rotate(${rot})">
+            <path d="M-25 -30 Q0 -40 25 -30 L11 31 Q0 36 -11 31 Z" fill="rgba(236,235,230,.08)" stroke="#b9bec9" stroke-width="2.5" stroke-linejoin="round"/>
+            <g class="lib-vrna">
+              <rect x="-17" y="-12" width="34" height="18" rx="3" fill="rgba(255,92,138,.25)" stroke="#ff5c8a" stroke-width="2.2"/>
+              <path d="M-11 -8v10M-6 -8v10M-2 -8v10M4 -8v10M9 -8v10M12 -8v10" stroke="#ff5c8a" stroke-width="2.2"/>
+            </g>
+          </g></svg>`;
+      }
+      const vpos = [[520, 300], [830, 250], [1140, 290], [1440, 260], [400, 560], [700, 520], [1010, 560], [1320, 520], [1580, 560], [560, 790], [880, 780], [1200, 790]];
+      const vir = vpos.map(([x, y], i) => {
+        const v = mk('div', 'lib-virus', `left:${x - 75}px;top:${y - 75}px`, $('lib-viruses'), virusSVG(40 + i));
+        tl.fromTo(v, { scale: 0.3, opacity: 0, x: 600 - x, y: 500 - y }, { scale: 1, opacity: 1, x: 0, y: 0, duration: 0.65, ease: E }, S.at(6, 0.2 + i * 0.04));
+        tl.fromTo(v.querySelector('.lib-vrna'), { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, S.at(6, 0.55 + i * 0.05));
+        return { v, x, y };
+      });
+      show(S.at(6, 0.8), '#lib-vlab', { y: 14 }, 0.5);
+
+      // ---------- 7: infect a big flask of cancer cells ----------
+      const fl = $('lib-flask');
+      let fcells = '';
+      { const rnd = Kit.rng(77);
+        for (let r = 0; r < 9; r++) for (let c = 0; c < 17; c++) {
+          const x = 200 + c * 52 + (rnd() - 0.5) * 22, y = 60 + r * 50 + (rnd() - 0.5) * 20, rr = 12 + rnd() * 4;
+          fcells += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr.toFixed(1)}" fill="#1f2530" stroke="#4b5466" stroke-width="2"/><circle cx="${(x - 1).toFixed(1)}" cy="${(y - 1).toFixed(1)}" r="${(rr * 0.4).toFixed(1)}" fill="#39414f"/>`;
+        } }
+      fl.innerHTML = `<path d="M170 20 H1060 Q1090 20 1090 50 V470 Q1090 500 1060 500 H170 Q140 500 140 470 V50 Q140 20 170 20 Z" fill="rgba(236,235,230,.035)" stroke="#8d93a0" stroke-width="3"/>
+        <path d="M140 180 L52 214 L52 306 L140 340" fill="rgba(236,235,230,.035)" stroke="#8d93a0" stroke-width="3" stroke-linejoin="round"/>
+        <rect x="8" y="200" width="46" height="120" rx="10" fill="#3a404c" stroke="#8d93a0" stroke-width="2"/>
+        <path d="M18 214 V306 M30 214 V306 M42 214 V306" stroke="#2b313d" stroke-width="3"/>
+        <g>${fcells}</g>`;
+      hide(S.at(7), '#lib-vlab', {}, 0.25);
+      tl.fromTo(fl, { opacity: 0, y: 140 }, { opacity: 1, y: 0, duration: 0.65, ease: E }, S.at(7));
+      show(S.at(7, 0.35), '#lib-flab', { y: 14 }, 0.5);
+      vir.forEach(({ v, x, y }, i) => {
+        const bx = 960 + (i % 6) * 100, by = 150 + Math.floor(i / 6) * 70;           // a band above the flask
+        const lx = 600 + ((i * 7) % 12) * 72, ly = 430 + ((i * 5) % 6) * 62;           // where it lands in the flask
+        tl.fromTo(v, { x: 0, y: 0, scale: 1 }, { x: bx - x, y: by - y, scale: 0.42, duration: 0.55, ease: 'power3.out' }, S.at(7));
+        tl.fromTo(v, { x: bx - x, y: by - y }, { x: lx - x, y: ly - y, duration: 0.6, ease: 'power2.in', immediateRender: false }, S.at(7, 0.65 + i * 0.07));
+        tl.fromTo(v, { opacity: 1 }, { opacity: 0, duration: 0.18 }, S.at(7, 1.2 + i * 0.07));
+      });
+
+      // ---------- 8: a few viruses; 100 cells (10 x 10) ----------
+      tl.fromTo(fl, { scale: 1, opacity: 1 }, { scale: 1.7, opacity: 0, duration: 0.4, ease: 'power2.in', transformOrigin: '26% 44%' }, S.at(8));
+      hide(S.at(8), '#lib-flab', {}, 0.25);
+      const field = $('lib-field');
+      const cells = grid100(field);
+      const singles = [1, 6, 13, 19, 20, 25, 27, 38, 44, 46, 50, 57, 59, 62, 71, 77, 83, 86, 89, 92, 94, 98];
+      const doubles = [8, 32, 65, 90];
+      const got = [...singles, ...doubles];
+      const empty = cells.map((_, i) => i).filter((i) => !got.includes(i));
+      cells.forEach((c, i) => { c.cover = mk('div', 'lib-cover', '', c.el); c.bc = c.el.querySelector('.bc'); });
+      doubles.forEach((i) => {
+        const c = cells[i], b2 = c.bc.cloneNode(); c.el.insertBefore(b2, c.cover);
+        c.bc.style.marginTop = '-15%'; b2.style.marginTop = '4%'; c.bc2 = b2;
+      });
+      tl.fromTo(field, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: E }, S.at(8, 0.3));
+      show(S.at(8, 0.4), '#lib-n100', { y: 14 }, 0.5);
+      show(S.at(8, 0.6), '#lib-moi', { y: 10 }, 0.5);
+      show(S.at(8, 0.5), '#lib-credit2', {}, 0.5);
+      // the drops: one per guide that lands (30: 22 cells get one, 4 get two)
+      const drops = [];
+      got.forEach((i) => (doubles.includes(i) ? [0, 1] : [0]).forEach((k) => drops.push({ i, k })));
+      drops.forEach((d, j) => {
+        const c = cells[d.i], x = 150 + c.x + (d.k ? 10 : 0) - (doubles.includes(d.i) && !d.k ? 8 : 0), y = 96 + c.y;
+        const dr = mk('div', 'lib-drop', `left:${x}px;top:${y}px`, $('lib-drops'));
+        const t = S.at(8, 0.75 + ((j * 7) % 30) * 0.035);
+        tl.fromTo(dr, { y: -120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, ease: 'power2.in' }, t);
+        tl.fromTo(dr, { opacity: 1, scale: 1 }, { opacity: 0, scale: 0.4, duration: 0.2 }, t + 0.42);
+        tl.fromTo(d.k ? c.bc2 : c.bc, { opacity: 0 }, { opacity: 1, duration: 0.2 }, t + 0.4);
+      });
+
+      // the tally (Poisson, MOI 0.3: e^-0.3 = 74%, 0.3 e^-0.3 = 22%, the rest 4%)
+      function row(id, n, text, bars) {
+        const r = $(id);
+        const ic = mk('div', 'cell', '', r, '<div class="nuc"></div>' + (bars ? '<div class="bc" style="opacity:1"></div>' : '') + (bars > 1 ? '<div class="bc" style="opacity:1"></div>' : ''));
+        if (bars > 1) { ic.children[1].style.marginTop = '-15%'; ic.children[2].style.marginTop = '4%'; }
+        mk('div', 'lib-n', '', r, String(n)); mk('div', 'lib-t', '', r, text);
+        return r;
+      }
+      row('lib-rowA', 74, '0 条向导', 0); row('lib-rowB', 22, '1 条向导', 1); row('lib-rowC', 4, '2 条及以上', 2);
+
+      // ---------- 9-10: three quarters get nothing ----------
+      const emptyEls = empty.map((i) => cells[i].el), gotEls = got.map((i) => cells[i].el);
+      tl.fromTo(emptyEls, { borderColor: '#4b5466' }, { borderColor: '#ecebe6', duration: 0.4, stagger: { each: 0.008, from: 'random' } }, S.at(9));
+      show(S.at(9, 0.1), '#lib-rowA', { x: 30 });
+      tl.fromTo(emptyEls, { borderColor: '#ecebe6', opacity: 1 }, { borderColor: '#4b5466', opacity: 0.45, duration: 0.5 }, S.at(10));
+
+      // ---------- 11-12: of those that got one, most got exactly one ----------
+      const rings = singles.map((i) => { const c = cells[i]; return mk('div', 'lib-ring', `left:${150 + c.x - c.r - 7}px;top:${96 + c.y - c.r - 7}px;width:${2 * c.r + 14}px;height:${2 * c.r + 14}px`, $('lib-drops')); });
+      tl.fromTo(gotEls, { scale: 1 }, { scale: 1.12, duration: 0.5, ease: E }, S.at(11));
+      tl.fromTo(rings, { scale: 1.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: E, stagger: 0.03 }, S.at(12));
+      show(S.at(12, 0.1), '#lib-rowB', { x: 30 });
+      show(S.at(12, 0.7), '#lib-rowC', { x: 30 });
+
+      // ---------- 13-14: the ones with none are killed by the antibiotic ----------
+      tl.fromTo(rings, { opacity: 1 }, { opacity: 0, duration: 0.3 }, S.at(13));
+      tl.fromTo(gotEls, { scale: 1.12 }, { scale: 1, duration: 0.4 }, S.at(13));
+      tl.fromTo(emptyEls, { opacity: 0.45, borderColor: '#4b5466' }, { opacity: 1, borderColor: '#ecebe6', duration: 0.35 }, S.at(13));
+      tl.fromTo('#lib-wash', { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(14));
+      show(S.at(14), '#lib-washlab', { y: 10 }, 0.4);
+      tl.fromTo(empty.map((i) => cells[i].cover), { opacity: 0 }, { opacity: 1, duration: 0.3, stagger: { each: 0.006, from: 'random' } }, S.at(14, 0.2));
+      tl.fromTo(emptyEls, { scale: 1, opacity: 1 }, { scale: 0.45, opacity: 0, duration: 0.45, ease: 'power2.in', stagger: { each: 0.006, from: 'random' } }, S.at(14, 0.6));
+      tl.fromTo('#lib-rowA', { opacity: 1 }, { opacity: 0.35, duration: 0.4 }, S.at(14, 0.6));
+      tl.fromTo(['#lib-wash', '#lib-washlab'], { opacity: 1 }, { opacity: 0, duration: 0.35 }, S.at(14, 1.45));
+      // the hold (and drug.html's first frame): only the barcoded survivors, the 示意 tag and the credit
+      tl.fromTo(['#lib-n100', '#lib-moi', '#lib-rowB', '#lib-rowC'], { opacity: 1 }, { opacity: 0, duration: 0.35 }, S.at(14, 1.45));
+      tl.fromTo('#lib-rowA', { opacity: 0.35 }, { opacity: 0, duration: 0.35 }, S.at(14, 1.45));
+
+      window.__timelines['lib'] = tl;
+    })();
+  </script>
+</template>

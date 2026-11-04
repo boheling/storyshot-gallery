@@ -1,0 +1,62 @@
+# CRISPR knockout screens, and screens of single mutations: a Chinese explainer made of scenes.
+# Sources: Shalem et al. 2014 Science 343:84 (GeCKO, A375 + vemurafenib); Jinek et al. 2012 (Cas9, NGG);
+# Ensembl GRCh38 NF2 ENST00000338641 exon 2 (the sequence on screen); Joung et al. 2017 Nat Protoc (MOI 0.3);
+# Aguirre et al. 2016 Cancer Discov (copy number); Haapaniemi et al. / Ihry et al. 2018 Nat Med (p53);
+# Hanna et al. 2021 Cell (base editor screens); Findlay et al. 2018 Nature (BRCA1, 3,893 SNVs).
+name: crispr-screen-explainer
+purpose: explainer
+out: crispr-screen-explainer.mp4
+lang: zh
+voice:
+  provider: qwen
+  voice: dylan
+  pronounce:
+    CRISPR: 克里斯珀
+    Cas9: Cas 九
+    V600E: V 六百 E
+    NGG: N G G
+    NF2: N F 二
+    NF1: N F 一
+    CUL3: C U L 三
+    TADA2B: T A D A 二 B
+    TADA1: T A D A 一
+    MED12: M E D 十二
+    p53: P 五十三
+    BRCA1: B R C A 一
+subtitles: burn
+theme: { accent: "#f4a62a", ink: "#17181b" }
+scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js }
+
+steps:
+  - scene: { file: scenes/hook.html, title: 一个药为什么失效, lead: 0.7 }
+    say: 黑色素瘤里，常见一个突变，叫 BRAF V600E。维莫非尼专门抑制它，很多病人一开始效果很好。可往往几个月后，肿瘤又长回来了。癌细胞里，一定还有别的基因在起作用。人有大约两万个基因，是哪一个？一个一个敲掉去试，要做两万次实验。CRISPR 筛选，把这两万次实验，放进同一瓶细胞里。
+
+  - scene: { file: scenes/cas.html, title: 剪刀和地址, lead: 0.6 }
+    say: 先看工具。Cas9 是一把剪刀，可它自己不认路。带路的，是一段二十个碱基的向导 RNA。这是 NF2 基因上的一段真实序列。向导和它一一配对，紧跟着还要有 NGG 三个碱基。都对上了，Cas9 就在这里，把 DNA 的两条链一起剪断。
+
+  - scene: { file: scenes/frame.html, title: 修错了，基因就坏了, lead: 0.6 }
+    say: DNA 断了，细胞会马上修。最快的修法很粗糙，常常多出一个碱基，或者少掉几个。蛋白质是三个碱基一组来读的。多一个碱基，后面每一组都读错了。在 NF2 上多一个 G，读到第 85 组，就碰上了终止信号。本来 595 个氨基酸的蛋白，只剩下开头一小段。这个基因，就被敲掉了。
+
+  - scene: { file: scenes/lib.html, title: 一瓶细胞，两万个实验, lead: 0.6 }
+    say: 现在，把一把剪刀变成一整套。2014 年的这次实验，给一万八千多个基因，每个设计三到四条向导，一共六万四千多条。它们装进慢病毒，去感染一大瓶癌细胞。病毒放得很少，大约四分之三的细胞，一条都没拿到。拿到的细胞里，绝大多数只有一条。没拿到的，用抗生素杀掉。
+
+  - scene: { file: scenes/drug.html, title: 加药，让细胞自己选, lead: 0.6 }
+    say: 向导的那段 DNA 插进了细胞自己的基因组，会一直留着。它就成了这个细胞的条形码，记着它敲掉了哪个基因。然后加药，维莫非尼，连续两周。大多数细胞停止生长，死掉了。可如果一个细胞，正好敲掉了 NF2，它就能顶着药继续分裂。两周后，带这条向导的细胞，从几百个，变成了成千上万个。
+
+  - scene: { file: scenes/count.html, title: 数条形码, lead: 0.6 }
+    say: 我们不用一个个去看细胞，只要数条形码。把加了药的和没加药的细胞，各取一份 DNA。用 PCR 把向导那一段扩增出来，送去测序。每一条向导，数一数出现了多少次。大多数向导变少了，有的完全消失。少数向导，反而多了很多倍。
+
+  - scene: { file: scenes/real.html, title: 怎么知道不是碰巧, lead: 0.6 }
+    say: 可一条向导变多，也可能只是运气。某个细胞碰巧先长了起来。所以每个基因有好几条向导，剪在不同位置。几条都变多，这个基因才算数。这次排在最前面的，有 NF2、CUL3、TADA2B 和 TADA1。早就知道的 NF1 和 MED12，也在其中。最后，再把它们一个一个单独敲掉，确认细胞真的不怕药了。
+
+  - scene: { file: scenes/lim.html, title: 局限：剪断不等于敲掉, lead: 0.6 }
+    say: 这套方法也会出错。第一，剪断不等于敲掉。少掉三个碱基，读法没乱，蛋白只少一个氨基酸，可能照样能用。第二，剪断本身就有伤害。癌细胞里有些区域复制了很多份，一条向导会剪出很多个断口。细胞因此停止生长，跟那里是什么基因无关。第三，断口会激活 p53。p53 正常的细胞，更不容易编辑成功。
+
+  - scene: { file: scenes/ask.html, title: 局限：能问什么问题, lead: 0.6 }
+    say: 还有剪错地方，或者两个相似的基因互相替补，也会让结果失真。另外，混在一瓶里筛，只能问每个细胞自己的事：活不活，长得快不快，带不带某个标记。细胞和细胞之间怎么互相影响，它看不到。最后，敲掉整个基因，和病人身上的一个点突变，不是一回事。
+
+  - scene: { file: scenes/base.html, title: 改一个碱基：突变扫描, lead: 0.6 }
+    say: 想问某一个突变，可以换一种工具，碱基编辑器。它不把 DNA 剪断，而是把一个 C 直接改成 T。把向导铺满一个基因，每条向导做出一个点突变。加药，测序，数条形码，和刚才一样。2021 年，有人这样找到了改变药效的点突变。另一种做法，是把突变直接换进基因里。2018 年，有人用它把 BRCA1 关键区域的 3893 个单碱基突变，逐个测了一遍。
+
+  - scene: { file: scenes/recap.html, title: 回顾, lead: 0.6, tail: 3.5 }
+    say: 回到开头的问题，药为什么失效？CRISPR 筛选，把每个细胞变成一个小实验，各敲掉一个基因。向导是剪刀的地址，也是细胞的条形码。加药让细胞自己选，测序数条形码，就知道谁让癌细胞活了下来。想问具体哪个突变，就换成只改一个碱基的编辑器。
