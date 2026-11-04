@@ -1,0 +1,183 @@
+<template>
+  <style>
+    /* scene 2 — "One person does not make the laws". Tokens from scenes/kit/kit.css */
+    #congress-pres { position: absolute; inset: 0; }
+    #congress .lcard { position: absolute; height: 140px; border-radius: 26px;
+      background: var(--ground-2); border: 5px solid var(--chalk-2); }
+    #congress .lcard span { position: absolute; left: 0; top: 42px; width: 100%;
+      text-align: center; font: 800 54px/1 var(--font); color: var(--chalk); }
+    /* a folded slip in the ballot box's slot — the same object scene 1 ended on */
+    #congress-slip { position: absolute; left: 145px; top: -54px; width: 170px; height: 172px; overflow: hidden; }
+    #congress-slip .paper { position: absolute; left: 17px; top: 12px; width: 136px; height: 160px;
+      border-radius: 10px; background: #f3f1ea; transform: rotate(-5deg); }
+    #congress-slip .paper i { position: absolute; left: 20px; height: 9px; border-radius: 5px; background: #9aa5bd; }
+  </style>
+
+  <div id="congress" class="world" data-composition-id="congress" data-width="1920" data-height="1080">
+
+    <div id="congress-credit" class="credit" data-layout-ignore>U.S. Constitution, Article I · Reapportionment Act of 1929</div>
+
+    <div id="congress-glow" data-layout-ignore style="position:absolute;left:400px;top:120px;width:1120px;height:760px;background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,201,74,.11) 0%, rgba(255,201,74,0) 70%)"></div>
+
+    <!-- ===== the seam: scene 1 ended on this ballot box, centred ===== -->
+    <div id="congress-boxwrap" style="position:absolute;left:730px;top:250px;width:460px;height:460px">
+      <div id="congress-slip" data-layout-ignore>
+        <div class="paper">
+          <i style="top:34px;width:96px"></i><i style="top:62px;width:70px"></i><i style="top:90px;width:86px"></i>
+        </div>
+      </div>
+    </div>
+    <div id="congress-election" class="big" style="left:660px;top:742px;width:600px;text-align:center;color:var(--you)">Election</div>
+
+    <!-- ===== the office of President: a plain figure with a label ===== -->
+    <div id="congress-pres" data-layout-allow-overlap>
+      <div id="congress-law" class="lcard" style="left:860px;top:420px;width:200px;height:112px"><span style="top:30px;font-size:46px">Law</span></div>
+    </div>
+    <div id="congress-preslabel" class="label" style="left:800px;top:770px;width:320px;text-align:center">President</div>
+
+    <!-- ===== Congress: two rooms under one roof ===== -->
+    <div id="congress-capwrap" style="position:absolute;left:460px;top:430px;width:1000px;height:395px"
+         data-layout-allow-overlap data-layout-allow-overflow></div>
+
+    <div id="congress-hdots" class="dots" style="left:487px;top:646px"></div>
+    <div id="congress-sdots" class="dots" style="left:1230px;top:639px"></div>
+
+    <div id="congress-hnum" class="big num" style="left:437px;top:150px;width:360px;text-align:center;color:var(--house)">0</div>
+    <div id="congress-snum" class="big num" style="left:1123px;top:150px;width:360px;text-align:center;color:var(--senate)">0</div>
+
+    <div id="congress-hlabel" class="label" style="left:437px;top:840px;width:360px;text-align:center;color:var(--house)">House</div>
+    <div id="congress-slabel" class="label" style="left:1123px;top:840px;width:360px;text-align:center;color:var(--senate)">Senate</div>
+
+    <!-- ===== both rooms have to say yes ===== -->
+    <svg id="congress-tickh" width="96" height="96" viewBox="0 0 100 100" fill="none"
+         style="position:absolute;left:569px;top:300px" data-layout-ignore>
+      <circle cx="50" cy="50" r="44" fill="rgba(90,209,196,.14)" stroke="#5ad1c4" stroke-width="7"/>
+      <path d="M29 51 l14 16 l28 -34" stroke="#5ad1c4" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <svg id="congress-ticks" width="96" height="96" viewBox="0 0 100 100" fill="none"
+         style="position:absolute;left:1255px;top:300px" data-layout-ignore>
+      <circle cx="50" cy="50" r="44" fill="rgba(194,166,255,.14)" stroke="#c2a6ff" stroke-width="7"/>
+      <path d="M29 51 l14 16 l28 -34" stroke="#c2a6ff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+    <div id="congress-idea" class="lcard" style="left:830px;top:120px;width:260px">
+      <span id="congress-t1">Idea</span>
+      <span id="congress-t2" style="opacity:0;color:var(--you)">Law</span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const R = document.getElementById('congress');
+      const q = s => R.querySelector(s);
+      const tl = gsap.timeline({ paused: true });
+
+      /* ---------- the ballot box scene 1 handed over ---------- */
+      const bw = q('#congress-boxwrap');
+      bw.insertAdjacentHTML('beforeend', Kit.BOX_SVG);   // the box draws over the slip's lower end
+      const boxSvg = bw.querySelector('svg');
+      boxSvg.setAttribute('width', 460);
+      boxSvg.setAttribute('height', 460);
+      boxSvg.style.position = 'absolute';
+      boxSvg.style.left = '0'; boxSvg.style.top = '0';
+
+      /* ---------- the office of President: 420 px, standing where the box stood ---------- */
+      const pres = Kit.person(q('#congress-pres'), { x: 960, y: 720, h: 420 });
+      q('#congress-pres').insertBefore(pres, q('#congress-law'));
+
+      /* ---------- the Capitol: 1000 px wide at (460, 430) — the seam into scene 3 ---------- */
+      const cw = q('#congress-capwrap');
+      cw.innerHTML = Kit.CAPITOL_SVG;
+      const capSvg = cw.querySelector('svg');
+      capSvg.setAttribute('width', 1000);
+      capSvg.setAttribute('height', 395);
+      capSvg.querySelector('#cap-wl').id = 'congress-wl';
+      capSvg.querySelector('#cap-wr').id = 'congress-wr';
+
+      /* ---------- the members: 435 in one room, 100 in the other ---------- */
+      const hdots = Kit.dots(q('#congress-hdots'), { n: Kit.US.house, cols: 29, size: 7, gap: 2, cls: 'house' });
+      const sdots = Kit.dots(q('#congress-sdots'), { n: Kit.US.senate, cols: 10, size: 12, gap: 3, cls: 'senate' });
+
+      const hnum = q('#congress-hnum'), snum = q('#congress-snum');
+      const hc = { v: 0 }, sc = { v: 0 };
+
+      /* ===================== the timeline ===================== */
+
+      // (0) "When people think about the government," — the box fades, a person stands in its place
+      tl.fromTo(['#congress-boxwrap', '#congress-election'], { opacity: 1 }, { opacity: 0, duration: .5 }, S.at(0));
+      tl.fromTo(pres, { opacity: 0, scale: .9 },
+        { opacity: 1, scale: 1, duration: .7, ease: 'expo.out', transformOrigin: '50% 100%' }, S.at(0) + .25);
+
+      // (1) "they usually picture the President." — the label lands under the figure
+      tl.fromTo('#congress-preslabel', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: .5, ease: 'expo.out' }, S.at(1));
+      tl.fromTo('#congress-glow', { opacity: 0 }, { opacity: 1, duration: .8 }, S.at(0));
+      tl.fromTo('#congress-glow', { opacity: 1 }, { opacity: 0, duration: .6 }, S.at(3));
+
+      // (2) "But one person does not make the laws." — a Law card tries to come out, and bounces back
+      tl.fromTo('#congress-law', { opacity: 0, scale: .3, y: -150 },
+        { opacity: 1, scale: 1, y: -312, duration: .7, ease: 'expo.out', transformOrigin: '50% 50%' }, S.at(2) + .1);
+      tl.fromTo('#congress-law', { y: -312 }, { y: -252, duration: .4, ease: 'power2.in' }, S.at(2) + 1.1);
+      tl.fromTo('#congress-law', { borderColor: '#9aa5bd' }, { borderColor: '#46506b', duration: .35 }, S.at(2) + 1.25);
+      tl.fromTo('#congress-law span', { color: '#f3f1ea' }, { color: '#46506b', duration: .35 }, S.at(2) + 1.25);
+
+      // (3) "Laws are made by Congress." — the figure steps aside, the Capitol rises
+      tl.fromTo('#congress-law', { opacity: 1 }, { opacity: 0, duration: .35 }, S.at(3));
+      tl.fromTo(pres, { scale: 1, x: 0, y: 0 },
+        { scale: 220 / 420, x: -710, y: 80, duration: .8, ease: 'power2.inOut', transformOrigin: '50% 100%' }, S.at(3));
+      tl.fromTo('#congress-preslabel', { x: 0, y: 0 }, { x: -710, y: 50, duration: .8, ease: 'power2.inOut' }, S.at(3));
+      tl.fromTo('#congress-capwrap', { y: 190, opacity: 0 },
+        { y: 0, opacity: 1, duration: .8, ease: 'expo.out' }, S.at(3) + .25);
+
+      // (4) "a big group of people who work in two rooms." — the two wings part and light up
+      tl.fromTo('#congress-wl', { attr: { x: 20, 'fill-opacity': .30 } },
+        { attr: { x: 4, 'fill-opacity': .60 }, duration: .7, ease: 'expo.out' }, S.at(4) + .4);
+      tl.fromTo('#congress-wr', { attr: { x: 510, 'fill-opacity': .30 } },
+        { attr: { x: 526, 'fill-opacity': .60 }, duration: .7, ease: 'expo.out' }, S.at(4) + .4);
+
+      // (5) "One room is called the House," — name it
+      tl.fromTo('#congress-hlabel', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .5, ease: 'expo.out' }, S.at(5));
+      tl.fromTo('#congress-credit', { opacity: 0 }, { opacity: 1, duration: .6 }, S.at(5));
+
+      // (6) "with four hundred thirty five members." — fill the room, count it up
+      tl.fromTo(hdots, { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: .3, ease: 'power2.out', stagger: .0016 }, S.at(6));
+      tl.fromTo('#congress-hnum', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .45, ease: 'expo.out' }, S.at(6));
+      tl.fromTo(hc, { v: 0 }, {
+        v: Kit.US.house, duration: .8, ease: 'power2.out', snap: { v: 1 },
+        onUpdate: () => { hnum.textContent = Math.round(hc.v); }
+      }, S.at(6));
+
+      // (7) "The other room is the Senate," — name it
+      tl.fromTo('#congress-slabel', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .5, ease: 'expo.out' }, S.at(7));
+
+      // (8) "with one hundred." — fill it, count it up
+      tl.fromTo(sdots, { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: .35, ease: 'power2.out', stagger: .006 }, S.at(8));
+      tl.fromTo('#congress-snum', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .45, ease: 'expo.out' }, S.at(8));
+      tl.fromTo(sc, { v: 0 }, {
+        v: Kit.US.senate, duration: .45, ease: 'power2.out', snap: { v: 1 },
+        onUpdate: () => { snum.textContent = Math.round(sc.v); }
+      }, S.at(8));
+
+      // (9) "For an idea to become a law," — the Idea card goes to the House and gets a yes
+      tl.fromTo('#congress-idea', { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: .4, ease: 'back.out(1.7)', transformOrigin: '50% 50%' }, S.at(9));
+      tl.fromTo('#congress-idea', { x: 0, y: 0 }, { x: -343, y: 310, duration: .55, ease: 'power2.inOut' }, S.at(9) + .55);
+      tl.fromTo('#congress-tickh', { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: .4, ease: 'back.out(2)', transformOrigin: '50% 50%' }, S.at(9) + 1.15);
+
+      // (10) "both rooms have to say yes." — on to the Senate, then it is a Law
+      tl.fromTo('#congress-idea', { x: -343 }, { x: 343, duration: .6, ease: 'power2.inOut' }, S.at(10));
+      tl.fromTo('#congress-ticks', { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: .4, ease: 'back.out(2)', transformOrigin: '50% 50%' }, S.at(10) + .65);
+      tl.fromTo('#congress-t1', { opacity: 1 }, { opacity: 0, duration: .3 }, S.at(10) + 1.0);
+      tl.fromTo('#congress-t2', { opacity: 0 }, { opacity: 1, duration: .3 }, S.at(10) + 1.05);
+      tl.fromTo('#congress-idea', { borderColor: '#9aa5bd' }, { borderColor: '#ffc94a', duration: .4 }, S.at(10) + 1.0);
+      tl.fromTo('#congress-idea', { x: 343, y: 310, scale: 1 },
+        { x: 0, y: 50, scale: 1.08, duration: .6, ease: 'expo.out' }, S.at(10) + 1.05);
+
+      window.__timelines['congress'] = tl;
+    })();
+  </script>
+</template>

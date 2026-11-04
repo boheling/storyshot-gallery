@@ -1,0 +1,160 @@
+<template>
+  <style>
+    /* Step 8 — "Fewer people show up".
+       The 2017 Virginia tie is drawn as two identical grey bars: one CSS class, same width, same
+       height, same colour, no names, no party, no winner. The slips in the bowl are the same shape
+       as each other too. Nothing on screen says who either candidate was. */
+
+    /* 100 grown-ups who could vote: a square ten by ten, so it reads as rows, not as columns */
+    #turnout-crowd { position: absolute; left: 320px; top: 126px; width: 820px; height: 770px; }
+
+    /* the two turnouts, side by side all the way to the end so they can be compared */
+    #turnout-tally { position: absolute; left: 1250px; top: 245px; width: 600px; height: 275px; }
+    .tyear { position: absolute; left: 0; font: 700 54px/1 var(--font); color: var(--chalk); white-space: nowrap; opacity: 0; }
+    .tcount { position: absolute; left: 0; font: 700 40px/1 var(--font); color: var(--chalk-2); white-space: nowrap; opacity: 0; }
+    #turnout-a-year { top: 0; }
+    #turnout-a-count { top: 64px; }
+    #turnout-b-year { top: 168px; }
+    #turnout-b-count { top: 232px; }
+
+    /* one real race: two candidates, exactly level */
+    #turnout-tie { position: absolute; left: 240px; top: 430px; width: 1440px; height: 440px; opacity: 0; }
+    #turnout-tielab { position: absolute; left: 450px; top: 0; width: 540px; text-align: center; font: 700 46px/1 var(--font); color: var(--you); opacity: 0; }
+    #turnout-level { position: absolute; left: 60px; top: 64px; width: 1320px; height: 8px; border-radius: 4px; background: var(--you); opacity: 0; }
+    /* the two places in the race: one class for the empty slots, one for the bars that fill them */
+    .tslot { position: absolute; top: 70px; width: 240px; height: 360px; box-sizing: border-box; border: 4px dashed #6b7794; border-radius: 16px 16px 0 0; opacity: 0; }
+    .tbar { position: absolute; top: 70px; width: 240px; height: 360px; border-radius: 16px 16px 0 0; background: var(--chalk-2); }
+    #turnout-slot-a, #turnout-bar-a { left: 60px; }
+    #turnout-slot-b, #turnout-bar-b { left: 1140px; }
+    .tnum { position: absolute; top: 108px; font: 700 44px/1 var(--mono); color: #16203a; white-space: nowrap; opacity: 0; }
+    #turnout-num-a { left: 101px; }
+    #turnout-num-b { left: 1181px; }
+    #turnout-ground { position: absolute; left: 10px; top: 430px; width: 1420px; height: 6px; border-radius: 3px; background: var(--off); opacity: 0; }
+    #turnout-bowl { position: absolute; left: 470px; top: 210px; width: 500px; height: 220px; opacity: 0; }
+    #turnout-slip { position: absolute; left: 620px; top: 82px; width: 200px; height: 128px; opacity: 0; }
+  </style>
+
+  <div id="turnout" class="world" data-composition-id="turnout" data-width="1920" data-height="1080">
+    <div id="turnout-kicker" class="kicker" style="opacity:0">Who shows up</div>
+    <div id="turnout-credit" class="credit" data-layout-ignore>
+      <div id="turnout-src-a" style="opacity:0">U. of Florida Election Lab</div>
+      <div id="turnout-src-b" style="opacity:0">Pew Research Center &middot; U.S. Elections Project</div>
+      <div id="turnout-src-c" style="opacity:0">Virginia, 94th district, 2017 &middot; AP</div>
+    </div>
+
+    <div id="turnout-crowd"></div>
+
+    <div id="turnout-tally">
+      <div id="turnout-a-year" class="tyear">2024</div>
+      <div id="turnout-a-count" class="tcount">64 out of 100</div>
+      <div id="turnout-b-year" class="tyear">2022 midterm</div>
+      <div id="turnout-b-count" class="tcount">45 out of 100</div>
+    </div>
+
+    <div id="turnout-tie" data-layout-allow-overlap>
+      <div id="turnout-tielab">a perfect tie</div>
+      <div id="turnout-slot-a" class="tslot"></div>
+      <div id="turnout-slot-b" class="tslot"></div>
+      <div id="turnout-bar-a" class="tbar"></div>
+      <div id="turnout-bar-b" class="tbar"></div>
+      <div id="turnout-level"></div>
+      <div id="turnout-num-a" class="tnum"></div>
+      <div id="turnout-num-b" class="tnum"></div>
+      <div id="turnout-ground"></div>
+
+      <!-- the bowl, with one folded slip still in it -->
+      <svg id="turnout-bowl" viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 26 56 Q 26 212 250 212 Q 474 212 474 56 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="8" />
+        <ellipse cx="250" cy="56" rx="224" ry="30" fill="#0e1628" stroke="#f3f1ea" stroke-width="8" />
+        <rect x="268" y="16" width="130" height="82" rx="12" fill="#f3f1ea" stroke="#cfcabb" stroke-width="5" transform="rotate(11 333 57)" />
+        <path d="M 26 56 Q 26 212 250 212 Q 474 212 474 56" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="8" />
+      </svg>
+
+      <!-- the slip that was drawn: the same folded paper, with the name left blank -->
+      <svg id="turnout-slip" viewBox="0 0 200 128" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="6" width="188" height="116" rx="16" fill="#f3f1ea" stroke="#ffc94a" stroke-width="7" />
+        <path d="M 100 14 V 114" stroke="#cfcabb" stroke-width="5" stroke-dasharray="12 10" />
+        <rect x="36" y="78" width="128" height="13" rx="7" fill="#8d93a4" />
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const C = { chalk: '#f3f1ea', chalk2: '#9aa5bd', off: '#46506b', you: '#ffc94a' };
+
+      // ---- 100 grown-ups who could vote, already standing there when the scene opens
+      const crowd = document.getElementById('turnout-crowd');
+      const people = Kit.people(crowd, { n: 100, cols: 10, w: 820, h: 770, size: 64, seed: 11 });
+      // the grid reads as ten standing columns, so the wave fills it column by column
+      const wave = [];
+      for (let c = 0; c < 10; c++) for (let r = 0; r < 10; r++) wave.push(people[r * 10 + c]);
+      const parts = (list) => list.reduce((acc, p) => acc.concat(Array.prototype.slice.call(p.querySelectorAll('.hd, .bd'))), []);
+
+      // the sourced numbers: 2024 presidential turnout and the 2022 midterm, of every 100 eligible
+      const V24 = Math.round(Kit.TURNOUT.pres2024);   // 64
+      const V22 = Math.round(Kit.TURNOUT.mid2022);    // 45
+      document.getElementById('turnout-a-count').textContent = V24 + ' out of 100';
+      document.getElementById('turnout-b-count').textContent = V22 + ' out of 100';
+
+      // the tie: both candidates on exactly the same number of votes
+      const TIE = Kit.VA_TIE.votes.toLocaleString('en-US');   // 11,608
+      document.getElementById('turnout-num-a').textContent = TIE;
+      document.getElementById('turnout-num-b').textContent = TIE;
+
+      // 0 — "And here is the strange part."
+      tl.fromTo('#turnout-kicker', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(0));
+
+      // 1 — "Fewer people vote in midterms."  the hundred come up out of the dark
+      tl.fromTo(crowd, { opacity: 0.55 }, { opacity: 1, duration: 0.7, ease: 'sine.out' }, S.at(1));
+      tl.fromTo(people, { scale: 0.86, transformOrigin: '50% 100%' }, { scale: 1, duration: 0.5, ease: 'expo.out', stagger: 0.008 }, S.at(1));
+
+      // 2 — "In the last Presidential election,"
+      tl.fromTo('#turnout-a-year', { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, S.at(2));
+      tl.fromTo('#turnout-src-a', { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(2));
+
+      // 3 — "about two out of every three grown ups who could vote did."  64 light up, wave by wave
+      tl.fromTo(parts(wave.slice(0, V24)), { backgroundColor: C.chalk2 }, { backgroundColor: C.you, duration: 0.35, stagger: 0.018 }, S.at(3, 0.1));
+      tl.fromTo(parts(wave.slice(V24)), { backgroundColor: C.chalk2 }, { backgroundColor: C.off, duration: 0.8 }, S.at(3, 0.7));
+      tl.fromTo('#turnout-a-count', { opacity: 0, x: 24 }, { opacity: 1, x: 0, color: C.you, duration: 0.5, ease: 'expo.out' }, S.at(3, 0.2));
+
+      // 4 — "In the last midterm,"
+      tl.fromTo('#turnout-b-year', { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, S.at(4));
+      tl.fromTo('#turnout-src-b', { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(4));
+
+      // 5 — "fewer than half."  nineteen of the lit ones go out; both counts stay on screen
+      tl.fromTo(parts(wave.slice(V22, V24)), { backgroundColor: C.you }, { backgroundColor: C.off, duration: 0.3, stagger: 0.03 }, S.at(5, 0.1));
+      tl.fromTo('#turnout-b-count', { opacity: 0, x: 24 }, { opacity: 1, x: 0, color: C.you, duration: 0.5, ease: 'expo.out' }, S.at(5, 0.1));
+      tl.fromTo('#turnout-a-count', { color: C.you }, { color: C.chalk2, duration: 0.5 }, S.at(5, 0.1));
+
+      // 6 — "Meanwhile,"  the hundred shrink to the top and stay there as the reference
+      tl.fromTo(crowd, { scale: 1, transformOrigin: '0% 0%' }, { scale: 0.37, duration: 0.8, ease: 'expo.out' }, S.at(6));
+      tl.fromTo('#turnout-tally', { y: 0 }, { y: -110, duration: 0.8, ease: 'expo.out' }, S.at(6));
+
+      // 7 — "tiny numbers decide real races."  one race, and the two places in it
+      tl.fromTo('#turnout-tie', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(7, 0.2));
+      tl.fromTo('#turnout-ground', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.8, ease: 'expo.out' }, S.at(7, 0.3));
+      tl.fromTo(['#turnout-slot-a', '#turnout-slot-b'], { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(7, 0.6));
+      tl.fromTo(crowd, { opacity: 1 }, { opacity: 0.75, duration: 0.6 }, S.at(7, 0.2));
+
+      // 8 — "In twenty seventeen,"  two candidates, one class, nothing to tell them apart
+      tl.fromTo(['#turnout-bar-a', '#turnout-bar-b'], { scaleY: 0, transformOrigin: '50% 100%' }, { scaleY: 1, duration: 0.75, ease: 'expo.out' }, S.at(8, 0.1));
+      tl.fromTo('#turnout-src-c', { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(8, 0.3));
+
+      // 9 — "a state election in Virginia ended in a perfect tie."  a level laid across both tops
+      tl.fromTo('#turnout-level', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.7, ease: 'expo.out' }, S.at(9, 0.2));
+      tl.fromTo('#turnout-tielab', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(9, 1.1));
+
+      // 10 — "Eleven thousand six hundred eight votes each."
+      tl.fromTo(['#turnout-num-a', '#turnout-num-b'], { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(10));
+
+      // 11 — "The winner's name was pulled out of a bowl."
+      tl.fromTo('#turnout-bowl', { opacity: 0, y: 46, scale: 0.86, transformOrigin: '50% 100%' }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'expo.out' }, S.at(11));
+      tl.fromTo('#turnout-slip', { opacity: 0, y: 150, scale: 0.5, rotation: 0, transformOrigin: '50% 100%' }, { opacity: 1, y: 0, scale: 1, rotation: -5, duration: 0.75, ease: 'expo.out' }, S.at(11, 0.4));
+
+      window.__timelines['turnout'] = tl;
+    })();
+  </script>
+</template>

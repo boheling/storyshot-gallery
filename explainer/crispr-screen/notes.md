@@ -1,6 +1,8 @@
 # CRISPR screens (zh): an explainer made of scenes, with no website in it
 
-**Request:** 那你重做一个，这次换另一个原理，比如 CRISPR 进行 mutation screen。 (It followed a TaqMan SNP-genotyping explainer made the same way; this one had to be built from scratch, which was the point.)
+**Request:** 做一个中文讲解视频，讲清楚 CRISPR 混合筛选是怎么回事：怎么在一瓶细胞里同时做两万次基因敲除实验，加药之后数条形码，就能找出是哪个基因让癌细胞扛住了药。用一个真实的例子从头讲到尾，把这套方法的局限也讲出来，最后讲到只改一个碱基的突变扫描。
+
+It followed a TaqMan SNP-genotyping explainer made the same way, but unlike that one it had to be built from scratch, which was the point of the exercise: to time a from-nothing explainer against a hand-written one.
 
 - **Type:** `explainer` (`purpose: explainer`, Storyshot 0.8.0), 16:9 1080p30, 5:38 (338.2 s), 11 chapters.
   Nothing is recorded and there is no `url` anywhere in the storyboard: all 11 steps are
