@@ -1,0 +1,52 @@
+# What a midterm election is, and why it matters — for 3rd to 5th graders (US civics, English).
+# Strictly non-partisan: no party, candidate or election result is named or favoured anywhere.
+# Sources: U.S. Constitution Art. I (two chambers, 2- and 6-year terms; Art. I §9 cl. 7, the money clause);
+# 2020 census apportionment (CA 52 seats, WY 1); 2026 elections (435 House seats, 33 Class 2 Senate seats,
+# 36 governorships); Pew Research Center / U.S. Elections Project (2022 House turnout 45.1% of eligible
+# voters; 2018 48.1%); University of Florida Election Lab (2024 presidential turnout ~64%);
+# The American Presidency Project, UCSB (president's party lost House seats in every midterm since 1900
+# except 1934, 1998 and 2002); AP / Virginia State Board of Elections (2017 VA 94th district, 11,608 votes
+# each, tie broken by a name drawn from a bowl, 4 Jan 2018); 26th Amendment (voting age 18).
+name: midterms-for-kids
+purpose: explainer
+out: midterms-for-kids.mp4
+lang: en
+voice:
+  provider: kokoro
+  voice: af_heart
+  speed: 0.95
+subtitles: burn
+music: { style: calm, bpm: 72 }
+theme: { accent: "#ffc94a", ink: "#0b1226" }
+scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js }
+
+steps:
+  - scene: { file: scenes/hook.html, title: Who gets to decide?, lead: 0.7 }
+    say: Think about your school. Who decided when recess is? Who decided what is for lunch? Not you, probably. Somebody decided for you. A whole country works the same way, only much bigger. Nobody votes on every single question. Instead, people pick other people to decide for them. Picking those deciders is what an election is for.
+
+  - scene: { file: scenes/congress.html, title: One person does not make the laws, lead: 0.6 }
+    say: When people think about the government, they usually picture the President. But one person does not make the laws. Laws are made by Congress. Congress is a big group of people who work in two rooms. One room is called the House, with four hundred thirty five members. The other room is the Senate, with one hundred. For an idea to become a law, both rooms have to say yes.
+
+  - scene: { file: scenes/seats.html, title: "Two per state, the rest by people", lead: 0.6 }
+    say: Who gets to be in those rooms? Every state sends two senators. Two for the biggest state, two for the smallest. The House works differently. States with more people get more seats. California has fifty two. Wyoming has one. So the Senate is about which state you live in, and the House is about how many of you there are.
+
+  - scene: { file: scenes/midterm.html, title: Why it is called the midterm, lead: 0.6 }
+    say: Now, where does that word midterm come from? A President is elected for four years. But the whole House is elected every two years, and about a third of the Senate too. So there is always an election right in the middle of a President's four years. The middle of the term. The midterm. No President is on the ballot that day. Congress is.
+
+  - scene: { file: scenes/ballot.html, title: What is on the ballot, lead: 0.6 }
+    say: A midterm ballot is longer than you would think. In twenty twenty six, all four hundred thirty five House seats were up, plus thirty three Senate seats, plus the governor in thirty six states. And underneath those, the ones almost nobody talks about. State lawmakers. Mayors. Judges. The school board. The school board is the one that decides things about your school.
+
+  - scene: { file: scenes/money.html, title: The rules and the money, lead: 0.6 }
+    say: So why does it matter who wins? Here is the first reason. Congress writes the laws, and a law is for everybody. And Congress holds the money. The Constitution says money can only leave the treasury if Congress says so. Roads. Parks. School lunches. The army. Somebody has to decide how much goes where, and that somebody is Congress.
+
+  - scene: { file: scenes/report.html, title: A report card in the middle, lead: 0.6 }
+    say: Here is the second reason. A midterm is the country's chance to say, halfway through, keep going, or slow down. And people really do use it that way. In the last twenty three midterms, the President's party lost seats in the House twenty times. It only gained seats three times. So a midterm can change what a President is able to get done, without changing the President.
+
+  - scene: { file: scenes/turnout.html, title: Fewer people show up, lead: 0.6 }
+    say: And here is the strange part. Fewer people vote in midterms. In the last Presidential election, about two out of every three grown ups who could vote did. In the last midterm, fewer than half. Meanwhile, tiny numbers decide real races. In twenty seventeen, a state election in Virginia ended in a perfect tie. Eleven thousand six hundred eight votes each. The winner's name was pulled out of a bowl.
+
+  - scene: { file: scenes/you.html, title: What you can do now, lead: 0.6 }
+    say: You cannot vote until you are eighteen. That does not leave you out of it. You can find out who represents your neighborhood, by name. You can go along with a grown up when they vote. You can watch what the school board decides, because that one is about you. And you can ask the grown ups in your house one question. Did you vote?
+
+  - scene: { file: scenes/recap.html, title: Recap, lead: 0.6, tail: 3.5 }
+    say: So, a midterm is the election in the middle of a President's term. The whole House, a third of the Senate, and a long list of local jobs. Those people write the laws and decide where the money goes. Fewer people show up to choose them. Which means the ones who do show up, decide.

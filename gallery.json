@@ -255,12 +255,26 @@
     "site": "Molecular biology",
     "lang": "zh",
     "url": null,
-    "request": "那你重做一个，这次换另一个原理，比如 CRISPR 进行 mutation screen。 (It followed a TaqMan SNP-genotyping explainer made the same way; this one had to be built from scratch, which was the point.)",
+    "request": "做一个中文讲解视频，讲清楚 CRISPR 混合筛选是怎么回事：怎么在一瓶细胞里同时做两万次基因敲除实验，加药之后数条形码，就能找出是哪个基因让癌细胞扛住了药。用一个真实的例子从头讲到尾，把这套方法的局限也讲出来，最后讲到只改一个碱基的突变扫描。",
     "seconds": 338.2,
     "video": "explainer/crispr-screen/video.mp4",
     "poster": "explainer/crispr-screen/poster.jpg",
     "storyboard": "explainer/crispr-screen/storyboard.yaml",
     "notes": "explainer/crispr-screen/notes.md",
+    "article": null
+   },
+   {
+    "id": "explainer/midterms-kids",
+    "title": "What a midterm election is, for 3rd–5th graders",
+    "site": "Civics",
+    "lang": "en",
+    "url": null,
+    "request": "Make an explainer video for 3rd–5th graders about what a midterm election is and why it matters: what Congress actually does, why there is an election in the middle of a President's term, what is on the ballot all the way down to the school board, and why fewer people showing up makes each vote count for more. Keep it strictly non-partisan.",
+    "seconds": 231.133333,
+    "video": "explainer/midterms-kids/video.mp4",
+    "poster": "explainer/midterms-kids/poster.jpg",
+    "storyboard": "explainer/midterms-kids/storyboard.yaml",
+    "notes": "explainer/midterms-kids/notes.md",
     "article": null
    }
   ]

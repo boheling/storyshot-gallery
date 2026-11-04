@@ -1,0 +1,246 @@
+<template>
+  <style>
+    /* Step 7 — "A report card in the middle".
+       Strictly non-partisan: the row of 23 midterms is labelled "the President's party" and nothing
+       else. Which party held the White House in any given year is never shown, implied or coloured.
+       Lost seats = grey (--off), gained seats = yellow (--you, "what the film points at"). The two
+       buttons are one CSS class: same size, same radius, same colours — only the words differ. */
+
+    /* the kicker's number badge: the same object money.html puts beside "Why it matters" for reason 1 */
+    #report-two { position: absolute; left: 404px; top: 62px; width: 62px; height: 62px;
+      border-radius: 50%; background: var(--you); color: #16203a;
+      font: 800 38px/62px var(--font); text-align: center; }
+
+    /* the report card the country fills in halfway through */
+    #report-sheet {
+      position: absolute; left: 460px; top: 180px; width: 1000px; height: 380px; box-sizing: border-box;
+      border-radius: 26px; background: #f3f1ea; border: 5px solid #cfcabb;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .42); opacity: 0;
+    }
+    #report-head { position: absolute; left: 0; right: 0; top: 40px; text-align: center; font: 800 62px/1 var(--font); color: #2a3148; opacity: 0; }
+    #report-rule { position: absolute; left: 52px; top: 128px; width: 886px; height: 5px; border-radius: 3px; background: #d6d1c1; opacity: 0; }
+    /* the two places an answer can go, and the two answers: one class each, so the pair cannot
+       differ in anything but its words */
+    .rslot { position: absolute; top: 170px; width: 400px; height: 132px; box-sizing: border-box; border: 4px dashed #c7c1b0; border-radius: 28px; opacity: 0; }
+    .rbtn {
+      position: absolute; top: 170px; width: 400px; height: 132px; box-sizing: border-box;
+      border-radius: 28px; background: #1f2b4a; border: 5px solid #3a4870; color: #f3f1ea;
+      font: 700 44px/1 var(--font); display: flex; align-items: center; justify-content: center; opacity: 0;
+    }
+    #report-slot-a, #report-btn-a { left: 70px; }
+    #report-slot-b, #report-btn-b { left: 530px; }
+
+    /* the row: 23 midterms, left to right, 1934 … 2022 */
+    #report-rowlabel { position: absolute; left: 660px; top: 146px; width: 600px; text-align: center; font: 700 40px/1 var(--font); color: var(--chalk); opacity: 0; }
+    #report-row { position: absolute; left: 60px; top: 314px; width: 1460px; height: 236px; }
+    #report-base { position: absolute; left: 20px; top: 113px; width: 1420px; height: 6px; border-radius: 3px; background: var(--chalk-2); opacity: 0; }
+    .rchip { position: absolute; top: 61px; width: 46px; height: 110px; border-radius: 12px; background: var(--chalk-2); opacity: 0; }
+
+    .ryear { position: absolute; top: 215px; font: 700 38px/1 var(--mono); color: var(--you); white-space: nowrap; opacity: 0; }
+    #report-leads { position: absolute; left: 0; top: 254px; width: 1920px; height: 56px; }
+    #report-leads path { fill: none; stroke: var(--you); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+
+    /* the two tallies, each beside its own half of the row */
+    .rcnt { position: absolute; left: 1632px; font: 700 100px/1 var(--mono); white-space: nowrap; opacity: 0; }
+    #report-cnt-up { top: 318px; color: var(--you); }
+    #report-cnt-dn { top: 438px; color: var(--chalk-2); }
+    .rarr { position: absolute; left: 1548px; width: 64px; height: 64px; opacity: 0; }
+    #report-arr-up { top: 336px; }
+    #report-arr-dn { top: 456px; }
+
+    /* the rooms, still standing where the money scene left them */
+    #report-stage { position: absolute; left: 280px; top: 570px; width: 1200px; height: 330px; }
+    #report-plabel { position: absolute; left: 70px; top: 14px; width: 240px; text-align: center; font: 700 38px/1 var(--font); color: var(--chalk); opacity: 0; }
+    #report-ring { position: absolute; left: 50px; top: 60px; width: 280px; height: 258px; box-sizing: border-box; border: 7px solid var(--you); border-radius: 38px; opacity: 0; }
+    #report-capitol { position: absolute; left: 430px; top: 10px; width: 760px; height: 300px; opacity: .3; }
+    #report-dots-h { left: 458px; top: 166px; width: 214px; height: 118px; opacity: .3; }
+    #report-dots-s { left: 980px; top: 182px; width: 150px; height: 86px; opacity: .3; }
+  </style>
+
+  <div id="report" class="world" data-composition-id="report" data-width="1920" data-height="1080">
+    <div id="report-kicker" class="kicker" style="opacity:0">Why it matters</div>
+    <div id="report-two" style="opacity:0">2</div>
+    <div id="report-credit" class="credit" data-layout-ignore style="opacity:0">The American Presidency Project, UCSB</div>
+
+    <!-- 1–5: the report card, and the two answers -->
+    <div id="report-sheet" data-layout-allow-overlap>
+      <div id="report-head">Halfway through</div>
+      <div id="report-rule"></div>
+      <div id="report-slot-a" class="rslot"></div>
+      <div id="report-slot-b" class="rslot"></div>
+      <div id="report-btn-a" class="rbtn">Keep going</div>
+      <div id="report-btn-b" class="rbtn">Slow down</div>
+    </div>
+
+    <!-- 6–8: the row of 23 -->
+    <div id="report-rowlabel">the President&rsquo;s party</div>
+    <div id="report-row" data-layout-allow-overlap>
+      <div id="report-base"></div>
+    </div>
+    <svg id="report-leads" viewBox="0 0 1920 56" xmlns="http://www.w3.org/2000/svg">
+      <path id="report-l0" pathLength="1" d="M 119 6 L 119 50" />
+      <path id="report-l16" pathLength="1" d="M 980 6 L 1095 50" />
+      <path id="report-l17" pathLength="1" d="M 1270 6 L 1156 50" />
+    </svg>
+    <svg id="report-arr-up" class="rarr" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 6 L59 38 H43 V58 H21 V38 H5 Z" fill="#ffc94a" /></svg>
+    <div id="report-cnt-up" class="rcnt num"></div>
+    <svg id="report-arr-dn" class="rarr" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 58 L59 26 H43 V6 H21 V26 H5 Z" fill="#9aa5bd" /></svg>
+    <div id="report-cnt-dn" class="rcnt num"></div>
+
+    <!-- 9–10: the rooms change; the office does not -->
+    <div id="report-stage" data-layout-allow-overlap>
+      <div id="report-plabel">President</div>
+      <div id="report-ring"></div>
+      <div id="report-capitol"></div>
+      <div id="report-dots-h" class="dots"></div>
+      <div id="report-dots-s" class="dots"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const C = { chalk2: '#9aa5bd', off: '#46506b', you: '#ffc94a', house: '#5ad1c4', senate: '#c2a6ff' };
+
+      // ---- the Capitol: already on screen, because that is where the money scene left it
+      const cap = document.getElementById('report-capitol');
+      cap.innerHTML = Kit.CAPITOL_SVG;
+      // seats inset inside their holder, so a seat that lifts out of line stays inside its own box
+      const PAD = 16;
+      const inset = (ds) => ds.map((d) => {
+        d.style.left = (parseFloat(d.style.left) + PAD) + 'px';
+        d.style.top = (parseFloat(d.style.top) + PAD) + 'px';
+        return d;
+      });
+      const dh = inset(Kit.dots(document.getElementById('report-dots-h'), { n: 18, cols: 6, size: 22, gap: 10, cls: 'house' }));
+      const ds = inset(Kit.dots(document.getElementById('report-dots-s'), { n: 8, cols: 4, size: 22, gap: 10, cls: 'senate' }));
+
+      // the President is an office: a plain figure with a label, never a likeness, never a colour
+      const stage = document.getElementById('report-stage');
+      const pres = Kit.person(stage, { x: 190, y: 310, h: 240 });
+      pres.id = 'report-pres';
+      pres.style.opacity = 0;
+
+      // ---- one chip per midterm since 1934, in order, from the checked table in the kit
+      const row = document.getElementById('report-row');
+      const chips = Kit.MIDTERMS.map(([year, dir], i) => {
+        const el = document.createElement('div');
+        el.className = 'rchip';
+        el.id = 'report-chip' + i;
+        el.style.left = (36 + 61 * i) + 'px';
+        row.appendChild(el);
+        return { el, year, dir, i };
+      });
+      const lost = chips.filter((c) => c.dir === 'down');   // 20
+      const gained = chips.filter((c) => c.dir === 'up');   // 3: 1934, 1998, 2002
+
+      // the year of each gained midterm, written above its chip (x matched to #report-leads)
+      const YEAR_X = { 0: 74, 16: 934, 17: 1224 };
+      const yearLabs = gained.map((c) => {
+        const el = document.createElement('div');
+        el.className = 'ryear';
+        el.id = 'report-year' + c.i;
+        el.style.left = YEAR_X[c.i] + 'px';
+        el.textContent = String(c.year);
+        document.getElementById('report').appendChild(el);
+        return el;
+      });
+      const leads = gained.map((c) => document.getElementById('report-l' + c.i));
+
+      const cntUp = document.getElementById('report-cnt-up');
+      const cntDn = document.getElementById('report-cnt-dn');
+
+      // a tally that counts while its chips move (no timers: GSAP drives it from the seek position)
+      function tally(el, to, t, dur) {
+        const o = { v: 0 };
+        tl.fromTo(o, { v: 0 }, {
+          v: to, duration: dur, ease: 'power1.out',
+          onUpdate() { el.textContent = String(Math.round(o.v)); },
+        }, t);
+      }
+
+      // two seats trade places: both lift, cross, and come back to their chamber's colour
+      function swap(a, b, base, t) {
+        const ax = parseFloat(a.style.left), ay = parseFloat(a.style.top);
+        const bx = parseFloat(b.style.left), by = parseFloat(b.style.top);
+        [[a, bx - ax, by - ay, -15], [b, ax - bx, ay - by, 15]].forEach(function (p) {
+          const el = p[0], dx = p[1], dy = p[2], lift = p[3];
+          tl.fromTo(el, { x: 0, y: 0, scale: 1, backgroundColor: base }, { y: lift, scale: 1.4, backgroundColor: C.you, duration: 0.26, ease: 'sine.out' }, t);
+          tl.fromTo(el, { x: 0 }, { x: dx, duration: 0.5, ease: 'sine.inOut' }, t + 0.26);
+          tl.fromTo(el, { y: lift, scale: 1.4 }, { y: dy, scale: 1, duration: 0.34, ease: 'sine.in' }, t + 0.44);
+          tl.fromTo(el, { backgroundColor: C.you }, { backgroundColor: base, duration: 0.34 }, t + 0.5);
+        });
+      }
+
+      // 0 — "Here is the second reason."
+      tl.fromTo('#report-kicker', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(0));
+      tl.fromTo('#report-two', { opacity: 0, scale: 0.3, transformOrigin: 'center center' },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, S.at(0, 0.22));
+
+      // 1 — "A midterm is the country's chance to say,"  the card lands
+      tl.fromTo('#report-sheet', { opacity: 0, y: -80, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'expo.out' }, S.at(1));
+      tl.fromTo('#report-rule', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: 'expo.out' }, S.at(1, 0.3));
+      tl.fromTo(['#report-slot-a', '#report-slot-b'], { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(1, 0.45));
+
+      // 2 — "halfway through,"  it is headed
+      tl.fromTo('#report-head', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(2));
+
+      // 3, 4 — the two answers, same shape, same colour
+      tl.fromTo('#report-btn-a', { opacity: 0, scale: 0.82 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out' }, S.at(3));
+      tl.fromTo('#report-btn-b', { opacity: 0, scale: 0.82 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out' }, S.at(4));
+
+      // 5 — they settle together: neither of them is ever the favoured one
+      tl.fromTo(['#report-btn-a', '#report-btn-b'], { scale: 1 }, { scale: 1.05, duration: 0.24, yoyo: true, repeat: 1, ease: 'sine.inOut' }, S.at(5));
+      tl.fromTo('#report-sheet', { y: 0 }, { y: -12, duration: 0.6, ease: 'expo.out' }, S.at(5));
+
+      // 6 — "In the last twenty three midterms,"  the card goes, the row arrives
+      tl.fromTo('#report-sheet', { opacity: 1, y: -12 }, { opacity: 0, y: -96, duration: 0.4, ease: 'power2.in' }, S.at(6, -0.45));
+      tl.fromTo('#report-credit', { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(6));
+      tl.fromTo('#report-rowlabel', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(6));
+      tl.fromTo('#report-base', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.7, ease: 'expo.out' }, S.at(6, 0.1));
+      chips.forEach((c, i) => {
+        tl.fromTo(c.el, { opacity: 0, scaleY: 0.12 }, { opacity: 1, scaleY: 1, duration: 0.45, ease: 'expo.out' }, S.at(6, 0.15 + i * 0.05));
+      });
+
+      // 7 — "the President's party lost seats in the House twenty times."  twenty tip below the line
+      lost.forEach((c, i) => {
+        tl.fromTo(c.el, { y: 0, rotationX: 0, backgroundColor: C.chalk2 },
+          { y: 60, rotationX: 180, backgroundColor: C.off, duration: 0.5, ease: 'expo.out', transformPerspective: 700 },
+          S.at(7, 0.1 + i * 0.075));
+      });
+      tl.fromTo('#report-arr-dn', { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: 0.4, ease: 'expo.out' }, S.at(7, 0.3));
+      tl.fromTo('#report-cnt-dn', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(7, 0.3));
+      tally(cntDn, lost.length, S.at(7, 0.35), 1.3);
+
+      // 8 — "It only gained seats three times."  three stand above it, and say which years
+      gained.forEach((c, i) => {
+        tl.fromTo(c.el, { y: 0, rotationX: 0, backgroundColor: C.chalk2 },
+          { y: -60, rotationX: -180, backgroundColor: C.you, duration: 0.55, ease: 'expo.out', transformPerspective: 700 },
+          S.at(8, 0.1 + i * 0.17));
+        tl.fromTo(leads[i], { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.35, ease: 'none', autoRound: false }, S.at(8, 0.45 + i * 0.17));
+        tl.fromTo(yearLabs[i], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, S.at(8, 0.55 + i * 0.17));
+      });
+      tl.fromTo('#report-arr-up', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: 'expo.out' }, S.at(8, 0.3));
+      tl.fromTo('#report-cnt-up', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(8, 0.3));
+      tally(cntUp, gained.length, S.at(8, 0.35), 0.7);
+
+      // 9 — "So a midterm can change what a President is able to get done,"
+      //     the office takes its place, then the seats behind it trade hands. The figure never moves again.
+      tl.fromTo('#report-pres', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(9));
+      tl.fromTo('#report-plabel', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(9, 0.15));
+      tl.fromTo(['#report-capitol', '#report-dots-h', '#report-dots-s'], { opacity: 0.3 }, { opacity: 1, duration: 0.6, ease: 'sine.out' }, S.at(9, 0.45));
+      const t9 = S.at(9, 0.85);
+      swap(dh[0], dh[14], C.house, t9);
+      swap(dh[3], dh[10], C.house, t9 + 0.33);
+      swap(dh[12], dh[5], C.house, t9 + 0.66);
+      swap(ds[0], ds[7], C.senate, t9 + 0.99);
+      swap(dh[16], dh[1], C.house, t9 + 1.32);
+
+      // 10 — "without changing the President."
+      tl.fromTo('#report-ring', { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'expo.out' }, S.at(10));
+
+      window.__timelines['report'] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,247 @@
+<template>
+  <style>
+    /* step 10 — the recap, and the film's last frame. Scene 1's question comes back at the top, then
+       the film's own objects grow into one chain, left to right, each link as its line names it. */
+    #recap, #recap * { box-sizing: border-box; }
+
+    #recap-q { left: 64px; top: 50px; width: 1792px; text-align: center; }
+
+    /* --- link 1: a President's four years, with the midterm pin in the middle --- */
+    #recap-bar { position: absolute; left: 70px; top: 580px; width: 330px; height: 56px;
+      border-radius: 28px; background: rgba(243, 241, 234, .07); border: 5px solid rgba(154, 165, 189, .8); opacity: 0; }
+    #recap-mid { position: absolute; left: 118px; top: -5px; width: 84px; height: 56px;
+      border-radius: 28px; background: var(--you); opacity: 0; }
+    /* year 1 and year 3: the bar reads as four years, with the midterm in the middle of them */
+    #recap-bar .tick { position: absolute; top: 9px; width: 5px; height: 28px; border-radius: 3px;
+      background: rgba(243, 241, 234, .38); }
+    #recap-pin { position: absolute; left: 195px; top: 468px; width: 80px; height: 113px; opacity: 0; }
+    #recap-mt { left: 147px; top: 412px; font-size: 34px; letter-spacing: .06em; color: var(--you); opacity: 0; }
+    #recap-4y { left: 172px; top: 658px; font-size: 34px; color: var(--chalk-2); opacity: 0; }
+
+    /* --- links 2, 3, 4: who a midterm elects --- */
+    #recap-hl { left: 450px; top: 240px; color: var(--house); opacity: 0; }
+    #recap-hd { left: 450px; top: 298px; width: 290px; height: 150px; }
+    #recap-sl { left: 450px; top: 478px; color: var(--senate); opacity: 0; }
+    #recap-sd { left: 450px; top: 536px; width: 150px; height: 150px; }
+    #recap-ll { left: 450px; top: 716px; color: var(--local); opacity: 0; }
+    #recap .rrow { position: absolute; left: 450px; width: 240px; height: 24px; border-radius: 12px;
+      background: var(--local); opacity: 0; }
+
+    /* --- link 5: the law they write, and the money they hand out --- */
+    #recap-law { left: 790px; top: 300px; width: 300px; height: 160px;
+      display: flex; align-items: center; justify-content: center; opacity: 0; }
+    #recap-lawtxt { font: 800 72px/1 var(--font); color: var(--chalk); letter-spacing: -.02em; }
+    #recap-seal { position: absolute; right: 16px; top: 14px; opacity: 0; }
+    #recap-jar { left: 795px; top: 540px; width: 290px; height: 280px; opacity: 0; }
+
+    /* --- link 6: who shows up --- */
+    #recap-crowd { position: absolute; left: 1140px; top: 360px; width: 360px; height: 340px; }
+
+    /* --- link 7: the ones who do show up, walking into the ballot box --- */
+    #recap-walk { position: absolute; left: 1140px; top: 709px; width: 400px; height: 75px; }
+    #recap-boxwrap { position: absolute; left: 1550px; top: 504px; width: 300px; height: 300px; opacity: 0; }
+    #recap-slip { position: absolute; left: 95px; top: -35px; width: 111px; height: 112px; overflow: hidden; }
+    #recap-slip .paper { position: absolute; left: 11px; top: 8px; width: 89px; height: 104px;
+      border-radius: 7px; background: #f3f1ea; transform: rotate(-5deg); }
+    #recap-slip .paper i { position: absolute; left: 13px; height: 6px; border-radius: 3px; background: #9aa5bd; }
+
+    /* the joints of the chain */
+    #recap .chev { position: absolute; top: 488px; width: 46px; height: 46px; opacity: 0; }
+  </style>
+
+  <div id="recap" class="world" data-composition-id="recap" data-width="1920" data-height="1080">
+
+    <!-- the question scene 1 opened with -->
+    <div id="recap-q" class="big">Who gets to <span id="recap-decide">decide?</span></div>
+
+    <!-- (1) a President's four years, and the pin in the middle -->
+    <div id="recap-bar">
+      <div class="tick" style="left:78px"></div><div class="tick" style="left:237px"></div>
+      <div id="recap-mid"></div>
+    </div>
+    <div id="recap-pin"></div>
+    <div id="recap-mt" class="label">MIDTERM</div>
+    <div id="recap-4y" class="label">4 years</div>
+
+    <!-- (2, 3, 4) the whole House, a third of the Senate, a stack of local jobs -->
+    <div id="recap-hl" class="label">House</div>
+    <div id="recap-hd" class="dots"></div>
+    <div id="recap-sl" class="label">Senate</div>
+    <div id="recap-sd" class="dots"></div>
+    <div id="recap-ll" class="label">Local jobs</div>
+    <div id="recap-lr0" class="rrow" style="top:774px"></div>
+    <div id="recap-lr1" class="rrow" style="top:806px"></div>
+    <div id="recap-lr2" class="rrow" style="top:838px"></div>
+
+    <!-- (5) they write the laws, and they decide where the money goes -->
+    <div id="recap-law" class="card" data-layout-allow-overlap>
+      <span id="recap-lawtxt">Law</span>
+      <svg id="recap-seal" viewBox="0 0 120 120" width="56" height="56" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="52" fill="#ffc94a"/>
+        <path d="M 34 62 l 17 18 l 35 -42" fill="none" stroke="#16203a" stroke-width="12"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div id="recap-jar" class="jar" data-layout-allow-overlap></div>
+
+    <!-- (6) one hundred people, forty five of them voting -->
+    <div id="recap-crowd"></div>
+
+    <!-- (7, 8) the lit ones walk into the ballot box -->
+    <div id="recap-walk" data-layout-allow-overlap></div>
+    <div id="recap-boxwrap">
+      <div id="recap-slip" data-layout-ignore>
+        <div class="paper">
+          <i style="top:22px;width:62px"></i><i style="top:40px;width:46px"></i><i style="top:58px;width:56px"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- the joints of the chain -->
+    <div id="recap-chev0" class="chev" style="left:402px">
+      <svg viewBox="0 0 40 40" width="46" height="46" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 12 8 L 28 20 L 12 32" fill="none" style="stroke:var(--chalk-2)" stroke-width="7"
+          stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div id="recap-chev1" class="chev" style="left:742px">
+      <svg viewBox="0 0 40 40" width="46" height="46" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 12 8 L 28 20 L 12 32" fill="none" style="stroke:var(--chalk-2)" stroke-width="7"
+          stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div id="recap-chev2" class="chev" style="left:1092px">
+      <svg viewBox="0 0 40 40" width="46" height="46" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 12 8 L 28 20 L 12 32" fill="none" style="stroke:var(--chalk-2)" stroke-width="7"
+          stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div id="recap-chev3" class="chev" style="left:1502px">
+      <svg viewBox="0 0 40 40" width="46" height="46" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 12 8 L 28 20 L 12 32" fill="none" style="stroke:var(--chalk-2)" stroke-width="7"
+          stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot, K = window.Kit;
+      const at = (k, o = 0) => S.at(k, o);
+      const el = (id) => document.getElementById('recap-' + id);
+
+      // (1) the pin that marked the middle of the term, as it was drawn in step 4
+      el('pin').innerHTML =
+        '<svg viewBox="0 0 110 156" width="80" height="113" xmlns="http://www.w3.org/2000/svg">'
+        + '<path d="M 14 80 L 55 154 L 96 80 Z" fill="#ffc94a"/>'
+        + '<circle cx="55" cy="55" r="50" fill="#ffc94a" stroke="#16203a" stroke-width="7"/>'
+        + '<circle cx="55" cy="55" r="19" fill="#16203a"/></svg>';
+
+      // (2) the whole House: 435 seats, as in step 2
+      const hdots = K.dots(el('hd'), { n: K.US.house, cols: 29, size: 8, gap: 2, cls: 'house' });
+      // (3) the Senate: 100 seats, about a third of them up this time
+      const sdots = K.dots(el('sd'), { n: K.US.senate, cols: 10, size: 12, gap: 3 });
+      const sUp = sdots.slice(0, Math.round(K.US.senate / 3));   // 33 of 100
+
+      // (5) the jar of money, as in step 6
+      const jar = el('jar'), rnd = K.rng(7), coins = [];
+      for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) {
+        const d = document.createElement('div');
+        d.className = 'coin';
+        d.style.cssText = 'left:' + (26 + c * 86 + (rnd() - 0.5) * 10) + 'px;top:'
+          + (100 + r * 78 + (rnd() - 0.5) * 10) + 'px;width:66px;height:66px';
+        jar.appendChild(d);
+        coins.push(d);
+      }
+
+      // (6) a hundred people; 45 of them show up at a midterm
+      const folk = K.people(el('crowd'), { n: 100, cols: 10, w: 350, h: 340, size: 28, seed: 5, cls: 'off' });
+      const lit = Math.round(K.TURNOUT.mid2022);                 // 45 out of 100
+      const ink = [];
+      for (let i = 0; i < lit; i++) ink.push(...folk[i].children);
+
+      // (7) three of the lit ones, walking out of the crowd and into the box
+      const walk = el('walk'), walkers = [];
+      for (let i = 0; i < 3; i++) {
+        const x = 60 + i * 52, w = 64 * 0.62 + 6;
+        const p = K.person(walk, { x, y: 71, h: 64, cls: 'on' });
+        p.style.width = w + 'px';
+        p.style.left = (x - w / 2) + 'px';
+        walkers.push(p);
+      }
+
+      // the ballot box: drawn over the slip, so the paper vanishes into the slot
+      const bw = el('boxwrap');
+      bw.insertAdjacentHTML('beforeend', K.BOX_SVG);
+      const bsvg = bw.querySelector('svg');
+      bsvg.setAttribute('width', '300');
+      bsvg.setAttribute('height', '300');
+      bsvg.style.position = 'absolute';
+      bsvg.style.left = '0';
+      bsvg.style.top = '0';
+
+      const tl = gsap.timeline({ paused: true });
+      const IN = { duration: 0.55, ease: 'expo.out' };
+
+      // (0) "So," — the four years a President gets
+      tl.fromTo(['#recap-bar', '#recap-4y'], { autoAlpha: 0, y: 34 }, { autoAlpha: 1, y: 0, ...IN }, at(0));
+
+      // (1) "...the election in the middle of a President's term."
+      tl.fromTo('#recap-mid', { autoAlpha: 0, scaleX: 0.2 },
+        { autoAlpha: 1, scaleX: 1, duration: 0.5, ease: 'expo.out', transformOrigin: '50% 50%' }, at(1, 0.45));
+      tl.fromTo('#recap-pin', { autoAlpha: 0, y: -90 },
+        { autoAlpha: 1, y: 0, duration: 0.6, ease: 'expo.out' }, at(1, 0.55));
+      tl.fromTo('#recap-mt', { autoAlpha: 0, y: -20 }, { autoAlpha: 1, y: 0, ...IN }, at(1, 1.0));
+
+      // (2) "The whole House," — 435 teal seats
+      tl.fromTo('#recap-chev0', { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: 'expo.out' }, at(2));
+      tl.fromTo('#recap-hl', { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, ...IN }, at(2, 0.1));
+      tl.fromTo(hdots, { autoAlpha: 0, scale: 0.3 },
+        { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'expo.out', stagger: 0.0013 }, at(2, 0.2));
+
+      // (3) "a third of the Senate," — 100 seats, 33 of them up
+      tl.fromTo('#recap-sl', { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, ...IN }, at(3));
+      tl.fromTo(sdots, { autoAlpha: 0, scale: 0.3 },
+        { autoAlpha: 1, scale: 1, duration: 0.3, ease: 'expo.out', stagger: 0.003 }, at(3, 0.1));
+      tl.fromTo(sUp, { backgroundColor: '#46506b' },
+        { backgroundColor: '#c2a6ff', duration: 0.3, stagger: 0.01 }, at(3, 0.32));
+
+      // (4) "and a long list of local jobs."
+      tl.fromTo('#recap-ll', { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, ...IN }, at(4));
+      tl.fromTo(['#recap-lr0', '#recap-lr1', '#recap-lr2'], { autoAlpha: 0, x: -30 },
+        { autoAlpha: 1, x: 0, duration: 0.45, ease: 'expo.out', stagger: 0.12 }, at(4, 0.2));
+
+      // (5) "Those people write the laws and decide where the money goes."
+      tl.fromTo('#recap-chev1', { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: 'expo.out' }, at(5));
+      tl.fromTo('#recap-law', { autoAlpha: 0, y: -40, scale: 0.9 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: 'expo.out', transformOrigin: '50% 50%' }, at(5, 0.1));
+      tl.fromTo('#recap-seal', { autoAlpha: 0, scale: 0.4 },
+        { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'back.out(2)', transformOrigin: '50% 50%' }, at(5, 0.7));
+      tl.fromTo('#recap-jar', { autoAlpha: 0, y: -40, scale: 0.8 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: 'expo.out', transformOrigin: '50% 100%' }, at(5, 1.5));
+      tl.fromTo(coins, { autoAlpha: 0, scale: 0.3 },
+        { autoAlpha: 1, scale: 1, duration: 0.4, ease: 'expo.out', stagger: 0.07, transformOrigin: '50% 50%' }, at(5, 1.95));
+
+      // (6) "Fewer people show up to choose them." — 100 people, 45 of them lit
+      tl.fromTo('#recap-chev2', { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: 'expo.out' }, at(6));
+      tl.fromTo(folk, { autoAlpha: 0, scale: 0.4 },
+        { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'expo.out', stagger: 0.004, transformOrigin: '50% 100%' }, at(6, 0.1));
+      tl.fromTo(ink, { backgroundColor: '#46506b' },
+        { backgroundColor: '#ffc94a', duration: 0.3, stagger: 0.008 }, at(6, 0.75));
+
+      // (7) "Which means the ones who do show up," — they walk into the ballot box
+      tl.fromTo('#recap-chev3', { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.4, ease: 'expo.out' }, at(7));
+      tl.fromTo('#recap-boxwrap', { autoAlpha: 0, scale: 0.6, y: -30 },
+        { autoAlpha: 1, scale: 1, y: 0, duration: 0.7, ease: 'expo.out', transformOrigin: '50% 100%' }, at(7, 0.15));
+      tl.fromTo('#recap-slip .paper', { y: -120, rotate: -5 },
+        { y: 0, rotate: -5, duration: 0.6, ease: 'expo.out' }, at(7, 0.5));
+      tl.fromTo(walkers, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, stagger: 0.08 }, at(7, 0.5));
+      tl.fromTo(walkers, { x: 0 }, { x: 200, duration: 1.4, ease: 'power1.inOut', stagger: 0.07 }, at(7, 0.7));
+
+      // (8) "decide." — the question at the top answers itself
+      tl.fromTo('#recap-decide', { color: '#f3f1ea' }, { color: '#ffc94a', duration: 0.5 }, at(8, -0.1));
+      tl.fromTo('#recap-boxwrap', { scale: 1 },
+        { scale: 1.05, duration: 0.25, ease: 'power2.out', transformOrigin: '50% 100%' }, at(8, 0.15));
+      tl.fromTo('#recap-boxwrap', { scale: 1.05 },
+        { scale: 1, duration: 0.55, ease: 'power2.inOut', transformOrigin: '50% 100%' }, at(8, 0.4));
+
+      window.__timelines['recap'] = tl;
+    })();
+  </script>
+</template>

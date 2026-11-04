@@ -1,0 +1,188 @@
+<template>
+  <style>
+    /* scene 5 — "What is on the ballot". Opens on the small sheet scene 4 leaves behind:
+       #ballot-seed is that sheet, 360x300 at 1420,300, with the same three rows midterm.html
+       ends on, and #ballot-sheet (the full 1080x780 ballot) starts scaled down to exactly the
+       same box behind it. On phrase 0 the big sheet grows to 420,120 and the seed dissolves. */
+    #ballot, #ballot * { box-sizing: border-box; }
+    #ballot-sheet { left: 420px; top: 120px; width: 1080px; height: 780px; }
+    /* the sheet scene 4 hands over, drawn exactly as midterm.html leaves it */
+    #ballot-seed { position: absolute; left: 1420px; top: 300px; width: 360px; height: 300px; }
+    #ballot-seed .brow .tk { position: absolute; left: 4px; top: 4px; }
+    #ballot-strike { position: absolute; left: 36px; top: 67px; width: 244px; height: 6px;
+      border-radius: 3px; background: #8d93a4; }
+    #ballot-year { position: absolute; left: 50px; top: 30px; width: 980px; text-align: center;
+      font: 800 86px/1 var(--font); letter-spacing: -.02em; color: #2a3148; }
+    #ballot-hrule { position: absolute; left: 50px; top: 142px; width: 980px; height: 6px;
+      border-radius: 3px; background: #ddd8c9; }
+    #ballot-rules { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+    #ballot .gr { position: absolute; left: 50px; width: 980px; height: 5px;
+      border-radius: 3px; background: #e4dfd0; }
+    #ballot-div { position: absolute; left: 50px; top: 424px; width: 980px; height: 0;
+      border-top: 5px dashed #c9c3b2; }
+    #ballot-band { position: absolute; left: 24px; top: 690px; width: 1032px; height: 64px;
+      border-radius: 18px; background: var(--local); }
+    #ballot-sheet .brow { font-size: 42px; }
+    #ballot-sheet .brow .box { display: flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; border-radius: 11px; }
+    #ballot-sheet .cnt { font-size: 48px; color: #3f4860; }
+    #ballot-sheet .unit { font: 700 40px/1 var(--font); color: #5a6478; }
+    #ballot-sheet .plc { position: absolute; left: 66px; top: 12px; height: 20px; border-radius: 10px; background: #d7d2c4; }
+    #ballot-school { position: absolute; left: 1496px; top: 120px; width: 360px; height: 770px; }
+    #ballot-ground { position: absolute; left: 24px; top: 380px; width: 310px; height: 9px;
+      border-radius: 5px; background: rgba(243, 241, 234, .75); }
+  </style>
+
+  <div id="ballot" class="world" data-composition-id="ballot" data-width="1920" data-height="1080">
+    <div class="credit" id="ballot-credit" data-layout-ignore>2026 regular contests · 435 House · 33 Senate (Class 2) · 36 governors</div>
+
+    <div class="ballot" id="ballot-sheet">
+      <div id="ballot-year">2026</div>
+      <div id="ballot-hrule"></div>
+      <div id="ballot-rules" data-layout-ignore></div>
+      <div id="ballot-band"></div>
+      <div id="ballot-div"></div>
+      <!-- the seven rows are built by the script, after the band so they sit on top of it -->
+    </div>
+
+    <!-- the sheet scene 4 hands over: President struck out, House and Senate ticked (built below) -->
+    <div id="ballot-seed" class="ballot"></div>
+
+    <!-- the school the school board decides about, with the yellow "you" kid in front of it -->
+    <div id="ballot-school" data-layout-allow-overlap>
+      <svg id="ballot-building" width="320" height="300" viewBox="0 0 320 300" style="position:absolute;left:20px;top:80px">
+        <rect x="28" y="100" width="264" height="200" rx="14" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7"/>
+        <path d="M 8 104 L 160 16 L 312 104 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7" stroke-linejoin="round"/>
+        <circle cx="160" cy="66" r="18" fill="none" stroke="#f3f1ea" stroke-width="6"/>
+        <path d="M 160 55 L 160 66 L 169 73" fill="none" stroke="#f3f1ea" stroke-width="5" stroke-linecap="round"/>
+        <rect x="62" y="128" width="60" height="52" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
+        <rect x="198" y="128" width="60" height="52" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
+        <rect x="131" y="188" width="58" height="112" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
+      </svg>
+      <div id="ballot-ground"></div>
+      <svg id="ballot-link" width="150" height="380" viewBox="0 0 150 380" style="position:absolute;left:2px;top:380px">
+        <path id="ballot-link-path" d="M 6 342 C 74 330, 14 140, 122 22" pathLength="1" fill="none"
+          stroke="#ff9d6b" stroke-width="9" stroke-linecap="round"
+          style="stroke-dasharray:1 1.2;stroke-dashoffset:1.1"/>
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const TICK = '<svg viewBox="0 0 24 24" width="28" height="28"><path d="M4 12.5 l5.5 5.5 l10.5 -14" fill="none" stroke="#2a3148" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const sheet = document.getElementById('ballot-sheet');
+      const rules = document.getElementById('ballot-rules');
+
+      // the handover: the same three rows scene 4 ends on, in the same places
+      const seed = document.getElementById('ballot-seed');
+      const SEEDTICK = '<svg class="tk" viewBox="0 0 28 28" width="28" height="28">'
+        + '<path d="M 5 15 l 6 6 l 12 -15" fill="none" stroke="#2a3148" stroke-width="5"'
+        + ' stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      Kit.brow(seed, { top: 52, text: 'President' });
+      Kit.brow(seed, { top: 132, text: 'House' }).insertAdjacentHTML('beforeend', SEEDTICK);
+      Kit.brow(seed, { top: 212, text: 'Senate' }).insertAdjacentHTML('beforeend', SEEDTICK);
+      seed.insertAdjacentHTML('beforeend', '<div id="ballot-strike"></div>');
+
+      // the 2026 ballot, top to bottom. counts from Kit.Y2026 (435 House, 33 Senate, 36 governors)
+      const ROWS = [
+        { id: 'r1', top: 182, rule: 236, text: 'U.S. House', count: String(Kit.Y2026.house), tint: 'var(--house)' },
+        { id: 'r2', top: 266, rule: 320, text: 'U.S. Senate', count: String(Kit.Y2026.senate), tint: 'var(--senate)' },
+        { id: 'r3', top: 350, rule: 404, text: 'Governor', count: String(Kit.Y2026.governors), unit: 'states', tint: 'var(--local)' },
+        { id: 'r4', top: 448, rule: 502, text: 'State lawmakers', w: 340 },
+        { id: 'r5', top: 532, rule: 586, text: 'Mayor', w: 122 },
+        { id: 'r6', top: 616, rule: 670, text: 'Judges', w: 142 },
+        { id: 'r7', top: 700, rule: 746, text: 'School board', w: 282, mark: true },
+      ];
+      const el = {};
+      for (const r of ROWS) {
+        const g = document.createElement('div');
+        g.className = 'gr';
+        g.style.top = r.rule + 'px';
+        rules.appendChild(g);
+
+        const d = document.createElement('div');
+        d.id = 'ballot-' + r.id;
+        d.className = 'brow' + (r.count ? '' : ' dim');
+        d.style.cssText = 'top:' + r.top + 'px;left:50px;width:980px';
+        if (r.count) {
+          d.innerHTML = '<span class="box" style="background:' + r.tint + ';border-color:' + r.tint + '"></span>'
+            + '<span>' + r.text + '</span>'
+            + '<span class="cnt" style="margin-left:auto">' + r.count + '</span>'
+            + (r.unit ? '<span class="unit">' + r.unit + '</span>' : '');
+        } else {
+          d.innerHTML = '<span class="box">' + (r.mark ? TICK : '') + '</span>'
+            + '<span class="txt">' + r.text + '</span>'
+            + '<i class="plc" style="width:' + r.w + 'px"></i>';
+        }
+        sheet.appendChild(d);
+        el[r.id] = d;
+      }
+      const kid = Kit.person(document.getElementById('ballot-school'), { x: 180, y: 380, h: 104, cls: 'on' });
+      kid.id = 'ballot-kid';
+
+      const tl = gsap.timeline({ paused: true });
+
+      // (0) the small sheet scene 4 left behind grows into the whole ballot
+      tl.fromTo('#ballot-sheet',
+        { x: 1000, y: 180, scaleX: 1 / 3, scaleY: 300 / 780, transformOrigin: '0 0' },
+        { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.9, ease: 'expo.out' }, S.at(0));
+      // the handed-over rows ride the sheet's top-left corner as it grows, and dissolve
+      tl.fromTo('#ballot-seed', { x: 0, y: 0 }, { x: -1000, y: -180, duration: 0.9, ease: 'expo.out' }, S.at(0));
+      tl.fromTo('#ballot-seed', { opacity: 1 }, { opacity: 0, duration: 0.5, ease: 'power1.in' }, S.at(0, 0.3));
+      tl.fromTo('#ballot-rules .gr', { opacity: 0, scaleX: 0, transformOrigin: 'left center' },
+        { opacity: 1, scaleX: 1, duration: 0.5, stagger: 0.06, ease: 'expo.out' }, S.at(0, 0.85));
+
+      // (1) the heading
+      tl.fromTo('#ballot-year', { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, S.at(1));
+      tl.fromTo('#ballot-hrule', { opacity: 0, scaleX: 0, transformOrigin: 'center center' },
+        { opacity: 1, scaleX: 1, duration: 0.6, ease: 'expo.out' }, S.at(1, 0.1));
+      tl.fromTo('#ballot-credit', { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(1, 0.2));
+
+      // (2)(3)(4) the three federal rows, each as the voice names it
+      [['r1', 2], ['r2', 3], ['r3', 4]].forEach(function (p) {
+        tl.fromTo(el[p[0]], { opacity: 0, x: -44 }, { opacity: 1, x: 0, duration: 0.55, ease: 'expo.out' }, S.at(p[1]));
+        tl.fromTo('#ballot-' + p[0] + ' .cnt', { scale: 0.4, transformOrigin: 'center center' },
+          { scale: 1, duration: 0.5, ease: 'back.out(2)' }, S.at(p[1], 0.18));
+      });
+
+      // (5) and underneath those: the lower half of the sheet opens up
+      tl.fromTo('#ballot-div', { opacity: 0, scaleX: 0, transformOrigin: 'left center' },
+        { opacity: 1, scaleX: 1, duration: 0.7, ease: 'expo.out' }, S.at(5));
+
+      // (6) four more lines, still blank
+      tl.fromTo(['#ballot-r4', '#ballot-r5', '#ballot-r6', '#ballot-r7'], { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.13, ease: 'expo.out' }, S.at(6));
+
+      // (7)(8)(9) each blank line gets its word
+      [['r4', 7], ['r5', 8], ['r6', 9]].forEach(function (p) {
+        tl.fromTo('#ballot-' + p[0] + ' .plc', { opacity: 1 }, { opacity: 0, duration: 0.22 }, S.at(p[1]));
+        tl.fromTo('#ballot-' + p[0] + ' .txt', { opacity: 0 }, { opacity: 1, duration: 0.28 }, S.at(p[1], 0.06));
+        tl.fromTo(el[p[0]], { color: '#5f6673' }, { color: '#2a3148', duration: 0.3 }, S.at(p[1], 0.06));
+      });
+
+      // (10) the school board: marked in peach, its checkbox ticked
+      tl.fromTo('#ballot-band', { opacity: 0, scaleX: 0, transformOrigin: 'left center' },
+        { opacity: 1, scaleX: 1, duration: 0.55, ease: 'expo.out' }, S.at(10));
+      tl.fromTo('#ballot-r7 .plc', { opacity: 1 }, { opacity: 0, duration: 0.22 }, S.at(10, 0.1));
+      tl.fromTo('#ballot-r7 .txt', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(10, 0.22));
+      tl.fromTo(el.r7, { color: '#5f6673' }, { color: '#2a3148', duration: 0.3 }, S.at(10, 0.22));
+      tl.fromTo('#ballot-r7 .box', { borderColor: '#8d93a4' }, { borderColor: '#2a3148', duration: 0.3 }, S.at(10, 0.22));
+      tl.fromTo('#ballot-r7 .box svg', { opacity: 0, scale: 0.3, transformOrigin: 'center center' },
+        { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2.4)' }, S.at(10, 0.32));
+
+      // (11) that row is the one about your school
+      tl.fromTo('#ballot-building', { opacity: 0, scale: 0.62, y: 26, transformOrigin: '50% 100%' },
+        { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(11, 0.1));
+      tl.fromTo('#ballot-ground', { opacity: 0, scaleX: 0.2, transformOrigin: 'center center' },
+        { opacity: 1, scaleX: 1, duration: 0.5, ease: 'expo.out' }, S.at(11, 0.2));
+      tl.fromTo('#ballot-kid', { opacity: 0, y: 20, scale: 0.8, transformOrigin: '50% 100%' },
+        { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'expo.out' }, S.at(11, 0.5));
+      tl.fromTo('#ballot-link-path', { strokeDashoffset: 1.1 },
+        { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut', autoRound: false }, S.at(11, 0.85));
+
+      window.__timelines['ballot'] = tl;
+    })();
+  </script>
+</template>

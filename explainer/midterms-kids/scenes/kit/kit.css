@@ -1,0 +1,78 @@
+/* Shared look for every scene of the midterms explainer (for 3rd–5th graders). Loaded before each
+   scene; scenes use these tokens and classes and never redefine them. Sizes are px at 1920x1080.
+   One friendly dark-blue world throughout: chunky rounded shapes, thick strokes, big type. */
+:root {
+  --ground: #16203a;      /* the film's ground: a warm navy */
+  --ground-2: #1f2b4a;    /* a panel, a card, a room */
+  --line: #33405f;        /* hairlines, rules, the edge of a panel */
+  --chalk: #f3f1ea;       /* text and main lines */
+  --chalk-2: #9aa5bd;     /* secondary text, things not being talked about */
+  /* things the story tracks: each colour means one thing, everywhere. Never red-vs-blue:
+     this film never shows a party, so nothing in it may read as one. */
+  --you: #ffc94a;         /* YOU, the viewer, and whatever the film is pointing at right now (= theme accent) */
+  --house: #5ad1c4;       /* the House of Representatives, and anything counted by population */
+  --senate: #c2a6ff;      /* the Senate, and anything counted by state */
+  --local: #ff9d6b;       /* governors, mayors, judges, the school board: the local layer */
+  --money: #8ddf6b;       /* money, and what money pays for */
+  --off: #46506b;         /* a person who did not vote, a seat not being elected, a dimmed thing */
+  --mono: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+}
+
+/* a scene's root: full frame, dark, clipped */
+.world { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(ellipse 120% 90% at 50% 38%, #1d2847 0%, var(--ground) 72%); color: var(--chalk); font-family: var(--font); }
+
+/* type. Big and plain: the audience is eight to eleven years old. */
+.kicker { position: absolute; left: 120px; top: 78px; font: 700 34px/1 var(--font); letter-spacing: .04em; color: var(--chalk-2); }
+.label { position: absolute; font: 700 38px/1.2 var(--font); color: var(--chalk); white-space: nowrap; }
+.label.s { font-size: 30px; font-weight: 600; color: var(--chalk-2); }
+.big { position: absolute; font: 800 104px/1 var(--font); color: var(--chalk); white-space: nowrap; letter-spacing: -.02em; }
+.huge { position: absolute; font: 800 168px/1 var(--font); color: var(--you); white-space: nowrap; letter-spacing: -.03em; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+/* source credit: small on purpose (exempt from the 28 px text floor — give it data-layout-ignore) */
+.credit { position: absolute; right: 64px; top: 40px; font: 400 20px/1.35 var(--font); color: #74809a; text-align: right; white-space: nowrap; }
+
+/* ---- a card / panel: thick rounded outline, the film's basic box ---- */
+.card { position: absolute; border-radius: 28px; background: var(--ground-2); border: 5px solid var(--line); }
+.card.you { border-color: var(--you); }
+.card.house { border-color: var(--house); }
+.card.senate { border-color: var(--senate); }
+.card.local { border-color: var(--local); }
+
+/* ---- a little person (Kit.person / Kit.people build them): head + body, 1 unit = 1 px ---- */
+.person { position: absolute; }
+.person .hd { position: absolute; left: 50%; border-radius: 50%; background: var(--chalk-2); }
+.person .bd { position: absolute; left: 50%; border-radius: 40% 40% 14px 14px; background: var(--chalk-2); }
+.person.on .hd, .person.on .bd { background: var(--you); }
+.person.house .hd, .person.house .bd { background: var(--house); }
+.person.senate .hd, .person.senate .bd { background: var(--senate); }
+.person.local .hd, .person.local .bd { background: var(--local); }
+.person.off .hd, .person.off .bd { background: var(--off); }
+
+/* ---- a seat dot: one member of a chamber (Kit.dots builds a grid of them) ---- */
+.dots { position: absolute; }
+.dot { position: absolute; border-radius: 50%; background: var(--off); }
+.dot.house { background: var(--house); }
+.dot.senate { background: var(--senate); }
+.dot.on { background: var(--you); }
+
+/* ---- a ballot sheet and its lines ---- */
+.ballot { position: absolute; border-radius: 22px; background: #f3f1ea; border: 5px solid #cfcabb; box-shadow: 0 18px 60px rgba(0,0,0,.35); }
+.brow { position: absolute; left: 44px; display: flex; align-items: center; gap: 22px; font: 700 34px/1 var(--font); color: #2a3148; white-space: nowrap; }
+.brow .box { flex: none; width: 36px; height: 36px; border-radius: 9px; border: 4px solid #8d93a4; background: #fff; }
+.brow .box.x { border-color: var(--local); background: var(--local); }
+.brow .cnt { font: 700 30px/1 var(--mono); color: #6b7280; }
+.brow.dim { color: #5f6673; }   /* dimmed, but still 5.1:1 on the cream sheet: the layout check fails #9aa0b0 */
+
+/* ---- a stack of coins / a pile of money ---- */
+.coin { position: absolute; border-radius: 50%; background: var(--money); border: 4px solid #0f1a2e; }
+.jar { position: absolute; border-radius: 20px 20px 46px 46px; background: rgba(141,223,107,.10); border: 5px solid var(--money); }
+
+/* ---- a bar in a plot ---- */
+.plot { position: absolute; background: rgba(255,255,255,.03); border: 3px solid var(--line); border-radius: 18px; }
+.bar { position: absolute; bottom: 0; border-radius: 8px 8px 0 0; background: var(--chalk-2); }
+.bar.you { background: var(--you); }
+.bar.house { background: var(--house); }
+.bar.down { background: var(--off); }
+
+/* ---- a speech bubble, for the one question a kid can ask ---- */
+.bubble { position: absolute; border-radius: 34px; background: var(--you); color: #16203a; font: 800 54px/1.25 var(--font); padding: 30px 44px; }

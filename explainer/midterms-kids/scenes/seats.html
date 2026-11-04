@@ -1,0 +1,201 @@
+<template>
+  <style>
+    #seats { position: absolute; inset: 0; overflow: hidden; }
+    #seats, #seats * { box-sizing: border-box; }
+
+    /* ---- the Capitol, carried over from the previous scene ---- */
+    #seats-cap {
+      position: absolute; left: 460px; top: 430px; width: 760px; height: 300px;
+      transform-origin: 0 0; transform: scale(1.3157895);
+    }
+
+    /* ---- the 50 identical state boxes: a plain grid, NOT a map of the country ---- */
+    #seats-grid { position: absolute; left: 280px; top: 300px; width: 1360px; height: 540px; transform-origin: 0 0; }
+    #seats-grid .sb {
+      position: absolute; width: 118px; height: 92px; border-radius: 18px;
+      background: var(--ground-2); border: 4px solid var(--line);
+    }
+    #seats-grid .sd { position: absolute; top: 35px; width: 18px; height: 18px; border-radius: 50%; background: var(--senate); }
+    #seats-gl { left: 160px; top: 160px; transform-origin: 0 0; opacity: 0; }
+
+    /* ---- one state, pulled out of the grid: name, its 2 senate dots, its box, its seat count ---- */
+    .seats-card { position: absolute; top: 268px; height: 488px; opacity: 0; }
+    .seats-card .nm { left: 0; top: 28px; }
+    .seats-card .pair { position: absolute; left: 0; top: 88px; width: 102px; height: 44px; }
+    .seats-card .pair i { position: absolute; top: 0; width: 44px; height: 44px; border-radius: 50%; background: var(--senate); }
+    .seats-card .cnt { top: 18px; opacity: 0; color: var(--house); }
+    .seats-box {
+      position: absolute; left: 0; border-radius: 26px; background: var(--ground-2);
+      border: 5px solid var(--line); overflow: hidden; transform-origin: 50% 100%;
+    }
+    .seats-ppl { position: absolute; left: 24px; top: 24px; opacity: 0; }
+    .seats-chip {
+      position: absolute; width: 48px; height: 56px; border-radius: 11px;
+      background: var(--house); border: 3px solid #0f1a2e; opacity: 0;
+    }
+
+    /* ---- the two things to carry away ---- */
+    .seats-sum { position: absolute; top: 800px; height: 100px; opacity: 0; }
+    .seats-sum .t { position: absolute; left: 28px; top: 31px; font: 700 36px/1 var(--font); white-space: nowrap; }
+  </style>
+
+  <div id="seats" class="world" data-composition-id="seats" data-width="1920" data-height="1080">
+    <div id="seats-cap"></div>
+
+    <div id="seats-grid" data-layout-allow-overlap></div>
+    <div id="seats-gl" class="big">50 states</div>
+
+    <div id="seats-ca" class="seats-card" style="left:300px;width:800px" data-layout-allow-overlap>
+      <div class="nm label">California</div>
+      <div class="cnt big num" style="left:260px">52</div>
+      <div id="seats-ca-box" class="seats-box" style="top:158px;width:800px;height:330px" data-layout-allow-overlap>
+        <div id="seats-ca-ppl" class="seats-ppl" style="width:752px;height:282px" data-layout-ignore></div>
+      </div>
+      <div class="pair"><i style="left:0"></i><i style="left:58px"></i></div>
+    </div>
+
+    <div id="seats-wy" class="seats-card" style="left:1200px;width:420px" data-layout-allow-overlap>
+      <div class="nm label">Wyoming</div>
+      <div class="cnt big num" style="left:230px">1</div>
+      <div id="seats-wy-box" class="seats-box" style="top:338px;width:240px;height:150px" data-layout-allow-overlap>
+        <div id="seats-wy-ppl" class="seats-ppl" style="width:192px;height:102px" data-layout-ignore></div>
+      </div>
+      <div class="pair"><i style="left:0"></i><i style="left:58px"></i></div>
+    </div>
+
+    <div id="seats-sum-s" class="card senate seats-sum" style="left:96px;width:700px">
+      <div class="t" style="color:var(--senate)">Senate &mdash; which state you live in</div>
+    </div>
+    <div id="seats-sum-h" class="card house seats-sum" style="left:1020px;width:760px">
+      <div class="t" style="color:var(--house)">House &mdash; how many of you there are</div>
+    </div>
+
+    <div id="seats-credit" class="credit" data-layout-ignore>2020 census apportionment</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+
+      /* ---------- build ---------- */
+
+      // The Capitol is handed over by `congress`: same wrapper (left 460 / top 430, SVG 1000 px
+      // wide), same opened-up wings. Kit.CAPITOL_SVG ships unprefixed ids, so rename them here.
+      const cap = document.getElementById('seats-cap');
+      cap.innerHTML = Kit.CAPITOL_SVG;
+      cap.querySelector('#cap-wl').id = 'seats-wl';
+      cap.querySelector('#cap-wr').id = 'seats-wr';
+
+      // 50 identical boxes, 10 x 5, each holding two lavender dots (two senators per state).
+      const grid = document.getElementById('seats-grid');
+      for (let i = 0; i < 50; i++) {
+        const b = document.createElement('div');
+        b.className = 'sb';
+        b.style.left = (i % 10) * 138 + 'px';
+        b.style.top = ((i / 10) | 0) * 112 + 'px';
+        b.innerHTML = '<i class="sd" style="left:35px"></i><i class="sd" style="left:65px"></i>';
+        grid.appendChild(b);
+      }
+
+      // the people inside each state's box: dense in California, sparse in Wyoming
+      Kit.people(document.getElementById('seats-ca-ppl'),
+        { n: 240, cols: 24, w: 752, h: 282, size: 24, seed: 11, cls: 'house' });
+      Kit.people(document.getElementById('seats-wy-ppl'),
+        { n: 3, cols: 3, w: 192, h: 102, size: 24, seed: 5, cls: 'house' });
+
+      // the House seats: 52 teal chips in California's box, 1 in Wyoming's
+      const caBox = document.getElementById('seats-ca-box');
+      const caChips = [];
+      for (let i = 0; i < Kit.US.caSeats; i++) {
+        const c = document.createElement('div');
+        c.className = 'seats-chip';
+        c.style.left = 28 + (i % 13) * 58 + 'px';
+        c.style.top = 35 + (((i / 13) | 0) * 68) + 'px';
+        caBox.appendChild(c);
+        caChips.push(c);
+      }
+      const wyBox = document.getElementById('seats-wy-box');
+      const wyChips = [];
+      for (let i = 0; i < Kit.US.wySeats; i++) {
+        const c = document.createElement('div');
+        c.className = 'seats-chip';
+        c.style.left = '96px';
+        c.style.top = '47px';
+        wyBox.appendChild(c);
+        wyChips.push(c);
+      }
+
+      /* ---------- timeline ---------- */
+
+      const tl = gsap.timeline({ paused: true });
+      const LAV = '#c2a6ff', DIM = '#46506b';
+
+      // (0) the Capitol, left exactly where the previous scene put it (left 460 / top 430,
+      // 1000 px wide), shrinks to the top of the frame (left 760 / top 70, 400 px wide).
+      tl.fromTo('#seats-cap',
+        { x: 0, y: 0, scale: 1.3157895 },
+        { x: 300, y: -360, scale: 0.5263158, duration: 1.05, ease: 'power2.inOut' }, S.at(0) + 0.45);
+      // its two chambers, held open at the end of `congress`, close up again as it goes
+      tl.fromTo('#seats-wl', { attr: { x: 4, 'fill-opacity': 0.6 } },
+        { attr: { x: 20, 'fill-opacity': 0.3 }, duration: 1.05, ease: 'power2.inOut' }, S.at(0) + 0.45);
+      tl.fromTo('#seats-wr', { attr: { x: 526, 'fill-opacity': 0.6 } },
+        { attr: { x: 510, 'fill-opacity': 0.3 }, duration: 1.05, ease: 'power2.inOut' }, S.at(0) + 0.45);
+      tl.fromTo('#seats-cap', { opacity: 1 }, { opacity: 0.5, duration: 0.5 }, S.at(1));
+
+      // (1) 50 identical boxes land in a neat grid, then each takes two lavender dots.
+      tl.fromTo('#seats-grid .sb', { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.45, ease: 'expo.out', stagger: { each: 0.006, grid: [5, 10], from: 'center' } },
+        S.at(1));
+      tl.fromTo('#seats-gl', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(1) + 0.15);
+      tl.fromTo('#seats-grid .sd', { scale: 0 },
+        { scale: 1, duration: 0.28, ease: 'expo.out', stagger: 0.0025 }, S.at(1) + 0.35);
+
+      // (2-3) two of the fifty slide out and grow: the same two dots in each.
+      tl.fromTo('#seats-grid', { x: 0, y: 0, scale: 1, opacity: 1 },
+        { x: -210, y: -224, scale: 0.28, opacity: 0.45, duration: 0.7, ease: 'expo.out' }, S.at(2));
+      tl.fromTo('#seats-gl', { x: 0, y: 0, scale: 1 },
+        { x: -90, y: 83, scale: 0.365, duration: 0.7, ease: 'expo.out' }, S.at(2));
+
+      tl.fromTo('#seats-ca', { opacity: 0, x: -170 }, { opacity: 1, x: 0, duration: 0.65, ease: 'expo.out' }, S.at(2) + 0.2);
+      tl.fromTo('#seats-ca-box', { scale: 0.35 }, { scale: 1, duration: 0.65, ease: 'expo.out' }, S.at(2) + 0.2);
+      tl.fromTo('#seats-wy', { opacity: 0, x: 170 }, { opacity: 1, x: 0, duration: 0.65, ease: 'expo.out' }, S.at(3) + 0.1);
+      tl.fromTo('#seats-wy-box', { scale: 0.35 }, { scale: 1, duration: 0.65, ease: 'expo.out' }, S.at(3) + 0.1);
+
+      // (4) the Senate side is settled: its dots dim while the House is explained.
+      tl.fromTo('#seats-grid .sd, .seats-card .pair i', { backgroundColor: LAV },
+        { backgroundColor: DIM, duration: 0.5 }, S.at(4) + 0.1);
+
+      // (5) the two boxes resize by population: California dense, Wyoming sparse.
+      // Both are anchored on the same invisible ground line; only their size changes.
+      tl.fromTo('#seats-ca-box', { y: -10, width: 520, height: 340 },
+        { y: 0, width: 800, height: 330, duration: 0.7, ease: 'expo.out' }, S.at(5));
+      tl.fromTo('#seats-wy-box', { y: -190, width: 520, height: 340 },
+        { y: 0, width: 240, height: 150, duration: 0.7, ease: 'expo.out' }, S.at(5));
+      tl.fromTo('.seats-card .pair', { x: 30, y: 90 }, { x: 0, y: 0, duration: 0.7, ease: 'expo.out' }, S.at(5));
+      tl.fromTo('#seats-ca-ppl, #seats-wy-ppl', { opacity: 0 }, { opacity: 0.85, duration: 0.5 }, S.at(5) + 0.5);
+
+      // (6) 52 House seats fill California's box.
+      tl.fromTo(caChips, { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.45, ease: 'expo.out', stagger: { each: 0.012, grid: [4, 13], from: 'start' } },
+        S.at(6));
+      tl.fromTo('#seats-ca-ppl', { opacity: 0.85 }, { opacity: 0, duration: 0.5 }, S.at(6) + 0.1);
+      tl.fromTo('#seats-ca .cnt', { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }, S.at(6) + 0.3);
+      tl.fromTo('#seats-credit', { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(6));
+
+      // (7) one House seat in Wyoming's.
+      tl.fromTo(wyChips, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: 'expo.out' }, S.at(7));
+      tl.fromTo('#seats-wy-ppl', { opacity: 0.85 }, { opacity: 0, duration: 0.5 }, S.at(7) + 0.1);
+      tl.fromTo('#seats-wy .cnt', { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }, S.at(7) + 0.3);
+
+      // (8-9) the two rules land and stay.
+      tl.fromTo('#seats-grid .sd, .seats-card .pair i', { backgroundColor: DIM },
+        { backgroundColor: LAV, duration: 0.5 }, S.at(8));
+      tl.fromTo('#seats-sum-s', { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(8) + 0.1);
+      tl.fromTo('#seats-sum-h', { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(9) + 0.1);
+
+      window.__timelines['seats'] = tl;
+    })();
+  </script>
+</template>

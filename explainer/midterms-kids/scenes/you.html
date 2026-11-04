@@ -1,0 +1,188 @@
+<template>
+  <style>
+    /* step 9 — what you can do now. The viewer (yellow) is the hero; the ballot box waits for them. */
+    #you, #you * { box-sizing: border-box; }
+
+    /* how long until you can vote yourself */
+    #you-18 { left: 520px; top: 520px; opacity: 0; }
+
+    /* the ballot box from step 1, dim until the film says you are part of this */
+    #you-box { position: absolute; left: 740px; top: 340px; width: 540px; height: 540px; }
+    /* the folded slip in its slot (as in hook.html), so the box reads as a ballot box and not a case */
+    #you-slip { position: absolute; left: 170px; top: -63px; width: 200px; height: 202px; overflow: hidden; }
+    #you-slip .paper { position: absolute; left: 20px; top: 14px; width: 160px; height: 188px;
+      border-radius: 12px; background: #f3f1ea; transform: rotate(-5deg); }
+    #you-slip .paper i { position: absolute; left: 24px; height: 11px; border-radius: 6px; background: #9aa5bd; }
+
+    /* find out who represents your neighborhood — the name line stays blank on purpose */
+    #you-rep { left: 110px; top: 70px; width: 540px; height: 215px; opacity: 0; }
+    #you-pin { position: absolute; left: 36px; top: 30px; opacity: 0; }
+    #you-rep-t { left: 130px; top: 36px; opacity: 0; }
+    #you-rep-line { position: absolute; left: 36px; top: 158px; width: 460px; height: 12px;
+      border-radius: 6px; background: var(--you); transform-origin: 0% 50%; }
+
+    /* the school board row, as it was on the ballot in step 5, and your school under it */
+    #you-sheet { left: 1340px; top: 180px; width: 490px; height: 120px; opacity: 0; }
+    #you-arrow { position: absolute; left: 1400px; top: 325px; opacity: 0; }
+    #you-school { position: absolute; left: 1370px; top: 530px; opacity: 0; }
+    #you-sl { left: 1385px; top: 790px; font-size: 34px; color: var(--local); opacity: 0; }
+
+    /* the one question a kid can ask */
+    #you-bubblewrap { position: absolute; left: 180px; top: 295px; width: 550px; height: 200px; }
+    #you-bubble { left: 0; top: 0; width: 550px; height: 160px; padding: 0; opacity: 0; }
+    #you-q, #you-ask { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; }
+    #you-q { font-size: 96px; }
+    #you-ask { font-size: 60px; }
+    #you-tail { position: absolute; left: 420px; top: 138px; width: 46px; height: 46px; border-radius: 10px;
+      background: var(--you); transform: rotate(45deg); opacity: 0; }
+  </style>
+
+  <div id="you" class="world" data-composition-id="you" data-width="1920" data-height="1080">
+
+    <!-- the ballot box from step 1, with a slip going into its slot -->
+    <div id="you-box">
+      <div id="you-slip" data-layout-ignore>
+        <div class="paper">
+          <i style="top:40px;width:113px"></i><i style="top:73px;width:82px"></i><i style="top:106px;width:101px"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- 18: the age you can vote at yourself -->
+    <div id="you-18" class="huge num">18</div>
+
+    <!-- who represents your neighborhood: the name line is blank, we do not know where you live -->
+    <div id="you-rep" class="card you">
+      <svg id="you-pin" viewBox="0 0 64 84" width="64" height="84" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 32 80 C 32 80 6 46 6 29 A 26 26 0 1 1 58 29 C 58 46 32 80 32 80 Z"
+          fill="rgba(255,201,74,.16)" stroke="#ffc94a" stroke-width="6" stroke-linejoin="round"/>
+        <circle cx="32" cy="28" r="9" fill="#ffc94a"/>
+      </svg>
+      <div id="you-rep-t" class="label">Your<br>representative</div>
+      <div id="you-rep-line"></div>
+    </div>
+
+    <!-- the school board row, and your school under it -->
+    <div id="you-sheet" class="ballot"></div>
+    <svg id="you-arrow" viewBox="0 0 200 170" width="200" height="170" xmlns="http://www.w3.org/2000/svg">
+      <path id="you-arrow-p" d="M 76 6 C 76 60 100 76 100 136" fill="none" stroke="#ff9d6b" stroke-width="7"
+        stroke-linecap="round" pathLength="1" stroke-dasharray="1"/>
+      <path id="you-arrow-h" d="M 100 164 L 84 136 L 116 136 Z" fill="#ff9d6b"/>
+    </svg>
+    <svg id="you-school" viewBox="0 0 280 180" width="360" height="232" xmlns="http://www.w3.org/2000/svg">
+      <rect x="24" y="68" width="232" height="100" rx="14" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="6"/>
+      <path d="M 12 72 L 140 14 L 268 72 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="6" stroke-linejoin="round"/>
+      <circle cx="140" cy="48" r="13" fill="#16203a" stroke="#f3f1ea" stroke-width="5"/>
+      <rect x="48" y="92" width="48" height="40" rx="8" fill="#16203a" stroke="#f3f1ea" stroke-width="5"/>
+      <rect x="184" y="92" width="48" height="40" rx="8" fill="#16203a" stroke="#f3f1ea" stroke-width="5"/>
+      <rect x="130" y="118" width="40" height="50" rx="8" fill="#ffc94a"/>
+      <rect x="4" y="166" width="272" height="10" rx="5" fill="#f3f1ea" opacity=".8"/>
+    </svg>
+    <div id="you-sl" class="label">Your school</div>
+
+    <!-- the question -->
+    <div id="you-bubblewrap" data-layout-allow-overlap>
+      <div id="you-tail"></div>
+      <div id="you-bubble" class="bubble" data-layout-allow-overlap>
+        <span id="you-q">?</span>
+        <span id="you-ask">Did you vote?</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot, K = window.Kit;
+      const root = document.getElementById('you');
+      const at = (k, o = 0) => S.at(k, o);
+
+      // the ballot box from step 1: drawn over the slip's lower end, so the paper vanishes into the slot
+      const box = document.getElementById('you-box');
+      box.insertAdjacentHTML('beforeend', K.BOX_SVG);
+      const bsvg = box.querySelector('svg');
+      bsvg.setAttribute('width', '540');
+      bsvg.setAttribute('height', '540');
+      bsvg.style.position = 'absolute';
+      bsvg.style.left = '0';
+      bsvg.style.top = '0';
+
+      // a person's box is as wide as it is tall; narrow it to the body so two can stand close
+      const slim = (p, x, h) => { const w = h * 0.62 + 6; p.style.width = w + 'px'; p.style.left = (x - w / 2) + 'px'; };
+
+      // the viewer, and the grown-up they go along with. Feet on the ballot box's own base line.
+      const kid = K.person(root, { x: 360, y: 837, h: 380, cls: 'on' });
+      kid.id = 'you-kid';
+      slim(kid, 360, 380);
+      const adult = K.person(root, { x: 350, y: 837, h: 330 });
+      adult.id = 'you-adult';
+      slim(adult, 350, 330);
+      adult.style.opacity = '0';
+
+      // the school board row, exactly as it sat on the ballot
+      const row = K.brow(document.getElementById('you-sheet'), { top: 40, text: 'School board' });
+      row.id = 'you-row';
+      row.querySelector('.box').classList.add('x');
+      row.style.opacity = '0';
+
+      const tl = gsap.timeline({ paused: true });
+
+      // (0) "You cannot vote until you are eighteen." — the kid is already there, the box is dim
+      tl.fromTo('#you-18', { autoAlpha: 0, y: -80, scale: 0.7 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.65, ease: 'expo.out' }, at(0, 0.15));
+
+      // (1) "That does not leave you out of it." — the box brightens
+      tl.fromTo('#you-box', { opacity: 0.2 }, { opacity: 1, duration: 0.7, ease: 'expo.out' }, at(1));
+      tl.fromTo('#you-box', { scale: 0.92 },
+        { scale: 1, duration: 0.7, ease: 'expo.out', transformOrigin: '50% 92%' }, at(1));
+
+      // (2) "...who represents your neighborhood" — the kid steps back, the card with the map pin lands
+      tl.fromTo('#you-18', { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.3 }, at(2));
+      tl.fromTo('#you-kid', { scale: 1 },
+        { scale: 0.72, duration: 0.8, ease: 'expo.out', transformOrigin: '50% 100%' }, at(2));
+      tl.fromTo('#you-rep', { autoAlpha: 0, y: -70 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'expo.out' }, at(2, 0.1));
+      tl.fromTo('#you-pin', { autoAlpha: 0, y: -46 },
+        { autoAlpha: 1, y: 0, duration: 0.55, ease: 'expo.out' }, at(2, 0.4));
+      tl.fromTo('#you-rep-t', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, at(2, 0.6));
+
+      // (3) "by name." — the blank name line draws itself, and waits to be filled in
+      tl.fromTo('#you-rep-line', { scaleX: 0 },
+        { scaleX: 1, duration: 0.5, ease: 'expo.out', transformOrigin: '0% 50%' }, at(3));
+
+      // (4) "You can go along with a grown up when they vote."
+      tl.fromTo('#you-kid', { x: 0 }, { x: 250, duration: 0.9, ease: 'power2.inOut' }, at(4, 0.1));
+      tl.fromTo('#you-adult', { autoAlpha: 0, x: -60 },
+        { autoAlpha: 1, x: 0, duration: 0.6, ease: 'expo.out' }, at(4, 1.15));
+      tl.fromTo('#you-box', { scale: 1 },
+        { scale: 1.04, duration: 0.3, ease: 'power2.out', transformOrigin: '50% 92%' }, at(4, 1.9));
+      tl.fromTo('#you-box', { scale: 1.04 },
+        { scale: 1, duration: 0.5, ease: 'power2.inOut', transformOrigin: '50% 92%' }, at(4, 2.2));
+
+      // (5) "You can watch what the school board decides," — the peach row comes back
+      tl.fromTo('#you-sheet', { autoAlpha: 0, x: 90 }, { autoAlpha: 1, x: 0, duration: 0.6, ease: 'expo.out' }, at(5));
+      tl.fromTo('#you-row', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, at(5, 0.35));
+
+      // (6) "because that one is about you." — a line runs from the row down to your school
+      tl.fromTo('#you-school', { autoAlpha: 0, y: 60 },
+        { autoAlpha: 1, y: 0, duration: 0.55, ease: 'expo.out' }, at(6));
+      tl.fromTo('#you-arrow', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, at(6, 0.35));
+      tl.fromTo('#you-arrow-p', { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.5, ease: 'none', autoRound: false }, at(6, 0.4));
+      tl.fromTo('#you-arrow-h', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, at(6, 0.85));
+      tl.fromTo('#you-sl', { autoAlpha: 0, x: 36 }, { autoAlpha: 1, x: 0, duration: 0.5, ease: 'expo.out' }, at(6, 0.95));
+
+      // (7) "...ask the grown ups in your house one question."
+      tl.fromTo('#you-bubble', { autoAlpha: 0, scale: 0.55 },
+        { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'expo.out', transformOrigin: '78% 100%' }, at(7, 0.15));
+      tl.fromTo('#you-tail', { autoAlpha: 0, scale: 0.4, rotation: 45 },
+        { autoAlpha: 1, scale: 1, rotation: 45, duration: 0.5, ease: 'expo.out' }, at(7, 0.3));
+      tl.fromTo('#you-q', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35 }, at(7, 0.45));
+
+      // (8) "Did you vote?" — the question itself
+      tl.fromTo('#you-q', { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.25 }, at(8, -0.6));
+      tl.fromTo('#you-ask', { autoAlpha: 0, scale: 0.88 },
+        { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'expo.out' }, at(8, -0.4));
+
+      window.__timelines['you'] = tl;
+    })();
+  </script>
+</template>
