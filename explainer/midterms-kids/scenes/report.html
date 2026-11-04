@@ -3,28 +3,33 @@
     /* Step 7 — "A report card in the middle".
        Strictly non-partisan: the row of 23 midterms is labelled "the President's party" and nothing
        else. Which party held the White House in any given year is never shown, implied or coloured.
-       Lost seats = grey (--off), gained seats = yellow (--you, "what the film points at"). The two
+       Lost seats = grey (--off), gained seats = amber (--you, "what the film points at"). The two
        buttons are one CSS class: same size, same radius, same colours — only the words differ. */
+
+    /* Amber on paper is a shape colour (2.8:1): right for a chip, a lead line or a ring, too pale
+       for words. Every amber WORD in this scene wears the kit's .hl, an amber letter with an ink
+       edge, so the colour still means "what the film is pointing at" and the edge carries the
+       contrast. Amber fills are untouched. */
 
     /* the kicker's number badge: the same object money.html puts beside "Why it matters" for reason 1 */
     #report-two { position: absolute; left: 404px; top: 62px; width: 62px; height: 62px;
-      border-radius: 50%; background: var(--you); color: #16203a;
+      border-radius: 50%; background: var(--you); color: #27150a;
       font: 800 38px/62px var(--font); text-align: center; }
 
-    /* the report card the country fills in halfway through */
+    /* the report card the country fills in halfway through: the kit's .card, a white sheet lying on
+       the paper with its own shadow. Only its place, its size and its corner are local. */
     #report-sheet {
-      position: absolute; left: 460px; top: 180px; width: 1000px; height: 380px; box-sizing: border-box;
-      border-radius: 26px; background: #f3f1ea; border: 5px solid #cfcabb;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .42); opacity: 0;
+      left: 460px; top: 180px; width: 1000px; height: 380px; box-sizing: border-box;
+      border-radius: 26px; opacity: 0;
     }
-    #report-head { position: absolute; left: 0; right: 0; top: 40px; text-align: center; font: 800 62px/1 var(--font); color: #2a3148; opacity: 0; }
-    #report-rule { position: absolute; left: 52px; top: 128px; width: 886px; height: 5px; border-radius: 3px; background: #d6d1c1; opacity: 0; }
+    #report-head { position: absolute; left: 0; right: 0; top: 40px; text-align: center; font: 800 62px/1 var(--font); color: var(--chalk); opacity: 0; }
+    #report-rule { position: absolute; left: 52px; top: 128px; width: 886px; height: 5px; border-radius: 3px; background: var(--line); opacity: 0; }
     /* the two places an answer can go, and the two answers: one class each, so the pair cannot
-       differ in anything but its words */
-    .rslot { position: absolute; top: 170px; width: 400px; height: 132px; box-sizing: border-box; border: 4px dashed #c7c1b0; border-radius: 28px; opacity: 0; }
+       differ in anything but its words. An answer not given yet is dashed in --off. */
+    .rslot { position: absolute; top: 170px; width: 400px; height: 132px; box-sizing: border-box; border: 4px dashed var(--off); border-radius: 28px; opacity: 0; }
     .rbtn {
       position: absolute; top: 170px; width: 400px; height: 132px; box-sizing: border-box;
-      border-radius: 28px; background: #1f2b4a; border: 5px solid #3a4870; color: #f3f1ea;
+      border-radius: 28px; background: var(--chalk); border: 5px solid var(--chalk); color: var(--ground);
       font: 700 44px/1 var(--font); display: flex; align-items: center; justify-content: center; opacity: 0;
     }
     #report-slot-a, #report-btn-a { left: 70px; }
@@ -34,19 +39,28 @@
     #report-rowlabel { position: absolute; left: 660px; top: 146px; width: 600px; text-align: center; font: 700 40px/1 var(--font); color: var(--chalk); opacity: 0; }
     #report-row { position: absolute; left: 60px; top: 314px; width: 1460px; height: 236px; }
     #report-base { position: absolute; left: 20px; top: 113px; width: 1420px; height: 6px; border-radius: 3px; background: var(--chalk-2); opacity: 0; }
-    .rchip { position: absolute; top: 61px; width: 46px; height: 110px; border-radius: 12px; background: var(--chalk-2); opacity: 0; }
+    /* one chip per midterm. The fill carries the meaning (--chalk-2 → --off down, --you up); the ink
+       outline is what keeps a pale --off chip reading as a chip against the paper. box-sizing keeps
+       the chip exactly 46 x 110 with the outline inside it. */
+    .rchip { position: absolute; top: 61px; width: 46px; height: 110px; box-sizing: border-box;
+      border-radius: 12px; border: 4px solid var(--chalk); background: var(--chalk-2); opacity: 0; }
 
-    .ryear { position: absolute; top: 215px; font: 700 38px/1 var(--mono); color: var(--you); white-space: nowrap; opacity: 0; }
+    /* the year of a gained midterm: .hl supplies the amber and its ink edge */
+    .ryear { position: absolute; top: 215px; font: 700 38px/1 var(--mono); white-space: nowrap; opacity: 0; }
     #report-leads { position: absolute; left: 0; top: 254px; width: 1920px; height: 56px; }
     #report-leads path { fill: none; stroke: var(--you); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
 
     /* the two tallies, each beside its own half of the row */
     .rcnt { position: absolute; left: 1632px; font: 700 100px/1 var(--mono); white-space: nowrap; opacity: 0; }
-    #report-cnt-up { top: 318px; color: var(--you); }
+    #report-cnt-up { top: 318px; }   /* .hl: amber with an ink edge */
     #report-cnt-dn { top: 438px; color: var(--chalk-2); }
     .rarr { position: absolute; left: 1548px; width: 64px; height: 64px; opacity: 0; }
     #report-arr-up { top: 336px; }
     #report-arr-dn { top: 456px; }
+    /* each arrow glyph reads as part of the number beside it, so it is drawn the same way: the up
+       arrow is an amber shape with the same ink edge its number wears */
+    #report-arr-up path { fill: var(--you); stroke: var(--chalk); stroke-width: 3; stroke-linejoin: round; }
+    #report-arr-dn path { fill: var(--chalk-2); }
 
     /* the rooms, still standing where the money scene left them */
     #report-stage { position: absolute; left: 280px; top: 570px; width: 1200px; height: 330px; }
@@ -63,7 +77,7 @@
     <div id="report-credit" class="credit" data-layout-ignore style="opacity:0">The American Presidency Project, UCSB</div>
 
     <!-- 1–5: the report card, and the two answers -->
-    <div id="report-sheet" data-layout-allow-overlap>
+    <div id="report-sheet" class="card" data-layout-allow-overlap>
       <div id="report-head">Halfway through</div>
       <div id="report-rule"></div>
       <div id="report-slot-a" class="rslot"></div>
@@ -82,9 +96,9 @@
       <path id="report-l16" pathLength="1" d="M 980 6 L 1095 50" />
       <path id="report-l17" pathLength="1" d="M 1270 6 L 1156 50" />
     </svg>
-    <svg id="report-arr-up" class="rarr" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 6 L59 38 H43 V58 H21 V38 H5 Z" fill="#ffc94a" /></svg>
-    <div id="report-cnt-up" class="rcnt num"></div>
-    <svg id="report-arr-dn" class="rarr" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 58 L59 26 H43 V6 H21 V26 H5 Z" fill="#9aa5bd" /></svg>
+    <svg id="report-arr-up" class="rarr" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 6 L59 38 H43 V58 H21 V38 H5 Z" /></svg>
+    <div id="report-cnt-up" class="rcnt num hl"></div>
+    <svg id="report-arr-dn" class="rarr" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 58 L59 26 H43 V6 H21 V26 H5 Z" /></svg>
     <div id="report-cnt-dn" class="rcnt num"></div>
 
     <!-- 9–10: the rooms change; the office does not -->
@@ -101,7 +115,9 @@
     (function () {
       const S = window.__storyshot;
       const tl = gsap.timeline({ paused: true });
-      const C = { chalk2: '#9aa5bd', off: '#46506b', you: '#ffc94a', house: '#5ad1c4', senate: '#c2a6ff' };
+      // the kit's tokens as plain values, because GSAP tweens colours, not var() references:
+      // keep these equal to --chalk-2, --off, --you, --house and --senate in kit.css.
+      const C = { chalk2: '#5d6578', off: '#b3ab99', you: '#d97706', house: '#0d8e82', senate: '#6d28d9' };
 
       // ---- the Capitol: already on screen, because that is where the money scene left it
       const cap = document.getElementById('report-capitol');
@@ -139,7 +155,7 @@
       const YEAR_X = { 0: 74, 16: 934, 17: 1224 };
       const yearLabs = gained.map((c) => {
         const el = document.createElement('div');
-        el.className = 'ryear';
+        el.className = 'ryear hl';
         el.id = 'report-year' + c.i;
         el.style.left = YEAR_X[c.i] + 'px';
         el.textContent = String(c.year);

@@ -11,9 +11,11 @@
 
     /* ---- the 50 identical state boxes: a plain grid, NOT a map of the country ---- */
     #seats-grid { position: absolute; left: 280px; top: 300px; width: 1360px; height: 540px; transform-origin: 0 0; }
+    /* a white box on warm paper: it needs its own shadow to lift off the ground (as the kit's .card does) */
     #seats-grid .sb {
       position: absolute; width: 118px; height: 92px; border-radius: 18px;
       background: var(--ground-2); border: 4px solid var(--line);
+      box-shadow: 0 6px 16px rgba(26, 35, 56, .10);
     }
     #seats-grid .sd { position: absolute; top: 35px; width: 18px; height: 18px; border-radius: 50%; background: var(--senate); }
     #seats-gl { left: 160px; top: 160px; transform-origin: 0 0; opacity: 0; }
@@ -27,11 +29,12 @@
     .seats-box {
       position: absolute; left: 0; border-radius: 26px; background: var(--ground-2);
       border: 5px solid var(--line); overflow: hidden; transform-origin: 50% 100%;
+      box-shadow: 0 10px 28px rgba(26, 35, 56, .10);
     }
     .seats-ppl { position: absolute; left: 24px; top: 24px; opacity: 0; }
     .seats-chip {
       position: absolute; width: 48px; height: 56px; border-radius: 11px;
-      background: var(--house); border: 3px solid #0f1a2e; opacity: 0;
+      background: var(--house); border: 3px solid var(--chalk); opacity: 0;
     }
 
     /* ---- the two things to carry away ---- */
@@ -128,7 +131,8 @@
       /* ---------- timeline ---------- */
 
       const tl = gsap.timeline({ paused: true });
-      const LAV = '#c2a6ff', DIM = '#46506b';
+      // GSAP tweens a colour, not a token, so these are the literal values of --senate and --off
+      const LAV = '#6d28d9', DIM = '#b3ab99';
 
       // (0) the Capitol, left exactly where the previous scene put it (left 460 / top 430,
       // 1000 px wide), shrinks to the top of the frame (left 760 / top 70, 400 px wide).

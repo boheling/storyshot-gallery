@@ -88,23 +88,23 @@ window.Kit = {
 // The Capitol, flat and friendly, 760 x 300: a dome on a block with two wings. The left wing is the
 // House, the right wing is the Senate (that is the real arrangement). Colour the wings from the scene.
 Kit.CAPITOL_SVG = `<svg viewBox="0 0 760 300" width="760" height="300" xmlns="http://www.w3.org/2000/svg">
-  <rect id="cap-wl" x="20" y="150" width="230" height="130" rx="16" fill="#5ad1c4" fill-opacity=".30" stroke="#5ad1c4" stroke-width="6"/>
-  <rect id="cap-wr" x="510" y="150" width="230" height="130" rx="16" fill="#c2a6ff" fill-opacity=".30" stroke="#c2a6ff" stroke-width="6"/>
-  <rect x="250" y="120" width="260" height="160" rx="14" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="6"/>
-  <path d="M 300 120 C 300 44, 460 44, 460 120 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="6"/>
-  <rect x="372" y="18" width="16" height="30" rx="6" fill="#ffc94a"/>
-  <g stroke="#f3f1ea" stroke-width="5" opacity=".55">
+  <rect id="cap-wl" x="20" y="150" width="230" height="130" rx="16" fill="#0d8e82" fill-opacity=".20" stroke="#0d8e82" stroke-width="6"/>
+  <rect id="cap-wr" x="510" y="150" width="230" height="130" rx="16" fill="#6d28d9" fill-opacity=".18" stroke="#6d28d9" stroke-width="6"/>
+  <rect x="250" y="120" width="260" height="160" rx="14" fill="#ffffff" stroke="#1a2338" stroke-width="6"/>
+  <path d="M 300 120 C 300 44, 460 44, 460 120 Z" fill="#ffffff" stroke="#1a2338" stroke-width="6"/>
+  <rect x="372" y="18" width="16" height="30" rx="6" fill="#d97706"/>
+  <g stroke="#1a2338" stroke-width="5" opacity=".45">
     <line x1="300" y1="160" x2="300" y2="268"/><line x1="340" y1="160" x2="340" y2="268"/>
     <line x1="380" y1="160" x2="380" y2="268"/><line x1="420" y1="160" x2="420" y2="268"/>
     <line x1="460" y1="160" x2="460" y2="268"/>
   </g>
-  <rect x="0" y="276" width="760" height="12" rx="6" fill="#f3f1ea" opacity=".8"/>
+  <rect x="0" y="276" width="760" height="12" rx="6" fill="#1a2338" opacity=".72"/>
 </svg>`;
 
 // A ballot box, 300 x 300: a slot on top, a box under it.
 Kit.BOX_SVG = `<svg viewBox="0 0 300 300" width="300" height="300" xmlns="http://www.w3.org/2000/svg">
-  <rect x="24" y="90" width="252" height="186" rx="22" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7"/>
-  <rect x="86" y="66" width="128" height="22" rx="11" fill="#0b1226" stroke="#f3f1ea" stroke-width="6"/>
-  <rect x="112" y="150" width="76" height="76" rx="12" fill="none" stroke="#ffc94a" stroke-width="7"/>
-  <path d="M 128 190 l 22 22 l 36 -48" fill="none" stroke="#ffc94a" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="24" y="90" width="252" height="186" rx="22" fill="#ffffff" stroke="#1a2338" stroke-width="7"/>
+  <rect x="86" y="66" width="128" height="22" rx="11" fill="#1a2338" stroke="#1a2338" stroke-width="6"/>
+  <rect x="112" y="150" width="76" height="76" rx="12" fill="none" stroke="#d97706" stroke-width="7"/>
+  <path d="M 128 190 l 22 22 l 36 -48" fill="none" stroke="#d97706" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;

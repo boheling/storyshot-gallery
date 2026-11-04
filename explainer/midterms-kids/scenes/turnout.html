@@ -5,12 +5,20 @@
        height, same colour, no names, no party, no winner. The slips in the bowl are the same shape
        as each other too. Nothing on screen says who either candidate was. */
 
+    /* Amber on paper is a shape colour (2.8:1): right for a lit person, the level or the slip's
+       ring, too pale for words. Every amber WORD in this scene wears the kit's .hl, an amber letter
+       with an ink edge, so the colour still means "what the film is pointing at" and the edge
+       carries the contrast. The lit people and the other amber fills are untouched. */
+
     /* 100 grown-ups who could vote: a square ten by ten, so it reads as rows, not as columns */
     #turnout-crowd { position: absolute; left: 320px; top: 126px; width: 820px; height: 770px; }
 
     /* the two turnouts, side by side all the way to the end so they can be compared */
     #turnout-tally { position: absolute; left: 1250px; top: 245px; width: 600px; height: 275px; }
     .tyear { position: absolute; left: 0; font: 700 54px/1 var(--font); color: var(--chalk); white-space: nowrap; opacity: 0; }
+    /* each count is grey until its own election is the one being talked about, then it turns amber;
+       both wear .hl from the start, so the ink edge is already there when the colour arrives and
+       the two lines never differ in weight */
     .tcount { position: absolute; left: 0; font: 700 40px/1 var(--font); color: var(--chalk-2); white-space: nowrap; opacity: 0; }
     #turnout-a-year { top: 0; }
     #turnout-a-count { top: 64px; }
@@ -19,19 +27,30 @@
 
     /* one real race: two candidates, exactly level */
     #turnout-tie { position: absolute; left: 240px; top: 430px; width: 1440px; height: 440px; opacity: 0; }
-    #turnout-tielab { position: absolute; left: 450px; top: 0; width: 540px; text-align: center; font: 700 46px/1 var(--font); color: var(--you); opacity: 0; }
+    #turnout-tielab { position: absolute; left: 450px; top: 0; width: 540px; text-align: center; font: 700 46px/1 var(--font); opacity: 0; }
     #turnout-level { position: absolute; left: 60px; top: 64px; width: 1320px; height: 8px; border-radius: 4px; background: var(--you); opacity: 0; }
-    /* the two places in the race: one class for the empty slots, one for the bars that fill them */
-    .tslot { position: absolute; top: 70px; width: 240px; height: 360px; box-sizing: border-box; border: 4px dashed #6b7794; border-radius: 16px 16px 0 0; opacity: 0; }
+    /* the two places in the race: one class for the empty slots, one for the bars that fill them.
+       The bars are solid --chalk-2 on the paper, so their number is reversed out in paper colour. */
+    .tslot { position: absolute; top: 70px; width: 240px; height: 360px; box-sizing: border-box; border: 4px dashed var(--off); border-radius: 16px 16px 0 0; opacity: 0; }
     .tbar { position: absolute; top: 70px; width: 240px; height: 360px; border-radius: 16px 16px 0 0; background: var(--chalk-2); }
     #turnout-slot-a, #turnout-bar-a { left: 60px; }
     #turnout-slot-b, #turnout-bar-b { left: 1140px; }
-    .tnum { position: absolute; top: 108px; font: 700 44px/1 var(--mono); color: #16203a; white-space: nowrap; opacity: 0; }
+    .tnum { position: absolute; top: 108px; font: 700 44px/1 var(--mono); color: var(--ground); white-space: nowrap; opacity: 0; }
     #turnout-num-a { left: 101px; }
     #turnout-num-b { left: 1181px; }
     #turnout-ground { position: absolute; left: 10px; top: 430px; width: 1420px; height: 6px; border-radius: 3px; background: var(--off); opacity: 0; }
     #turnout-bowl { position: absolute; left: 470px; top: 210px; width: 500px; height: 220px; opacity: 0; }
     #turnout-slip { position: absolute; left: 620px; top: 82px; width: 200px; height: 128px; opacity: 0; }
+    /* the two drawn objects, one class per part, so even inside the SVGs the colours are tokens:
+       a white bowl on the paper with an ink rim and a dark mouth, holding a folded white slip */
+    #turnout-bowl .tbowl { fill: var(--ground-2); stroke: var(--chalk); }
+    #turnout-bowl .tmouth { fill: var(--chalk); stroke: var(--chalk); }
+    #turnout-bowl .tfolded { fill: var(--ground-2); stroke: var(--off); }
+    /* the slip that was drawn: the same folded paper, ringed in amber because it is what the film
+       is pointing at, with the name line left blank */
+    #turnout-slip .tsheet { fill: var(--ground-2); stroke: var(--you); }
+    #turnout-slip .tfold { fill: none; stroke: var(--off); }
+    #turnout-slip .tname { fill: var(--chalk-2); }
   </style>
 
   <div id="turnout" class="world" data-composition-id="turnout" data-width="1920" data-height="1080">
@@ -46,13 +65,13 @@
 
     <div id="turnout-tally">
       <div id="turnout-a-year" class="tyear">2024</div>
-      <div id="turnout-a-count" class="tcount">64 out of 100</div>
+      <div id="turnout-a-count" class="tcount hl">64 out of 100</div>
       <div id="turnout-b-year" class="tyear">2022 midterm</div>
-      <div id="turnout-b-count" class="tcount">45 out of 100</div>
+      <div id="turnout-b-count" class="tcount hl">45 out of 100</div>
     </div>
 
     <div id="turnout-tie" data-layout-allow-overlap>
-      <div id="turnout-tielab">a perfect tie</div>
+      <div id="turnout-tielab" class="hl">a perfect tie</div>
       <div id="turnout-slot-a" class="tslot"></div>
       <div id="turnout-slot-b" class="tslot"></div>
       <div id="turnout-bar-a" class="tbar"></div>
@@ -64,17 +83,17 @@
 
       <!-- the bowl, with one folded slip still in it -->
       <svg id="turnout-bowl" viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 26 56 Q 26 212 250 212 Q 474 212 474 56 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="8" />
-        <ellipse cx="250" cy="56" rx="224" ry="30" fill="#0e1628" stroke="#f3f1ea" stroke-width="8" />
-        <rect x="268" y="16" width="130" height="82" rx="12" fill="#f3f1ea" stroke="#cfcabb" stroke-width="5" transform="rotate(11 333 57)" />
-        <path d="M 26 56 Q 26 212 250 212 Q 474 212 474 56" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="8" />
+        <path class="tbowl" d="M 26 56 Q 26 212 250 212 Q 474 212 474 56 Z" stroke-width="8" />
+        <ellipse class="tmouth" cx="250" cy="56" rx="224" ry="30" stroke-width="8" />
+        <rect class="tfolded" x="268" y="16" width="130" height="82" rx="12" stroke-width="5" transform="rotate(11 333 57)" />
+        <path class="tbowl" d="M 26 56 Q 26 212 250 212 Q 474 212 474 56" stroke-width="8" />
       </svg>
 
       <!-- the slip that was drawn: the same folded paper, with the name left blank -->
       <svg id="turnout-slip" viewBox="0 0 200 128" xmlns="http://www.w3.org/2000/svg">
-        <rect x="6" y="6" width="188" height="116" rx="16" fill="#f3f1ea" stroke="#ffc94a" stroke-width="7" />
-        <path d="M 100 14 V 114" stroke="#cfcabb" stroke-width="5" stroke-dasharray="12 10" />
-        <rect x="36" y="78" width="128" height="13" rx="7" fill="#8d93a4" />
+        <rect class="tsheet" x="6" y="6" width="188" height="116" rx="16" stroke-width="7" />
+        <path class="tfold" d="M 100 14 V 114" stroke-width="5" stroke-dasharray="12 10" />
+        <rect class="tname" x="36" y="78" width="128" height="13" rx="7" />
       </svg>
     </div>
   </div>
@@ -83,7 +102,9 @@
     (function () {
       const S = window.__storyshot;
       const tl = gsap.timeline({ paused: true });
-      const C = { chalk: '#f3f1ea', chalk2: '#9aa5bd', off: '#46506b', you: '#ffc94a' };
+      // the kit's tokens as plain values, because GSAP tweens colours, not var() references: keep
+      // these equal to --chalk, --chalk-2, --off and --you in kit.css.
+      const C = { chalk: '#1a2338', chalk2: '#5d6578', off: '#b3ab99', you: '#d97706' };
 
       // ---- 100 grown-ups who could vote, already standing there when the scene opens
       const crowd = document.getElementById('turnout-crowd');

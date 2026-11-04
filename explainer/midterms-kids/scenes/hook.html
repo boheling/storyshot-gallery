@@ -2,17 +2,20 @@
   <style>
     /* scene 1 — "Who gets to decide?"  All tokens come from scenes/kit/kit.css */
     #hook-town, #hook-yard, #hook-kids, #hook-grown { position: absolute; inset: 0; }
+    /* was a soft warm halo behind the school; a glow only reads as a stain on paper, so the same
+       area is a flat warm panel with a crisp edge — the school's patch of sunlight */
     #hook-glow { position: absolute; left: 370px; top: 40px; width: 1180px; height: 800px;
-      background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,201,74,.14) 0%, rgba(255,201,74,0) 70%); }
+      background: rgba(217,119,6,.09); border-radius: 72px; }
     #hook-arms, #hook-sight { position: absolute; left: 0; top: 0; }
 
-    #hook .qmark { position: absolute; font: 800 78px/1 var(--font); color: var(--you); text-align: center; }
+    /* 78 px: label size, so the darkened amber rather than the outlined .hl treatment */
+    #hook .qmark { position: absolute; font: 800 78px/1 var(--font); color: var(--you-ink); text-align: center; }
 
     #hook-field { position: absolute; left: 69px; top: 140px; width: 1782px; height: 752px; }
     #hook .fcard { position: absolute; width: 148px; height: 148px; border-radius: 22px;
       background: var(--ground-2); border: 4px solid var(--line);
       display: flex; align-items: center; justify-content: center; }
-    #hook .fcard.mine { border-color: var(--you); box-shadow: 0 0 0 5px rgba(255,201,74,.16); }
+    #hook .fcard.mine { border-color: var(--you); box-shadow: 0 0 0 5px rgba(217,119,6,.22); }
     #hook .fcard svg { width: 96px; height: 96px; }
 
     #hook .qrow { position: absolute; left: 46px; font: 700 36px/1 var(--font); color: var(--chalk); white-space: nowrap; }
@@ -20,9 +23,11 @@
 
     /* a folded slip going into the ballot box's slot */
     #hook-slip { position: absolute; left: 145px; top: -54px; width: 170px; height: 172px; overflow: hidden; }
+    /* a white sheet on warm paper: the edge is an inset ring so the lines inside do not shift */
     #hook-slip .paper { position: absolute; left: 17px; top: 12px; width: 136px; height: 160px;
-      border-radius: 10px; background: #f3f1ea; }
-    #hook-slip .paper i { position: absolute; left: 20px; height: 9px; border-radius: 5px; background: #9aa5bd; }
+      border-radius: 10px; background: var(--ground-2);
+      box-shadow: inset 0 0 0 3px var(--line), 0 6px 14px rgba(26,35,56,.14); }
+    #hook-slip .paper i { position: absolute; left: 20px; height: 9px; border-radius: 5px; background: var(--chalk-2); }
   </style>
 
   <div id="hook" class="world" data-composition-id="hook" data-width="1920" data-height="1080">
@@ -36,40 +41,40 @@
         <svg id="hook-school" width="900" height="521" viewBox="0 0 760 440" fill="none"
              style="position:absolute;left:510px;top:170px">
           <!-- belfry: an open bell tower on the roof -->
-          <path d="M314 28 L380 2 L446 28 Z" fill="#f3f1ea"/>
-          <rect x="330" y="28" width="11" height="32" fill="#f3f1ea"/>
-          <rect x="419" y="28" width="11" height="32" fill="#f3f1ea"/>
-          <path d="M363 54 C363 28 397 28 397 54 Z" fill="#ffc94a"/>
-          <circle cx="380" cy="58" r="6" fill="#ffc94a"/>
-          <rect x="310" y="56" width="140" height="13" rx="6" fill="#f3f1ea"/>
+          <path d="M314 28 L380 2 L446 28 Z" fill="#1a2338"/>
+          <rect x="330" y="28" width="11" height="32" fill="#1a2338"/>
+          <rect x="419" y="28" width="11" height="32" fill="#1a2338"/>
+          <path d="M363 54 C363 28 397 28 397 54 Z" fill="#d97706"/>
+          <circle cx="380" cy="58" r="6" fill="#d97706"/>
+          <rect x="310" y="56" width="140" height="13" rx="6" fill="#1a2338"/>
           <!-- a plain pennant on a pole -->
-          <path d="M150 62 V 12" stroke="#f3f1ea" stroke-width="7" stroke-linecap="round"/>
-          <path d="M153 16 L210 30 L153 44 Z" fill="#ffc94a"/>
+          <path d="M150 62 V 12" stroke="#1a2338" stroke-width="7" stroke-linecap="round"/>
+          <path d="M153 16 L210 30 L153 44 Z" fill="#d97706"/>
           <!-- roof -->
-          <path d="M14 152 L128 62 L632 62 L746 152 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7" stroke-linejoin="round"/>
+          <path d="M14 152 L128 62 L632 62 L746 152 Z" fill="#ffffff" stroke="#1a2338" stroke-width="7" stroke-linejoin="round"/>
           <!-- a long, low building -->
-          <rect x="40" y="152" width="680" height="268" rx="22" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7"/>
+          <rect x="40" y="152" width="680" height="268" rx="22" fill="#ffffff" stroke="#1a2338" stroke-width="7"/>
           <!-- a classroom window for every room -->
-          <rect x="72" y="196" width="76" height="94" rx="10" fill="#0b1226" stroke="#f3f1ea" stroke-width="6"/>
-          <path d="M110 196 v94 M72 243 h76" stroke="#f3f1ea" stroke-width="4" opacity=".45"/>
-          <rect x="158" y="196" width="76" height="94" rx="10" fill="#0b1226" stroke="#f3f1ea" stroke-width="6"/>
-          <path d="M196 196 v94 M158 243 h76" stroke="#f3f1ea" stroke-width="4" opacity=".45"/>
-          <rect x="244" y="196" width="76" height="94" rx="10" fill="#0b1226" stroke="#f3f1ea" stroke-width="6"/>
-          <path d="M282 196 v94 M244 243 h76" stroke="#f3f1ea" stroke-width="4" opacity=".45"/>
-          <rect x="440" y="196" width="76" height="94" rx="10" fill="#0b1226" stroke="#f3f1ea" stroke-width="6"/>
-          <path d="M478 196 v94 M440 243 h76" stroke="#f3f1ea" stroke-width="4" opacity=".45"/>
-          <rect x="526" y="196" width="76" height="94" rx="10" fill="#0b1226" stroke="#f3f1ea" stroke-width="6"/>
-          <path d="M564 196 v94 M526 243 h76" stroke="#f3f1ea" stroke-width="4" opacity=".45"/>
-          <rect x="612" y="196" width="76" height="94" rx="10" fill="#0b1226" stroke="#f3f1ea" stroke-width="6"/>
-          <path d="M650 196 v94 M612 243 h76" stroke="#f3f1ea" stroke-width="4" opacity=".45"/>
+          <rect x="72" y="196" width="76" height="94" rx="10" fill="#f6f1e6" stroke="#1a2338" stroke-width="6"/>
+          <path d="M110 196 v94 M72 243 h76" stroke="#1a2338" stroke-width="4" opacity=".45"/>
+          <rect x="158" y="196" width="76" height="94" rx="10" fill="#f6f1e6" stroke="#1a2338" stroke-width="6"/>
+          <path d="M196 196 v94 M158 243 h76" stroke="#1a2338" stroke-width="4" opacity=".45"/>
+          <rect x="244" y="196" width="76" height="94" rx="10" fill="#f6f1e6" stroke="#1a2338" stroke-width="6"/>
+          <path d="M282 196 v94 M244 243 h76" stroke="#1a2338" stroke-width="4" opacity=".45"/>
+          <rect x="440" y="196" width="76" height="94" rx="10" fill="#f6f1e6" stroke="#1a2338" stroke-width="6"/>
+          <path d="M478 196 v94 M440 243 h76" stroke="#1a2338" stroke-width="4" opacity=".45"/>
+          <rect x="526" y="196" width="76" height="94" rx="10" fill="#f6f1e6" stroke="#1a2338" stroke-width="6"/>
+          <path d="M564 196 v94 M526 243 h76" stroke="#1a2338" stroke-width="4" opacity=".45"/>
+          <rect x="612" y="196" width="76" height="94" rx="10" fill="#f6f1e6" stroke="#1a2338" stroke-width="6"/>
+          <path d="M650 196 v94 M612 243 h76" stroke="#1a2338" stroke-width="4" opacity=".45"/>
           <!-- the front entrance: a pediment over double doors -->
-          <path d="M318 196 L380 158 L442 196 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="6" stroke-linejoin="round"/>
-          <rect x="332" y="200" width="96" height="220" rx="14" fill="#0b1226" stroke="#f3f1ea" stroke-width="7"/>
-          <path d="M380 206 v212" stroke="#f3f1ea" stroke-width="5" opacity=".4"/>
-          <circle cx="368" cy="312" r="7" fill="#ffc94a"/>
-          <circle cx="392" cy="312" r="7" fill="#ffc94a"/>
-          <rect x="290" y="410" width="180" height="22" rx="10" fill="#33405f"/>
-          <rect x="0" y="424" width="760" height="12" rx="6" fill="#f3f1ea" opacity=".5"/>
+          <path d="M318 196 L380 158 L442 196 Z" fill="#ffffff" stroke="#1a2338" stroke-width="6" stroke-linejoin="round"/>
+          <rect x="332" y="200" width="96" height="220" rx="14" fill="#f6f1e6" stroke="#1a2338" stroke-width="7"/>
+          <path d="M380 206 v212" stroke="#1a2338" stroke-width="5" opacity=".4"/>
+          <circle cx="368" cy="312" r="7" fill="#d97706"/>
+          <circle cx="392" cy="312" r="7" fill="#d97706"/>
+          <rect x="290" y="410" width="180" height="22" rx="10" fill="#5d6578"/>
+          <rect x="0" y="424" width="760" height="12" rx="6" fill="#1a2338" opacity=".5"/>
         </svg>
 
         <div id="hook-kids"></div>
@@ -78,32 +83,32 @@
       <!-- the grown-up who decides, standing behind the two cards -->
       <div id="hook-grown">
         <svg id="hook-arms" width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" data-layout-ignore>
-          <path d="M1375 668 L1288 464" stroke="#9aa5bd" stroke-width="28" stroke-linecap="round"/>
-          <path d="M1545 668 L1632 464" stroke="#9aa5bd" stroke-width="28" stroke-linecap="round"/>
-          <circle cx="1286" cy="458" r="26" fill="#9aa5bd"/>
-          <circle cx="1634" cy="458" r="26" fill="#9aa5bd"/>
+          <path d="M1375 668 L1288 464" stroke="#5d6578" stroke-width="28" stroke-linecap="round"/>
+          <path d="M1545 668 L1632 464" stroke="#5d6578" stroke-width="28" stroke-linecap="round"/>
+          <circle cx="1286" cy="458" r="26" fill="#5d6578"/>
+          <circle cx="1634" cy="458" r="26" fill="#5d6578"/>
         </svg>
       </div>
 
       <!-- the two things somebody already decided for you -->
       <div id="hook-clock" class="card" style="left:1120px;top:300px;width:320px;height:280px">
         <svg width="150" height="150" viewBox="0 0 100 100" fill="none" style="position:absolute;left:85px;top:26px">
-          <circle cx="50" cy="50" r="42" fill="#0b1226" stroke="#f3f1ea" stroke-width="7"/>
-          <path d="M50 50 L33 33" stroke="#ffc94a" stroke-width="8" stroke-linecap="round"/>
-          <path d="M50 50 L50 82" stroke="#ffc94a" stroke-width="6" stroke-linecap="round"/>
-          <circle cx="50" cy="50" r="5" fill="#ffc94a"/>
+          <circle cx="50" cy="50" r="42" fill="#f6f1e6" stroke="#1a2338" stroke-width="7"/>
+          <path d="M50 50 L33 33" stroke="#b45309" stroke-width="8" stroke-linecap="round"/>
+          <path d="M50 50 L50 82" stroke="#b45309" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="5" fill="#b45309"/>
         </svg>
         <div class="label" style="left:0;top:198px;width:320px;text-align:center">Recess 10:30</div>
       </div>
 
       <div id="hook-lunch" class="card" style="left:1480px;top:300px;width:320px;height:280px">
         <svg width="240" height="172" viewBox="0 0 140 100" fill="none" style="position:absolute;left:40px;top:14px">
-          <rect x="4" y="22" width="132" height="64" rx="14" fill="#0b1226" stroke="#f3f1ea" stroke-width="6"/>
-          <circle cx="40" cy="54" r="23" stroke="#9aa5bd" stroke-width="5"/>
-          <path d="M26 63 L40 38 L54 63 Z" fill="#9aa5bd"/>
-          <path d="M78 78 V46 L88 33 L98 46 V78 Z" fill="#9aa5bd"/>
-          <circle cx="118" cy="58" r="14" fill="#ffc94a"/>
-          <path d="M118 44 v-8" stroke="#f3f1ea" stroke-width="5" stroke-linecap="round"/>
+          <rect x="4" y="22" width="132" height="64" rx="14" fill="#f6f1e6" stroke="#1a2338" stroke-width="6"/>
+          <circle cx="40" cy="54" r="23" stroke="#5d6578" stroke-width="5"/>
+          <path d="M26 63 L40 38 L54 63 Z" fill="#5d6578"/>
+          <path d="M78 78 V46 L88 33 L98 46 V78 Z" fill="#5d6578"/>
+          <circle cx="118" cy="58" r="14" fill="#d97706"/>
+          <path d="M118 44 v-8" stroke="#1a2338" stroke-width="5" stroke-linecap="round"/>
         </svg>
         <div class="label" style="left:0;top:198px;width:320px;text-align:center">Lunch</div>
       </div>
@@ -113,9 +118,9 @@
 
       <!-- the yellow kid looks up at something out of reach -->
       <svg id="hook-sight" width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" data-layout-ignore>
-        <path d="M588 716 L1092 360" stroke="#ffc94a" stroke-width="6" stroke-linecap="round"
+        <path d="M588 716 L1092 360" stroke="#b45309" stroke-width="6" stroke-linecap="round"
               stroke-dasharray="6 20" opacity=".8"/>
-        <circle cx="1092" cy="360" r="9" fill="#ffc94a" opacity=".8"/>
+        <circle cx="1092" cy="360" r="9" fill="#b45309" opacity=".8"/>
       </svg>
     </div>
 
@@ -132,7 +137,7 @@
       <div class="qrow last" style="top:502px">… and millions more</div>
       <svg id="hook-ex" width="620" height="620" viewBox="0 0 100 100" fill="none"
            style="position:absolute;left:70px;top:0px" data-layout-ignore>
-        <path d="M19 19 L81 81 M81 19 L19 81" stroke="#c3ccdd" stroke-width="11" stroke-linecap="round" opacity=".45"/>
+        <path d="M19 19 L81 81 M81 19 L19 81" stroke="#5d6578" stroke-width="11" stroke-linecap="round" opacity=".45"/>
       </svg>
     </div>
 
@@ -148,7 +153,7 @@
         </div>
       </div>
     </div>
-    <div id="hook-election" class="big" style="left:660px;top:742px;width:600px;text-align:center;color:var(--you)">Election</div>
+    <div id="hook-election" class="big hl" style="left:660px;top:742px;width:600px;text-align:center">Election</div>
   </div>
 
   <script>
@@ -176,7 +181,7 @@
         park:   '<path d="M50 12 L70 42 H30 Z"/><path d="M50 32 L76 68 H24 Z"/><path d="M50 68 v16"/><path d="M16 86 h68"/>',
         hosp:   '<rect x="22" y="24" width="56" height="60" rx="8"/><path d="M50 38 v32 M34 54 h32" stroke-width="9"/>'
       };
-      const glyph = k => '<svg viewBox="0 0 100 100" fill="none" stroke="#9aa5bd" stroke-width="6"'
+      const glyph = k => '<svg viewBox="0 0 100 100" fill="none" stroke="#5d6578" stroke-width="6"'
         + ' stroke-linecap="round" stroke-linejoin="round">' + IC[k] + '</svg>';
       const keys = ['school', 'road', 'park', 'hosp'];
       const FIELD = q('#hook-field');
@@ -263,7 +268,7 @@
 
       // (10) "people pick other people to decide for them." — a handful rise, and turn yellow
       tl.fromTo(risers, { y: 0 }, { y: -86, duration: .6, ease: 'expo.out', stagger: .06 }, S.at(10) + .1);
-      tl.fromTo(riserInk, { backgroundColor: '#9aa5bd' }, { backgroundColor: '#ffc94a', duration: .45, stagger: .03 }, S.at(10) + .15);
+      tl.fromTo(riserInk, { backgroundColor: '#5d6578' }, { backgroundColor: '#d97706', duration: .45, stagger: .03 }, S.at(10) + .15);
 
       // (11) "Picking those deciders is what an election is for." — the ballot box, centred
       tl.fromTo('#hook-crowd', { opacity: 1 }, { opacity: 0, duration: .5 }, S.at(11));

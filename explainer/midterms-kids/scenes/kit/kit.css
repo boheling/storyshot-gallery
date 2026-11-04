@@ -1,25 +1,37 @@
 /* Shared look for every scene of the midterms explainer (for 3rd–5th graders). Loaded before each
    scene; scenes use these tokens and classes and never redefine them. Sizes are px at 1920x1080.
-   One friendly dark-blue world throughout: chunky rounded shapes, thick strokes, big type. */
+
+   This is a LIGHT world: warm paper, dark navy ink, chunky rounded shapes and thick strokes, like a
+   classroom poster. The token names are kept from the first (dark) version so scenes keep working, so
+   read them by meaning, not by name: --chalk is the INK colour, --ground is PAPER. */
 :root {
-  --ground: #16203a;      /* the film's ground: a warm navy */
-  --ground-2: #1f2b4a;    /* a panel, a card, a room */
-  --line: #33405f;        /* hairlines, rules, the edge of a panel */
-  --chalk: #f3f1ea;       /* text and main lines */
-  --chalk-2: #9aa5bd;     /* secondary text, things not being talked about */
-  /* things the story tracks: each colour means one thing, everywhere. Never red-vs-blue:
-     this film never shows a party, so nothing in it may read as one. */
-  --you: #ffc94a;         /* YOU, the viewer, and whatever the film is pointing at right now (= theme accent) */
-  --house: #5ad1c4;       /* the House of Representatives, and anything counted by population */
-  --senate: #c2a6ff;      /* the Senate, and anything counted by state */
-  --local: #ff9d6b;       /* governors, mayors, judges, the school board: the local layer */
-  --money: #8ddf6b;       /* money, and what money pays for */
-  --off: #46506b;         /* a person who did not vote, a seat not being elected, a dimmed thing */
+  --ground: #f6f1e6;      /* the film's ground: warm paper */
+  --ground-2: #ffffff;    /* a panel, a card, a sheet laid on the paper */
+  --line: #ddd4c1;        /* hairlines, rules, the edge of a panel */
+  --chalk: #1a2338;       /* INK: text and main lines (dark navy) */
+  --chalk-2: #5d6578;     /* secondary ink: labels, ordinary people, things not being talked about */
+  /* Things the story tracks: each colour means one thing, everywhere. There is deliberately NO RED and
+     NO BLUE in this palette, so the film cannot code a party by accident — see SPEC's hard rule. */
+  --you: #d97706;         /* YOU, the viewer, and whatever the film is pointing at right now (= theme accent) */
+  --house: #0d8e82;       /* the House of Representatives, and anything counted by population */
+  --senate: #6d28d9;      /* the Senate, and anything counted by state */
+  --local: #be185d;       /* governors, mayors, judges, the school board: the local layer */
+  --money: #15803d;       /* money, and what money pays for */
+  --off: #b3ab99;         /* a person who did not vote, a seat not being elected, a dimmed thing */
+  --you-ink: #b45309;     /* --you darkened to 4.5:1 on paper: amber TEXT at label size. Never a fill. */
   --mono: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', Menlo, monospace;
 }
 
-/* a scene's root: full frame, dark, clipped */
-.world { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(ellipse 120% 90% at 50% 38%, #1d2847 0%, var(--ground) 72%); color: var(--chalk); font-family: var(--font); }
+/* a scene's root: full frame, paper, clipped */
+.world { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(ellipse 120% 90% at 50% 38%, #fffaf0 0%, var(--ground) 74%); color: var(--chalk); font-family: var(--font); }
+/* The burned-in subtitles are white with a dark outline, which would sit badly on paper, so every scene
+   carries a soft dark shelf across the bottom band they live in (var(--safe-bottom), 173 px at 1080p).
+   It is solid across the part the text actually occupies (the lines sit 65–125 px up) and feathers out
+   only in its top 24 px, so a line never straddles a soft edge and the bar reads as a deliberate lower
+   third rather than as a smudge. Scenes keep their content above it anyway. */
+.world::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: var(--safe-bottom, 173px);
+  background: linear-gradient(to top, rgba(17,23,38,.94) 0%, rgba(17,23,38,.94) 86%, rgba(17,23,38,0) 100%);
+  pointer-events: none; z-index: 60; }
 
 /* type. Big and plain: the audience is eight to eleven years old. */
 .kicker { position: absolute; left: 120px; top: 78px; font: 700 34px/1 var(--font); letter-spacing: .04em; color: var(--chalk-2); }
@@ -28,11 +40,17 @@
 .big { position: absolute; font: 800 104px/1 var(--font); color: var(--chalk); white-space: nowrap; letter-spacing: -.02em; }
 .huge { position: absolute; font: 800 168px/1 var(--font); color: var(--you); white-space: nowrap; letter-spacing: -.03em; }
 .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+/* Amber TEXT on paper measures about 2.8:1, which fails the contrast check even at poster sizes, and
+   darkening --you would dull every amber shape in the film. So amber words wear an ink outline: the
+   letter stays bright, the edge carries the contrast, and it looks like a printed poster. Tune the
+   stroke per use if a size needs it — it should read as an edge, not as a second letter. */
+.hl { color: var(--you); -webkit-text-stroke: .03em var(--chalk); paint-order: stroke fill; }
 /* source credit: small on purpose (exempt from the 28 px text floor — give it data-layout-ignore) */
-.credit { position: absolute; right: 64px; top: 40px; font: 400 20px/1.35 var(--font); color: #74809a; text-align: right; white-space: nowrap; }
+.credit { position: absolute; right: 64px; top: 40px; font: 400 20px/1.35 var(--font); color: #7b7462; text-align: right; white-space: nowrap; }
 
 /* ---- a card / panel: thick rounded outline, the film's basic box ---- */
-.card { position: absolute; border-radius: 28px; background: var(--ground-2); border: 5px solid var(--line); }
+.card { position: absolute; border-radius: 28px; background: var(--ground-2); border: 5px solid var(--line);
+  box-shadow: 0 10px 28px rgba(26,35,56,.10); }
 .card.you { border-color: var(--you); }
 .card.house { border-color: var(--house); }
 .card.senate { border-color: var(--senate); }
@@ -55,24 +73,28 @@
 .dot.senate { background: var(--senate); }
 .dot.on { background: var(--you); }
 
-/* ---- a ballot sheet and its lines ---- */
-.ballot { position: absolute; border-radius: 22px; background: #f3f1ea; border: 5px solid #cfcabb; box-shadow: 0 18px 60px rgba(0,0,0,.35); }
-.brow { position: absolute; left: 44px; display: flex; align-items: center; gap: 22px; font: 700 34px/1 var(--font); color: #2a3148; white-space: nowrap; }
-.brow .box { flex: none; width: 36px; height: 36px; border-radius: 9px; border: 4px solid #8d93a4; background: #fff; }
+/* ---- a ballot sheet and its lines: a white sheet lying on the paper, so it needs its own shadow ---- */
+.ballot { position: absolute; border-radius: 22px; background: var(--ground-2); border: 5px solid var(--line);
+  box-shadow: 0 20px 54px rgba(26,35,56,.18); }
+.brow { position: absolute; left: 44px; display: flex; align-items: center; gap: 22px; font: 700 34px/1 var(--font); color: var(--chalk); white-space: nowrap; }
+.brow .box { flex: none; width: 36px; height: 36px; border-radius: 9px; border: 4px solid #9aa0ad; background: #fff; }
 .brow .box.x { border-color: var(--local); background: var(--local); }
-.brow .cnt { font: 700 30px/1 var(--mono); color: #6b7280; }
-.brow.dim { color: #5f6673; }   /* dimmed, but still 5.1:1 on the cream sheet: the layout check fails #9aa0b0 */
+.brow .cnt { font: 700 30px/1 var(--mono); color: var(--chalk-2); }
+.brow.dim { color: #6b7280; }
 
 /* ---- a stack of coins / a pile of money ---- */
-.coin { position: absolute; border-radius: 50%; background: var(--money); border: 4px solid #0f1a2e; }
-.jar { position: absolute; border-radius: 20px 20px 46px 46px; background: rgba(141,223,107,.10); border: 5px solid var(--money); }
+/* A coin needs a lit face as well as a rim: at the ~36 px the falling coins are drawn, a flat disc with
+   a dark edge reads as a green dot, because the rim all but disappears into the fill. */
+.coin { position: absolute; border-radius: 50%; border: 3px solid #0b4f26;
+  background: radial-gradient(circle at 36% 32%, #3fc472 0%, var(--money) 62%); }
+.jar { position: absolute; border-radius: 20px 20px 46px 46px; background: rgba(21,128,61,.10); border: 5px solid var(--money); }
 
 /* ---- a bar in a plot ---- */
-.plot { position: absolute; background: rgba(255,255,255,.03); border: 3px solid var(--line); border-radius: 18px; }
+.plot { position: absolute; background: rgba(26,35,56,.04); border: 3px solid var(--line); border-radius: 18px; }
 .bar { position: absolute; bottom: 0; border-radius: 8px 8px 0 0; background: var(--chalk-2); }
 .bar.you { background: var(--you); }
 .bar.house { background: var(--house); }
 .bar.down { background: var(--off); }
 
 /* ---- a speech bubble, for the one question a kid can ask ---- */
-.bubble { position: absolute; border-radius: 34px; background: var(--you); color: #16203a; font: 800 54px/1.25 var(--font); padding: 30px 44px; }
+.bubble { position: absolute; border-radius: 34px; background: var(--you); color: #27150a; font: 800 54px/1.25 var(--font); padding: 30px 44px; }

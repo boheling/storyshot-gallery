@@ -12,7 +12,8 @@ Asked on 4 November 2026, the day after Election Day.
 - **Sound:** Storyshot's own synth soundtrack, `calm` at 72 bpm. −13.8 LUFS, LRA 5.2.
 - **Captions:** the narration burned in (`subtitles: burn`, 124 lines, word-by-word highlight), plus
   `subtitles.srt` and `chapters.txt`.
-- **Wall-clock time:** 1 h 15 m from the request to the finished file. Roughly: 16 min for the sources,
+- **Wall-clock time:** 1 h 15 m from the request to the first finished file, plus about 1 h 10 m to
+  repaint it from a dark world into this light one (see "The look, and why it changed" below). Roughly: 16 min for the sources,
   the story, the narration, the scene kit and the brief (the voice synthesises in the background during
   this); 53 min of five sub-agents writing ten scenes in parallel, overlapping my own review and two
   fixes; 4 min 16 s to render. For comparison, the Chinese CRISPR explainer in this section took 46 min
@@ -21,7 +22,7 @@ Asked on 4 November 2026, the day after Election Day.
 - **Cost:** none beyond the agent itself. Local voice, local render, synth music, no API calls for media.
 
 ## Files
-- `video.mp4`, `poster.jpg` (the term bar with the midterm pin, 1:30), `subtitles.srt`, `chapters.txt`
+- `video.mp4`, `poster.jpg` (the term bar with the midterm pin landing on year 2, 1:30), `subtitles.srt`, `chapters.txt`
 - `storyboard.yaml`: 10 `scene:` steps with their narration, the voice, the theme and the two scene-kit
   files. Every number on screen is sourced in the header comment.
 - `scenes/`: the 10 scene files, plus `scenes/kit/kit.css` and `scenes/kit/kit.js`, which the storyboard
@@ -43,6 +44,32 @@ Sources are printed small in the corner of the scene where their number appears:
 apportionment, Pew Research Center and the U.S. Elections Project, the University of Florida Election Lab,
 The American Presidency Project at UCSB, and AP for the Virginia tie. The four spending buckets are the
 one illustrative picture in the film and say so on screen.
+
+## The look, and why it changed
+The film was first drawn on a dark navy ground, because it reused the world built for the Chinese CRISPR
+explainer in this same section. That was wrong: a civics explainer for eight- to eleven-year-olds should
+look like a classroom poster, not a lab readout. It was repainted — warm paper, dark navy ink, chunky
+shapes, thick strokes — with the five story colours darkened so they hold on light: teal House, violet
+Senate, deep pink local, green money, amber "you".
+
+Two problems the light ground created, and how they were settled once in the kit rather than ten times
+in the scenes:
+
+- **The burned-in subtitles are white with a dark outline**, which sits badly on paper. Every scene now
+  carries a dark caption bar across the bottom `var(--safe-bottom)` (173 px), solid across the part the
+  lines actually occupy and feathered only in its top 24 px, so no line straddles a soft edge. It reads
+  as the film's lower third. Scenes were already required to keep their content above that band.
+- **Amber text measures about 2.8:1 on paper** and fails the layout check, while darkening the token
+  would have dulled every amber shape in the film. So amber words carry an ink outline (`.hl`) at display
+  size and a darker shade of the same hue (`--you-ink`) at label size, and amber *fills* are untouched.
+
+The conversion was done by five sub-agents under one rule — change the look and nothing else, no position,
+duration or cue moves — and each re-previewed its own scenes until the lint and layout checks were clean
+again. Things that did not survive the move and needed a different answer: every glow (a halo on paper is
+a stain, so each became a flat tinted panel), the cream sheets (now white sheets with their own shadow and
+three weights of rule inside, so a form still reads as a form), the 435 seat dots inside their own teal
+wing (1.75:1 on white, so the dots are now the same hue inked down), and the School board row (its band
+went from light peach to dark magenta, so its text flipped from ink to white).
 
 ## Non-partisan by construction
 The film explains the machinery and takes no side, and that is enforced in the kit rather than left to
@@ -67,8 +94,8 @@ ends in May 2026. The 2026 figures it does show are scheduled facts rather than 
 ## How it was made
 1. **Facts first**, then the narration, written at a 3rd–5th grade reading level: short sentences, one
    idea per scene, every number checked before a word was drawn.
-2. **A scene kit.** `kit.css` fixes one friendly dark-navy world, chunky rounded shapes and a 34 px type
-   floor (higher than Storyshot's 28 px, because of the audience). `kit.js` holds the verified numbers
+2. **A scene kit.** `kit.css` fixes one world — warm paper, dark navy ink — chunky rounded shapes and a
+   34 px type floor (higher than Storyshot's 28 px, because of the audience). `kit.js` holds the verified numbers
    (`Kit.US`, `Kit.Y2026`, `Kit.TURNOUT`, `Kit.MIDTERMS`, `Kit.VA_TIE`), a seeded RNG, and builders for
    little people, seat dots, ballot rows, the Capitol and the ballot box.
 3. **A brief** (`SPEC.md`, not shipped here) with the per-scene beats, the colour meanings, the
@@ -99,6 +126,8 @@ ends in May 2026. The 2026 figures it does show are scheduled facts rather than 
 - The recap opens on a near-empty frame for about a second, on the word "So".
 - The spending buckets are shapes, not a budget. They are labelled illustrative, but a viewer who skips
   the credit could over-read them.
+- A few subtitle lines sit high enough to clip the caption bar's top edge by a glyph's ascender. Legible,
+  because the text is outlined, but visible if you look for it.
 - The film says "about a third of the Senate" and shows a third-filled ring; it never explains the
   six-year terms and three classes that produce that third. That is the right omission for the age, but
   it is an omission.

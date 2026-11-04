@@ -10,27 +10,31 @@
     #ballot-seed { position: absolute; left: 1420px; top: 300px; width: 360px; height: 300px; }
     #ballot-seed .brow .tk { position: absolute; left: 4px; top: 4px; }
     #ballot-strike { position: absolute; left: 36px; top: 67px; width: 244px; height: 6px;
-      border-radius: 3px; background: #8d93a4; }
+      border-radius: 3px; background: var(--chalk-2); }
     #ballot-year { position: absolute; left: 50px; top: 30px; width: 980px; text-align: center;
-      font: 800 86px/1 var(--font); letter-spacing: -.02em; color: #2a3148; }
+      font: 800 86px/1 var(--font); letter-spacing: -.02em; color: var(--chalk); }
+    /* three weights of rule on the white sheet, so it reads as a printed form and not a blank
+       rectangle: the header rule is ink, the federal/local split is a dashed secondary ink, and
+       the rules between rows are the kit's hairline */
     #ballot-hrule { position: absolute; left: 50px; top: 142px; width: 980px; height: 6px;
-      border-radius: 3px; background: #ddd8c9; }
+      border-radius: 3px; background: var(--chalk); }
     #ballot-rules { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
     #ballot .gr { position: absolute; left: 50px; width: 980px; height: 5px;
-      border-radius: 3px; background: #e4dfd0; }
+      border-radius: 3px; background: var(--line); }
     #ballot-div { position: absolute; left: 50px; top: 424px; width: 980px; height: 0;
-      border-top: 5px dashed #c9c3b2; }
+      border-top: 5px dashed var(--chalk-2); }
     #ballot-band { position: absolute; left: 24px; top: 690px; width: 1032px; height: 64px;
       border-radius: 18px; background: var(--local); }
     #ballot-sheet .brow { font-size: 42px; }
     #ballot-sheet .brow .box { display: flex; align-items: center; justify-content: center;
       width: 44px; height: 44px; border-radius: 11px; }
-    #ballot-sheet .cnt { font-size: 48px; color: #3f4860; }
-    #ballot-sheet .unit { font: 700 40px/1 var(--font); color: #5a6478; }
-    #ballot-sheet .plc { position: absolute; left: 66px; top: 12px; height: 20px; border-radius: 10px; background: #d7d2c4; }
+    #ballot-sheet .cnt { font-size: 48px; color: var(--chalk-2); }
+    #ballot-sheet .unit { font: 700 40px/1 var(--font); color: var(--chalk-2); }
+    /* a line not yet named: the dimmed token, which is what it means */
+    #ballot-sheet .plc { position: absolute; left: 66px; top: 12px; height: 20px; border-radius: 10px; background: var(--off); }
     #ballot-school { position: absolute; left: 1496px; top: 120px; width: 360px; height: 770px; }
     #ballot-ground { position: absolute; left: 24px; top: 380px; width: 310px; height: 9px;
-      border-radius: 5px; background: rgba(243, 241, 234, .75); }
+      border-radius: 5px; background: var(--chalk-2); }
   </style>
 
   <div id="ballot" class="world" data-composition-id="ballot" data-width="1920" data-height="1080">
@@ -50,20 +54,22 @@
 
     <!-- the school the school board decides about, with the yellow "you" kid in front of it -->
     <div id="ballot-school" data-layout-allow-overlap>
+      <!-- the school: a white building with an ink outline and ink windows, the same language as
+           the kit's Capitol (SVG presentation attributes cannot take var(), so these go in style) -->
       <svg id="ballot-building" width="320" height="300" viewBox="0 0 320 300" style="position:absolute;left:20px;top:80px">
-        <rect x="28" y="100" width="264" height="200" rx="14" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7"/>
-        <path d="M 8 104 L 160 16 L 312 104 Z" fill="#1f2b4a" stroke="#f3f1ea" stroke-width="7" stroke-linejoin="round"/>
-        <circle cx="160" cy="66" r="18" fill="none" stroke="#f3f1ea" stroke-width="6"/>
-        <path d="M 160 55 L 160 66 L 169 73" fill="none" stroke="#f3f1ea" stroke-width="5" stroke-linecap="round"/>
-        <rect x="62" y="128" width="60" height="52" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
-        <rect x="198" y="128" width="60" height="52" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
-        <rect x="131" y="188" width="58" height="112" rx="10" fill="#0f1a2e" stroke="#f3f1ea" stroke-width="5"/>
+        <rect x="28" y="100" width="264" height="200" rx="14" style="fill:var(--ground-2);stroke:var(--chalk)" stroke-width="7"/>
+        <path d="M 8 104 L 160 16 L 312 104 Z" style="fill:var(--ground-2);stroke:var(--chalk)" stroke-width="7" stroke-linejoin="round"/>
+        <circle cx="160" cy="66" r="18" fill="none" style="stroke:var(--chalk)" stroke-width="6"/>
+        <path d="M 160 55 L 160 66 L 169 73" fill="none" style="stroke:var(--chalk)" stroke-width="5" stroke-linecap="round"/>
+        <rect x="62" y="128" width="60" height="52" rx="10" style="fill:var(--chalk);stroke:var(--chalk)" stroke-width="5"/>
+        <rect x="198" y="128" width="60" height="52" rx="10" style="fill:var(--chalk);stroke:var(--chalk)" stroke-width="5"/>
+        <rect x="131" y="188" width="58" height="112" rx="10" style="fill:var(--chalk);stroke:var(--chalk)" stroke-width="5"/>
       </svg>
       <div id="ballot-ground"></div>
       <svg id="ballot-link" width="150" height="380" viewBox="0 0 150 380" style="position:absolute;left:2px;top:380px">
         <path id="ballot-link-path" d="M 6 342 C 74 330, 14 140, 122 22" pathLength="1" fill="none"
-          stroke="#ff9d6b" stroke-width="9" stroke-linecap="round"
-          style="stroke-dasharray:1 1.2;stroke-dashoffset:1.1"/>
+          stroke-width="9" stroke-linecap="round"
+          style="stroke:var(--local);stroke-dasharray:1 1.2;stroke-dashoffset:1.1"/>
       </svg>
     </div>
   </div>
@@ -71,14 +77,14 @@
   <script>
     (function () {
       const S = window.__storyshot;
-      const TICK = '<svg viewBox="0 0 24 24" width="28" height="28"><path d="M4 12.5 l5.5 5.5 l10.5 -14" fill="none" stroke="#2a3148" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const TICK = '<svg viewBox="0 0 24 24" width="28" height="28"><path d="M4 12.5 l5.5 5.5 l10.5 -14" fill="none" style="stroke:var(--chalk)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       const sheet = document.getElementById('ballot-sheet');
       const rules = document.getElementById('ballot-rules');
 
       // the handover: the same three rows scene 4 ends on, in the same places
       const seed = document.getElementById('ballot-seed');
       const SEEDTICK = '<svg class="tk" viewBox="0 0 28 28" width="28" height="28">'
-        + '<path d="M 5 15 l 6 6 l 12 -15" fill="none" stroke="#2a3148" stroke-width="5"'
+        + '<path d="M 5 15 l 6 6 l 12 -15" fill="none" style="stroke:var(--chalk)" stroke-width="5"'
         + ' stroke-linecap="round" stroke-linejoin="round"/></svg>';
       Kit.brow(seed, { top: 52, text: 'President' });
       Kit.brow(seed, { top: 132, text: 'House' }).insertAdjacentHTML('beforeend', SEEDTICK);
@@ -122,6 +128,15 @@
       const kid = Kit.person(document.getElementById('ballot-school'), { x: 180, y: 380, h: 104, cls: 'on' });
       kid.id = 'ballot-kid';
 
+      // GSAP tweens colours, so they have to be resolved values: take them from the kit rather than
+      // writing any of them down here. A row settles to ink on the white sheet — except the school
+      // board row, which settles on the solid --local band and so settles to the sheet's own white.
+      const ROOT = getComputedStyle(document.documentElement);
+      const INK = ROOT.getPropertyValue('--chalk').trim();
+      const SHEET = ROOT.getPropertyValue('--ground-2').trim();
+      const DIM = getComputedStyle(el.r4).color;                                  // the kit's .brow.dim
+      const BOXLINE = getComputedStyle(el.r7.querySelector('.box')).borderTopColor; // an unticked box
+
       const tl = gsap.timeline({ paused: true });
 
       // (0) the small sheet scene 4 left behind grows into the whole ballot
@@ -159,7 +174,7 @@
       [['r4', 7], ['r5', 8], ['r6', 9]].forEach(function (p) {
         tl.fromTo('#ballot-' + p[0] + ' .plc', { opacity: 1 }, { opacity: 0, duration: 0.22 }, S.at(p[1]));
         tl.fromTo('#ballot-' + p[0] + ' .txt', { opacity: 0 }, { opacity: 1, duration: 0.28 }, S.at(p[1], 0.06));
-        tl.fromTo(el[p[0]], { color: '#5f6673' }, { color: '#2a3148', duration: 0.3 }, S.at(p[1], 0.06));
+        tl.fromTo(el[p[0]], { color: DIM }, { color: INK, duration: 0.3 }, S.at(p[1], 0.06));
       });
 
       // (10) the school board: marked in peach, its checkbox ticked
@@ -167,8 +182,8 @@
         { opacity: 1, scaleX: 1, duration: 0.55, ease: 'expo.out' }, S.at(10));
       tl.fromTo('#ballot-r7 .plc', { opacity: 1 }, { opacity: 0, duration: 0.22 }, S.at(10, 0.1));
       tl.fromTo('#ballot-r7 .txt', { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(10, 0.22));
-      tl.fromTo(el.r7, { color: '#5f6673' }, { color: '#2a3148', duration: 0.3 }, S.at(10, 0.22));
-      tl.fromTo('#ballot-r7 .box', { borderColor: '#8d93a4' }, { borderColor: '#2a3148', duration: 0.3 }, S.at(10, 0.22));
+      tl.fromTo(el.r7, { color: DIM }, { color: SHEET, duration: 0.3 }, S.at(10, 0.22));
+      tl.fromTo('#ballot-r7 .box', { borderColor: BOXLINE }, { borderColor: INK, duration: 0.3 }, S.at(10, 0.22));
       tl.fromTo('#ballot-r7 .box svg', { opacity: 0, scale: 0.3, transformOrigin: 'center center' },
         { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2.4)' }, S.at(10, 0.32));
 
