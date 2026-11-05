@@ -1,0 +1,190 @@
+<template>
+  <style>
+    /* scene 9 — who it is for: an eligibility form filled in line by line, beside the real pictures */
+    #who-sheet { left: 80px; top: 150px; width: 1010px; height: 600px; }
+    #who .chk .mk svg { left: 3px; top: 3px; }
+    #who .chk .tx { max-width: 880px; }
+
+    #who-skin { position: absolute; left: 1150px; top: 150px; width: 700px; height: 280px; }
+    #who-skin svg { display: block; }
+    #who-ring { position: absolute; left: 1379px; top: 174px; width: 238px; height: 159px;
+      border: 4px dashed var(--tum); border-radius: 50%; }
+
+    #who .wk { position: absolute; font: 600 30px/1 var(--font); color: var(--rna); white-space: nowrap; }
+    #who-blk { position: absolute; left: 1186px; top: 700px; width: 148px; height: 116px;
+      border: 4px solid var(--tum); background: var(--tum-soft); border-radius: 14px 20px 12px 18px; }
+    #who-blk i { position: absolute; display: block; background: var(--tum); border-radius: 3px; opacity: .72; }
+    #who-vial { left: 1470px; top: 676px; width: 130px; height: 196px; }
+    #who-vial .tis { position: absolute; left: 18px; right: 18px; bottom: 16px; height: 68px;
+      border: 4px solid var(--tum); background: var(--tum-soft); border-radius: 9px; }
+
+    #who-note { position: absolute; left: 80px; top: 778px; width: 1010px; height: 104px; }
+    #who-noterule { position: absolute; left: 80px; top: 758px; width: 1010px; transform-origin: left center; }
+    #who-note .edge { position: absolute; left: 0; top: 0; width: 7px; height: 104px;
+      background: var(--tum); border-radius: 4px; transform-origin: center top; }
+    #who-note .n1 { position: absolute; left: 34px; top: 2px; font: 600 36px/1.2 var(--font); color: var(--ink); white-space: nowrap; }
+    #who-note .n2 { position: absolute; left: 34px; top: 56px; font: 500 29px/1.2 var(--font); color: var(--ink-2); white-space: nowrap; }
+  </style>
+
+  <div id="who" class="world" data-composition-id="who" data-width="1920" data-height="1080">
+    <div class="kicker" id="who-kick">现在适合谁</div>
+    <div class="credit" id="who-credit" data-layout-ignore>NCT05933577 入排标准</div>
+
+    <div class="sheet" id="who-sheet">
+      <div class="sheet-hd">INTerpath-001 入组条件</div>
+    </div>
+    <div id="who-rows" data-layout-allow-overlap></div>
+
+    <!-- right column: the skin this is about, the 13-week window, the tissue that has to be kept -->
+    <div id="who-right" data-layout-allow-overlap>
+      <div id="who-skin"></div>
+      <div id="who-ring"></div>
+      <div class="schem" id="who-schem" style="left:1150px;top:446px" data-layout-ignore>示意</div>
+      <div class="label s" id="who-skinlb" style="left:1660px;top:442px">皮肤剖面</div>
+
+      <div class="ruler" id="who-ruler" style="left:1150px;top:566px;width:688px"></div>
+      <div id="who-ticks"></div>
+      <div class="span" id="who-span" style="left:1150px;top:554px;width:559px;height:28px"></div>
+      <div class="pin" id="who-pin" style="left:1707px;top:536px;height:64px"></div>
+      <div class="wk" id="who-wk" style="left:1150px;top:506px">手术后 <span class="num">13</span> 周以内</div>
+      <div class="label s" id="who-wk0" style="left:1150px;top:616px">手术</div>
+      <div class="label s" id="who-wk1" style="left:1646px;top:616px">第一针</div>
+
+      <div id="who-blk"></div>
+      <div id="who-arrow"></div>
+      <div class="vial" id="who-vial"><div class="tis"></div><div class="cap"></div></div>
+    </div>
+
+    <div class="rule" id="who-noterule"></div>
+    <div id="who-note">
+      <div class="edge"></div>
+      <div class="n1">截至 2026 年 11 月尚未获批，仍是研究性药物</div>
+      <div class="n2">目前只能通过临床试验用到</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const root = document.getElementById('who');
+      const rows = document.getElementById('who-rows');
+      const W = Kit.WHO;
+      const st = W[0].t.split('，');   // ['皮肤黑色素瘤', 'IIB 到 IV 期']
+      const TEAL = '#0f766e', CRIM = '#a3203a', LINE = '#d9d4c7', INK2 = '#5c6270';
+
+      // ---- the seven conditions, in the order the narration says them ------------------------
+      const PLAN = [
+        { t: st[0] + '，<span id="who-stage">' + st[1] + '</span>', k: 'yes', cue: 2 },
+        { t: W[1].t, k: 'yes', cue: 4 },
+        { t: W[2].t, k: 'yes', cue: 5 },
+        { t: W[3].t, k: 'yes', cue: 6 },
+        { t: W[5].t, k: 'no', cue: 7 },
+        { t: W[6].t, k: 'no', cue: 8 },
+        { t: W[4].t, k: 'yes', cue: 10 },
+      ];
+      const made = PLAN.map((p, i) => {
+        const el = Kit.chk(rows, { x: 124, y: 268 + i * 70, t: p.t, k: p.k });
+        const mk = el.querySelector('.mk');
+        mk.innerHTML = p.k === 'yes' ? Kit.MARK_OK : Kit.MARK_NO;
+        return { el, mk, svg: mk.querySelector('svg'), tx: el.querySelector('.tx'), k: p.k, cue: p.cue };
+      });
+
+      // hairlines between the rows, so the sheet is a form and not a blank rectangle
+      const rules = [];
+      for (let i = 0; i < 6; i++) {
+        const r = document.createElement('div');
+        r.className = 'rule';
+        r.style.cssText = 'left:120px;top:' + (326 + i * 70) + 'px;width:930px;transform-origin:left center';
+        root.appendChild(r); rules.push(r);
+      }
+
+      // ---- the skin cross-section: the first true picture of the scene -----------------------
+      const skin = document.getElementById('who-skin');
+      skin.innerHTML = Kit.SKIN_SVG;
+      const svg = skin.querySelector('svg');
+      svg.setAttribute('width', 700); svg.setAttribute('height', 280);
+      svg.querySelector('#lesion').id = 'who-lesion';
+
+      // ---- the week ruler: 16 weeks drawn, the allowed window spanning 0–13 ------------------
+      const ticks = document.getElementById('who-ticks'), wkPx = 43;
+      for (let i = 0; i <= 16; i++) {
+        const big = i % 13 === 0;
+        const d = document.createElement('div');
+        d.className = 'tickmark';
+        d.style.cssText = 'left:' + (1150 + i * wkPx) + 'px;top:' + (big ? 552 : 558) + 'px;height:' + (big ? 32 : 18) + 'px';
+        ticks.appendChild(d);
+      }
+
+      // ---- the tissue block that goes into the tube ------------------------------------------
+      const blk = document.getElementById('who-blk');
+      [[24, 22, 42, 12], [34, 50, 62, 12], [22, 78, 34, 12], [70, 78, 40, 12]].forEach(([x, y, w, h]) => {
+        const i2 = document.createElement('i');
+        i2.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px';
+        blk.appendChild(i2);
+      });
+      const arrow = Kit.lead(document.getElementById('who-arrow'), { x1: 1350, y1: 758, x2: 1456, y2: 758 });
+
+      // ---- timeline ---------------------------------------------------------------------------
+      const tl = gsap.timeline({ paused: true });
+      const IN = { duration: 0.6, ease: 'expo.out' };
+
+      // S.at(0) 那现在谁用得上 — the skin is already the picture; nothing starts on an empty sheet
+      tl.fromTo('#who-kick', { opacity: 0, x: -18 }, { opacity: 1, x: 0, ...IN }, S.at(0));
+      tl.fromTo('#who-credit', { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(0, 0.2));
+      // it opens big, at 59% of the frame, and only steps aside when the form arrives
+      tl.fromTo('#who-skin', { opacity: 0, scale: 1.62, x: -760, y: 178, transformOrigin: 'left top' },
+        { opacity: 1, scale: 1.62, x: -760, y: 150, duration: 0.7, ease: 'expo.out' }, S.at(0));
+
+      // S.at(1) 门槛很具体 — the empty form: seven blanks, waiting
+      tl.fromTo('#who-skin', { scale: 1.62, x: -760, y: 150 },
+        { scale: 1, x: 0, y: 0, duration: 0.85, ease: 'expo.inOut', transformOrigin: 'left top' }, S.at(1));
+      tl.fromTo('#who-skinlb', { opacity: 0 }, { opacity: 1, duration: 0.45 }, S.at(1, 0.7));
+      tl.fromTo('#who-schem', { opacity: 0 }, { opacity: 1, duration: 0.45 }, S.at(1, 0.7));
+      tl.fromTo('#who-sheet', { opacity: 0, y: 26 }, { opacity: 1, y: 0, ...IN }, S.at(1, 0.3));
+      rules.forEach((r, i) => tl.fromTo(r, { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: 'expo.out' }, S.at(1, 0.5 + i * 0.05)));
+      made.forEach((m, i) => tl.fromTo(m.mk,
+        { opacity: 0, scale: 0.4, borderColor: LINE, backgroundColor: 'rgba(255,255,255,1)' },
+        { opacity: 1, scale: 1, duration: 0.4, ease: 'expo.out' }, S.at(1, 0.62 + i * 0.05)));
+
+      // each condition lands on the beat its words are spoken
+      made.forEach((m) => {
+        tl.fromTo(m.tx, { opacity: 0, x: -14 }, { opacity: 1, x: 0, ...IN }, S.at(m.cue));
+        tl.fromTo(m.mk,
+          { borderColor: LINE, backgroundColor: 'rgba(255,255,255,1)' },
+          { borderColor: m.k === 'yes' ? TEAL : CRIM, backgroundColor: m.k === 'yes' ? 'rgba(15,118,110,.12)' : 'rgba(163,32,58,.12)', duration: 0.35, ease: 'none' }, S.at(m.cue));
+        tl.fromTo(m.svg, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' }, S.at(m.cue, 0.2));
+      });
+
+      // S.at(2) 皮肤黑色素瘤 — the margin is drawn round the lesion
+      tl.fromTo('#who-ring', { opacity: 0, scale: 1.22 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'expo.out' }, S.at(2, 0.1));
+      // S.at(3) 二 B 到四期 — the stage reads in the film's crimson
+      tl.fromTo('#who-stage', { color: '#16181d' }, { color: CRIM, duration: 0.4, ease: 'none' }, S.at(3));
+      // S.at(4) 已经完整切除 — the lesion is gone, the margin stays as an empty bed
+      tl.fromTo('#who-lesion', { opacity: 1 }, { opacity: 0, duration: 0.5, ease: 'power1.in' }, S.at(4, 0.15));
+      tl.fromTo('#who-ring', { borderColor: CRIM }, { borderColor: INK2, duration: 0.5, ease: 'none' }, S.at(4, 0.3));
+
+      // S.at(6) 不超过十三周 — the window
+      tl.fromTo('#who-ruler', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'expo.out', transformOrigin: 'left center' }, S.at(6));
+      [...ticks.children].forEach((d, i) => tl.fromTo(d, { opacity: 0 }, { opacity: 1, duration: 0.3 }, S.at(6, 0.18 + i * 0.012)));
+      tl.fromTo('#who-span', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: 'expo.out', transformOrigin: 'left center' }, S.at(6, 0.25));
+      tl.fromTo('#who-pin', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.4, ease: 'expo.out', transformOrigin: 'center bottom' }, S.at(6, 0.6));
+      tl.fromTo('#who-wk', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(6, 0.45));
+      tl.fromTo('#who-wk0', { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(6, 0.35));
+      tl.fromTo('#who-wk1', { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(6, 0.7));
+
+      // S.at(9)–S.at(10) 够做测序的肿瘤组织
+      tl.fromTo('#who-blk', { opacity: 0, y: -20 }, { opacity: 1, y: 0, ...IN }, S.at(9));
+      tl.fromTo(arrow.line, { opacity: 0, scaleX: 0 }, { opacity: 0.8, scaleX: 1, duration: 0.4, ease: 'power2.out', transformOrigin: 'left center' }, S.at(10));
+      tl.fromTo(arrow.anchor, { opacity: 0 }, { opacity: 0.8, duration: 0.3 }, S.at(10, 0.3));
+      tl.fromTo('#who-vial', { opacity: 0, y: 20 }, { opacity: 1, y: 0, ...IN }, S.at(10, 0.15));
+
+      // S.at(11)–S.at(12) the honest closing note: ink type, a crimson edge, no warning box
+      tl.fromTo('#who-noterule', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: 'expo.out' }, S.at(11));
+      tl.fromTo('#who-note .edge', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.5, ease: 'expo.out' }, S.at(11));
+      tl.fromTo('#who-note .n1', { opacity: 0, x: -14 }, { opacity: 1, x: 0, ...IN }, S.at(12));
+      tl.fromTo('#who-note .n2', { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, S.at(12, 0.25));
+
+      window.__timelines['who'] = tl;
+    })();
+  </script>
+</template>

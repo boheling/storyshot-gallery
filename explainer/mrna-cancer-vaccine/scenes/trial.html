@@ -1,0 +1,193 @@
+<template>
+  <style>
+    /* trial — 1,137 人，2:1 两组，两年无复发 82.2% vs 70.0%，HR 0.58。
+       只写位置和这一场独有的部件；颜色、字号、形状都用 kit 的 token 和类。
+       版面：左边是人（点阵，1 点 = 1 人），右边是结果（0–100 的柱），同一行对齐。 */
+
+    #trial-src { left: 110px; top: 92px; }
+    #trial-stage { left: 110px; top: 134px; }
+    #trial-n { left: 110px; top: 208px; }
+    #trial-n .u { font-size: 44px; font-weight: 600; letter-spacing: 0; }
+
+    /* 接住上一场那支药瓶：缩小版，摆在点阵上面，分组开始时就让位 */
+    #trial-vial { position: absolute; left: 118px; top: 300px; width: 44px; height: 80px; }
+    #trial-vial .vial { left: 0; top: 14px; width: 44px; height: 66px; border-width: 4px; border-radius: 6px 6px 11px 11px; }
+    #trial-vial .cap { left: 20%; right: 20%; top: -12px; height: 12px; border-radius: 4px; }
+    #trial-vial .fill { height: 58%; }
+    #trial-vt { left: 186px; top: 322px; }
+    #trial-ratio { display: inline-block; font-size: 29px; font-weight: 500; letter-spacing: 0;
+      color: var(--ink-2); font-family: var(--font); }
+
+    /* 两组的标签行：人数 → 色标 → 组名，各自单独出现 */
+    #trial-la, #trial-lb { left: 110px; display: flex; align-items: center; gap: 18px; }
+    #trial-la { top: 340px; }
+    #trial-lb { top: 630px; }
+    #trial-la .swatch, #trial-lb .swatch { position: static; flex: none; }
+
+    /* 点阵：1 点 = 1 人。点的颜色取自所在块（currentColor），所以一条 tween 就能给一组上色 */
+    #trial-a, #trial-b { left: 110px; color: rgba(138, 133, 120, .55); }
+    #trial-a { top: 396px; }
+    #trial-b { top: 686px; }
+    #trial-a .dot, #trial-b .dot { background: currentColor; border-color: currentColor; }
+
+    /* 右边：两年无复发的比例，按 0–100 画 */
+    #trial-hd { left: 978px; top: 318px; }
+    #trial-max { left: 1418px; top: 404px; width: 120px; text-align: right; }
+    #trial .trk { position: absolute; left: 976px; width: 564px; height: 76px;
+      border: 2px solid var(--line); border-radius: 6px; }
+    #trial-tka { top: 454px; }
+    #trial-tkb { top: 695px; }
+    #trial-bara, #trial-barb { left: 978px; height: 72px; }
+    #trial-bara { top: 456px; }
+    #trial-barb { top: 697px; }
+    #trial-pa, #trial-pb { left: 1560px; }
+    #trial-pa { top: 446px; color: var(--imm); }
+    #trial-pb { top: 687px; color: var(--ctrl); }
+
+    /* 底下一行：HR 和"低 42%"是同一件事，所以写在一行里 */
+    #trial-sum { position: absolute; left: 110px; top: 822px; display: flex; align-items: baseline; gap: 26px; }
+    #trial-sum .label { position: static; }
+    #trial-cut .num { font-size: 44px; }
+  </style>
+
+  <div id="trial" class="world" data-composition-id="trial" data-width="1920" data-height="1080">
+    <div id="trial-credit" class="credit" data-layout-ignore></div>
+    <div id="trial-src" class="label s"></div>
+    <div id="trial-stage" class="label s"></div>
+
+    <div id="trial-vial"><span class="vial"><span class="cap"></span><span class="fill"></span></span></div>
+    <div id="trial-vt" class="label s">同一支按人定制的药</div>
+
+    <div id="trial-n" class="big"><span class="num"></span><span class="u"> 人</span><span id="trial-ratio"></span></div>
+
+    <div id="trial-la" class="label">
+      <span id="trial-la-n"><span class="num"></span> 人</span>
+      <span id="trial-la-sw" class="swatch imm"></span>
+      <span id="trial-la-t" class="hl">疫苗 + PD-1 抑制剂</span>
+    </div>
+    <div id="trial-a" class="dots"></div>
+
+    <div id="trial-lb" class="label">
+      <span id="trial-lb-n"><span class="num"></span> 人</span>
+      <span id="trial-lb-sw" class="swatch"></span>
+      <span id="trial-lb-t">只打 PD-1 抑制剂</span>
+    </div>
+    <div id="trial-b" class="dots"></div>
+
+    <div id="trial-hd" class="label">两年内没有复发</div>
+    <div id="trial-max" class="label s num">100%</div>
+    <div id="trial-tka" class="trk"></div>
+    <div id="trial-tkb" class="trk"></div>
+    <div id="trial-bara" class="bar imm"></div>
+    <div id="trial-barb" class="bar"></div>
+    <div id="trial-pa" class="big num"></div>
+    <div id="trial-pb" class="big num"></div>
+
+    <div id="trial-sum">
+      <div id="trial-hr" class="label"></div>
+      <div id="trial-cut" class="label"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot, K = Kit.TRIAL;
+      const root = document.getElementById('trial');
+      const q = (s) => root.querySelector(s);
+      const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      const comma = (n) => String(n).replace(/\B(?=(\d{3})+$)/g, ',');
+      const cs = getComputedStyle(document.documentElement);
+      const COL = {
+        imm: cs.getPropertyValue('--imm').trim() || '#0f766e',
+        ctrl: cs.getPropertyValue('--ctrl').trim() || '#8a8578',
+      };
+      const PALE = 'rgba(138, 133, 120, 0.55)';   // 还没分组的人
+
+      // ---- 每个数字都从 Kit.TRIAL 取 ----------------------------------------------------------
+      q('#trial-credit').textContent = K.id + ', ESMO 2026 LBA1（2026-10-24）；' + K.nct;
+      q('#trial-src').textContent = K.id + ' · 3 期 · ESMO 2026';
+      q('#trial-stage').textContent = K.stage;
+      q('#trial-n .num').textContent = comma(K.n);                       // 1,137
+      q('#trial-ratio').textContent = ' · ' + K.ratio.replace(':', ' : ') + ' 随机分组';
+      q('#trial-la-n .num').textContent = comma(K.nVax);                 // 757
+      q('#trial-lb-n .num').textContent = comma(K.nCtrl);                // 380
+      q('#trial-pa').textContent = K.rfs.vax.toFixed(1) + '%';           // 82.2%
+      q('#trial-pb').textContent = K.rfs.ctrl.toFixed(1) + '%';          // 70.0%
+      q('#trial-hr').innerHTML = 'HR <span class="num">' + K.rfs.hr.toFixed(2) + '</span>（95%CI <span class="num">'
+        + K.rfs.lo.toFixed(2) + '–' + K.rfs.hi.toFixed(2) + '</span>），P <span class="num">' + esc(K.rfs.p) + '</span>';
+      q('#trial-cut').innerHTML = '→ 复发或死亡风险低 <span class="num hl">' + K.rfs.cut + '%</span>';
+
+      // ---- 人：1 点 = 1 人，上面 757，下面 380 -----------------------------------------------
+      const COLS = 56, SZ = 10, GAP = 4, P = SZ + GAP;
+      const block = (el, n) => {
+        Kit.dots(el, { n, cols: COLS, size: SZ, gap: GAP });
+        el.style.width = (COLS - 1) * P + SZ + 'px';
+        el.style.height = (Math.ceil(n / COLS) - 1) * P + SZ + 'px';
+        return el;
+      };
+      const A = block(q('#trial-a'), K.nVax), B = block(q('#trial-b'), K.nCtrl);
+      const SPLIT = Math.ceil(K.nVax / COLS) * P;   // 94px：合在一起时下面那块往上贴的距离
+
+      // ---- 结果：柱子按 0–100 画，轨道就是 100% ------------------------------------------------
+      const SCALE = 560;
+      const barA = q('#trial-bara'), barB = q('#trial-barb');
+      barA.style.width = (SCALE * K.rfs.vax / 100).toFixed(1) + 'px';
+      barB.style.width = (SCALE * K.rfs.ctrl / 100).toFixed(1) + 'px';
+
+      // ---- 时间线 ----------------------------------------------------------------------------
+      const tl = gsap.timeline({ paused: true });
+      const show = (t, at, { d = 0.55, dy = 14, e = 'expo.out' } = {}) =>
+        tl.fromTo(t, { opacity: 0, y: dy }, { opacity: 1, y: 0, duration: d, ease: e }, at);
+
+      // 0 ── 这是哪个试验：接住上一场那支药瓶，人随即开始填进来
+      show('#trial-src', S.at(0));
+      show('#trial-stage', S.at(0) + 0.3);
+      tl.fromTo('#trial-credit', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'none' }, S.at(0));
+      show('#trial-vial', S.at(0) + 0.1, { dy: 10 });
+      show('#trial-vt', S.at(0) + 0.25, { dy: 10 });
+      // 两块点阵先合成一片，自上而下慢慢擦出来，到念出人数时正好填满
+      tl.fromTo(A, { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.6, ease: 'none' }, S.at(0) + 0.3);
+      tl.fromTo(B, { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'none' }, S.at(0) + 1.7);
+
+      // 1 ── 一千一百三十七个人
+      show('#trial-n', S.at(1));
+
+      // 2 ── 按 2:1 分开：药瓶让位，下面那块落下去，两组的人数出来
+      tl.fromTo('#trial-vial, #trial-vt', { opacity: 1 }, { opacity: 0, duration: 0.35, ease: 'none' }, S.at(2));
+      tl.fromTo(B, { y: -SPLIT }, { y: 0, duration: 0.7, ease: 'expo.out' }, S.at(2));
+      show('#trial-ratio', S.at(2) + 0.1);
+      show('#trial-la-n', S.at(2) + 0.5, { dy: 0 });
+      show('#trial-lb-n', S.at(2) + 0.65, { dy: 0 });
+
+      // 3 ── 上面那块是疫苗 + PD-1，同一行右边摆上它的空轨道（0–100）
+      tl.fromTo(A, { color: PALE }, { color: COL.imm, duration: 0.6, ease: 'none' }, S.at(3));
+      show('#trial-la-sw', S.at(3) + 0.1, { dy: 0 });
+      show('#trial-la-t', S.at(3) + 0.1, { dy: 0 });
+      tl.fromTo('#trial-tka', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'none' }, S.at(3) + 0.35);
+      show('#trial-max', S.at(3) + 0.5, { dy: 0 });
+
+      // 4 ── 下面那块只打 PD-1，轨道同样跟上
+      tl.fromTo(B, { color: PALE }, { color: COL.ctrl, duration: 0.6, ease: 'none' }, S.at(4));
+      show('#trial-lb-sw', S.at(4) + 0.1, { dy: 0 });
+      show('#trial-lb-t', S.at(4) + 0.1, { dy: 0 });
+      tl.fromTo('#trial-tkb', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'none' }, S.at(4) + 0.35);
+
+      // 5 ── 两年之后：量的是什么
+      show('#trial-hd', S.at(5));
+
+      // 6 ── 疫苗组 82.2%
+      tl.fromTo(barA, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'expo.out', transformOrigin: 'left center' }, S.at(6));
+      show('#trial-pa', S.at(6) + 0.45, { dy: 0 });
+
+      // 7 ── 对照组 70.0%
+      tl.fromTo(barB, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'expo.out', transformOrigin: 'left center' }, S.at(7));
+      show('#trial-pb', S.at(7) + 0.45, { dy: 0 });
+
+      // 8–9 ── 同一个数的两种说法
+      show('#trial-hr', S.at(8), { dy: 10 });
+      show('#trial-cut', S.at(9), { dy: 10 });
+
+      window.__timelines['trial'] = tl;
+    })();
+  </script>
+</template>

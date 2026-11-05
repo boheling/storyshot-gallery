@@ -1,0 +1,264 @@
+<template>
+  <style>
+    /* scene-only bits; everything shared comes from scenes/kit/kit.css */
+    #make .msvg { position: absolute; }
+    #make .strand path { stroke-linejoin: round; }
+    #make-ship { position: absolute; left: 1080px; top: 690px; width: 220px; height: 40px; }
+    #make-box { position: absolute; left: 6px; top: 6px; width: 28px; height: 28px; border-radius: 4px;
+      border: 3px solid var(--rna); background: var(--rna-soft); }
+    #make-ok { position: absolute; left: 930px; top: 570px; width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--imm); background: var(--imm-soft); }
+    #make-ok .mk { position: absolute; left: 23px; top: 23px; width: 34px; height: 34px; }
+    #make .vial .crimp { position: absolute; left: 0; right: 0; top: 36px; height: 3px; background: var(--ink); opacity: .5; }
+    /* the time figure: a ruler, a window and two pins are meant to sit on each other */
+    #make-time { position: absolute; left: 170px; top: 540px; width: 1640px; height: 292px; }
+    /* the part of the window that making the dose eats: a deeper ochre, position schematic */
+    #make-band { position: absolute; border-radius: 5px; background: rgba(180,83,9,.30); border: 2px solid var(--rna); }
+  </style>
+
+  <div id="make" class="world" data-composition-id="make" data-width="1920" data-height="1080">
+    <div id="make-cred1" class="credit" style="top:38px" data-layout-ignore>生产周期：Moderna 10-K，“a few weeks”</div>
+    <div id="make-cred2" class="credit" style="top:70px" data-layout-ignore>NCT05933577：手术 → 首剂 ≤ 13 周</div>
+    <div id="make-cred3" class="credit" style="top:102px" data-layout-ignore>INTerpath-001, ESMO 2026</div>
+
+    <!-- 0-1: the 34 picked in the scene before, then lined up as the recipe -->
+    <div id="make-picked"></div>
+    <div id="make-picklab" class="label s" style="left:580px;top:742px">上一步挑好的 34 段</div>
+    <div id="make-picklab2" class="label s" style="left:150px;top:780px">写进这条链的 34 段</div>
+
+    <!-- 1: the mRNA written from scratch -->
+    <div id="make-strandlab" class="label s" style="left:620px;top:410px">人工合成的 mRNA</div>
+
+    <!-- 2: wrapped in a lipid particle -->
+    <div id="make-lnp" class="lnp" style="left:1030px;top:110px;width:380px;height:380px"></div>
+    <div id="make-lnplab" class="label s" style="left:1460px;top:282px">脂质颗粒</div>
+
+    <!-- 3-4: filled, then released -->
+    <div id="make-vial" class="vial" style="left:700px;top:540px;width:170px;height:330px" data-layout-allow-overflow>
+      <div id="make-fill" class="fill" style="height:0;border-radius:0 0 13px 13px;background:rgba(180,83,9,.52)"></div>
+      <div class="cap"></div>
+      <div class="crimp"></div>
+    </div>
+    <div id="make-ok"></div>
+    <div id="make-oklab" class="label s hl" style="left:916px;top:668px">批次放行</div>
+
+    <!-- 5: shipped back to the patient's hospital -->
+    <div id="make-ship" data-layout-allow-overlap>
+      <svg class="msvg" style="left:0;top:0" width="220" height="40" viewBox="0 0 220 40">
+        <path id="make-shipline" d="M 6 20 H 186" pathLength="1" fill="none" stroke="#b45309" stroke-width="3"
+          stroke-linecap="round" style="stroke-dasharray:1 1.2"></path>
+        <path id="make-shiphead" d="M 180 11 l 14 9 l -14 9" fill="none" stroke="#b45309" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <div id="make-box"></div>
+    </div>
+    <div id="make-hosp" class="msvg" style="left:1360px;top:520px;width:330px;height:304px"></div>
+    <div id="make-hosplab" class="label s" style="left:1375px;top:840px">病人所在的医院</div>
+
+    <!-- 6-10: the clock. 0-16 weeks, the 13-week window, and where making it sits inside -->
+    <div id="make-time" data-layout-allow-overlap>
+      <div id="make-span" class="span" style="left:50px;top:72px;width:0;height:80px"></div>
+      <div id="make-band" style="left:237.5px;top:86px;width:656.25px;height:52px"></div>
+      <div id="make-ruler" class="ruler" style="left:50px;top:158px;width:0"></div>
+      <div id="make-ticks"></div>
+      <div id="make-nums"></div>
+      <div id="make-unit" class="label s" style="left:1575px;top:188px">周</div>
+      <div id="make-pin0" class="pin" style="left:48px;top:56px;height:130px"></div>
+      <div id="make-pin13" class="pin" style="left:1266.75px;top:56px;height:130px"></div>
+      <div id="make-lab0" class="label" style="left:16px;top:235px">手术</div>
+      <div id="make-lab13" class="label" style="left:1217.75px;top:235px">第一针</div>
+      <div id="make-bandlab" class="label s" style="left:390px;top:20px">生产与运输</div>
+      <div id="make-bandschem" class="schem" style="left:720px;top:30px" data-layout-ignore>示意</div>
+      <div id="make-win" class="label hl r" style="left:1300px;top:98px">最多 <span class="num">13</span> 周</div>
+    </div>
+
+    <!-- 12-13: it worked for almost everybody -->
+    <div id="make-arm" class="label s" style="left:420px;top:266px">疫苗组 757 人</div>
+    <div id="make-pct" class="big num hl" style="left:420px;top:318px">&gt;99%</div>
+    <div id="make-pctlab" class="label s" style="left:420px;top:428px">个体化生产按时完成</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const E = 'expo.out';
+      const mk = (tag, cls, css, parent, html) => {
+        const d = document.createElement(tag);
+        if (cls) d.className = cls;
+        if (css) d.style.cssText = css;
+        if (html != null) d.innerHTML = html;
+        parent.appendChild(d); return d;
+      };
+      const show = (t, el, from = {}, dur = 0.6) => tl.fromTo(el, { opacity: 0, ...from }, { opacity: 1, x: 0, y: 0, scale: 1, duration: dur, ease: E }, t);
+      const hide = (t, el, dur = 0.35) => tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: dur, ease: 'power2.in' }, t);
+      // the leader line carries an inline rotate(), so draw it by its width, never by scaleX
+      const ldr = (parent, p, t, d = 0.4) => {
+        const l = Kit.lead(parent, p), len = Math.hypot(p.x2 - p.x1, p.y2 - p.y1);
+        tl.fromTo(l.line, { width: 0 }, { width: len, duration: d, ease: E }, t);
+        tl.fromTo(l.anchor, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: E }, t + d * 0.7);
+        return [l.line, l.anchor];
+      };
+      const W = 93.75;   // px per week on the ruler (1500 px for 0-16 weeks)
+
+      // ---------- the 34 tiles, exactly where the scene before left them ----------
+      const picked = $('make-picked'), tiles = [];
+      for (let i = 0; i < 34; i++) {
+        tiles.push({ el: Kit.pep(picked, { x: 945 + (i % 6) * 90, y: 394 + Math.floor(i / 6) * 52 }), i });
+      }
+
+      // ---------- the strand ----------
+      // Kit.strand's control points are +/-amp but the curve itself only swings 0.289 * amp, and the
+      // box it makes is amp*2+60 tall, so most of it is empty. Big amp, then crop the box to the curve.
+      const SW = 1200, SWAVES = 3, SAMP = 200, SEG = SW / SWAVES, SX = 620, SY = 300;
+      const st = Kit.strand($('make'), { x: SX, y: SY, w: SW, amp: SAMP, waves: SWAVES, ticks: 0 });
+      st.path.style.strokeDasharray = '1 1.2';   // a round cap on a zero-length dash leaves a dot
+      const codon = (() => {
+        const ns = 'http://www.w3.org/2000/svg', svg = st.el.querySelector('svg'), out = [];
+        const P = (k, u) => {
+          const sgn = k % 2 ? 1 : -1;
+          return { x: k * SEG + SEG * (0.75 * (1 - u) * (1 - u) * u + 2.25 * (1 - u) * u * u + u * u * u),
+                   y: st.h / 2 + sgn * SAMP * 3 * u * (1 - u) * (1 - 2 * u) };
+        };
+        for (let k = 0; k < SWAVES; k++) for (const u of [0.15, 0.38, 0.62, 0.85]) {
+          const a = P(k, u), b = P(k, Math.min(0.999, u + 0.004)), c = P(k, Math.max(0.001, u - 0.004));
+          const ang = Math.atan2(b.y - c.y, b.x - c.x) + Math.PI / 2;
+          const dx = Math.cos(ang) * 18, dy = Math.sin(ang) * 18;
+          const l = document.createElementNS(ns, 'line');
+          l.setAttribute('x1', (a.x - dx).toFixed(1)); l.setAttribute('y1', (a.y - dy).toFixed(1));
+          l.setAttribute('x2', (a.x + dx).toFixed(1)); l.setAttribute('y2', (a.y + dy).toFixed(1));
+          l.setAttribute('class', 'tick'); svg.appendChild(l); out.push({ el: l, at: a.x / SW });
+        }
+        // crop the box to what the curve actually uses
+        const PAD = SAMP * 0.2887 + 26, svgEl = st.el.querySelector('svg');
+        svgEl.setAttribute('viewBox', `0 ${(st.h / 2 - PAD).toFixed(1)} ${SW} ${(PAD * 2).toFixed(1)}`);
+        svgEl.setAttribute('height', (PAD * 2).toFixed(1));
+        st.el.style.height = (PAD * 2).toFixed(1) + 'px';
+        st.el.style.top = (SY - PAD).toFixed(1) + 'px';
+        return out;
+      })();
+
+      // ---------- a hospital, in plain ink line ----------
+      $('make-hosp').innerHTML = `<svg viewBox="0 0 250 230" width="330" height="304">
+        <rect x="6" y="96" width="78" height="128" rx="4" fill="#ffffff" stroke="#16181d" stroke-width="4"/>
+        <rect x="166" y="96" width="78" height="128" rx="4" fill="#ffffff" stroke="#16181d" stroke-width="4"/>
+        <rect x="78" y="30" width="94" height="194" rx="4" fill="#ffffff" stroke="#16181d" stroke-width="4"/>
+        <g stroke="#16181d" stroke-width="3" fill="none">
+          <rect x="20" y="118" width="22" height="22"/><rect x="50" y="118" width="22" height="22"/>
+          <rect x="20" y="152" width="22" height="22"/><rect x="50" y="152" width="22" height="22"/>
+          <rect x="180" y="118" width="22" height="22"/><rect x="210" y="118" width="22" height="22"/>
+          <rect x="180" y="152" width="22" height="22"/><rect x="210" y="152" width="22" height="22"/>
+        </g>
+        <path d="M 125 50 v 36 M 107 68 h 36" stroke="#16181d" stroke-width="8" stroke-linecap="round"/>
+        <path d="M 90 108 h 70" stroke="#16181d" stroke-width="3"/>
+        <path d="M 104 160 h 42 v 64 h -42 z" fill="#f6f4ef" stroke="#16181d" stroke-width="4"/>
+      </svg>`;
+      $('make-ok').innerHTML = `<div class="mk">${Kit.MARK_OK}</div>`;
+
+      // ---------- the week ruler ----------
+      const ticks = [], nums = [];
+      for (let w = 0; w <= 16; w++) {
+        ticks.push(mk('div', 'tickmark', `left:${(50 + w * W - 1).toFixed(2)}px;top:162px;height:${w % 2 ? 13 : 22}px`, $('make-ticks')));
+        if (w % 2 === 0) {
+          const s = String(w), half = s.length * 29 * 0.3;
+          nums.push(mk('div', 'label s num', `left:${(50 + w * W - half).toFixed(2)}px;top:190px`, $('make-nums'), s));
+        }
+      }
+
+      // ============================ 0: the picked set, brought up close ============================
+      // 6 x 6 at 1.35, filling the middle of the frame
+      tiles.forEach(({ el, i }) => {
+        const c = i % 6, r = Math.floor(i / 6);
+        tl.fromTo(el, { x: 0, y: 0, scale: 1 },
+          { x: -315.05 + 32 * c, y: -53.75 + 18 * r, scale: 1.35, duration: 0.6, ease: 'power2.inOut' }, S.at(0, i * 0.008));
+      });
+      show(S.at(0, 0.05), '#make-picklab', { y: 12 }, 0.45);
+
+      // ============================ 1: the mRNA written from scratch ============================
+      // the 34 reflow into a 4 x 9 column at the left: the recipe the strand is written from
+      hide(S.at(1, 0.7), '#make-picklab', 0.3);
+      tiles.forEach(({ el, i }) => {
+        const c = i % 6, r = Math.floor(i / 6), c1 = i % 4, r1 = Math.floor(i / 4);
+        tl.fromTo(el, { x: -315.05 + 32 * c, y: -53.75 + 18 * r, scale: 1.35 },
+          { x: -752.45 + 112 * c1 - 90 * c, y: -186.75 + 66 * r1 - 52 * r, scale: 1.15, duration: 0.7, ease: 'power2.inOut' }, S.at(1, i * 0.009));
+      });
+      show(S.at(1, 1.5), '#make-picklab2', { y: 12 }, 0.5);
+      tl.fromTo(st.path, { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 1.4, ease: 'none', autoRound: false }, S.at(1, 0.3));
+      // each codon tick lands just after the line has drawn past it
+      codon.forEach((t) => tl.fromTo(t.el, { opacity: 0 }, { opacity: 0.55, duration: 0.25 }, S.at(1, 0.34 + 1.4 * t.at)));
+      show(S.at(1, 1.5), '#make-strandlab', { y: 12 }, 0.5);
+
+      // ============================ 2: folded into a lipid particle ============================
+      hide(S.at(2), '#make-strandlab', 0.3);
+      show(S.at(2, 0.35), '#make-lnp', { scale: 0.55 }, 0.6);
+      tl.fromTo(st.el, { scale: 1 }, { scale: 0.25, duration: 0.8, ease: 'power2.inOut', transformOrigin: '50% 50%' }, S.at(2, 0.1));
+      show(S.at(2, 0.8), '#make-lnplab', { y: 10 }, 0.45);
+      const lnpLead = ldr($('make'), { x1: 1450, y1: 300, x2: 1416, y2: 300 }, S.at(2, 0.85), 0.3);
+
+      // ============================ 3-4: filled, then released. one quick beat ============================
+      show(S.at(3), '#make-vial', { scale: 0.9, y: 14 }, 0.4);
+      tl.fromTo('#make-fill', { height: 0 }, { height: 232, duration: 0.5, ease: 'power2.out' }, S.at(3, 0.18));
+      show(S.at(4), '#make-ok', { scale: 0.5 }, 0.3);
+      show(S.at(4, 0.12), '#make-oklab', { y: 8 }, 0.35);
+
+      // ============================ 5: back to the patient's hospital ============================
+      show(S.at(5, 0.25), '#make-hosp', { scale: 0.92, x: 20 }, 0.55);
+      show(S.at(5, 0.6), '#make-hosplab', { y: 10 }, 0.45);
+      tl.fromTo('#make-shipline', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', autoRound: false }, S.at(5, 0.3));
+      show(S.at(5, 0.75), '#make-shiphead', {}, 0.25);
+      tl.fromTo('#make-box', { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: E }, S.at(5, 0.9));
+      tl.fromTo('#make-box', { x: 0 }, { x: 166, duration: 0.9, ease: 'power1.inOut' }, S.at(5, 1.15));
+      tl.fromTo('#make-box', { opacity: 1 }, { opacity: 0, duration: 0.2 }, S.at(5, 2.0));
+
+      // ============================ 6: the whole thing takes weeks ============================
+      // the line clears, the finished dose parks right above week 13, and the clock takes the frame
+      hide(S.at(6), [picked, '#make-picklab2', st.el, '#make-lnp', '#make-lnplab', ...lnpLead,
+        '#make-ok', '#make-oklab', '#make-ship', '#make-hosp', '#make-hosplab'], 0.4);
+      tl.fromTo('#make-vial', { x: 0, y: 0, scale: 1 }, { x: 653.75, y: -340, scale: 1.2, transformOrigin: '50% 100%', duration: 0.7, ease: 'power2.inOut' }, S.at(6, 0.05));
+      tl.fromTo('#make-ruler', { width: 0 }, { width: 1500, duration: 0.55, ease: 'power2.out' }, S.at(6, 0.1));
+      tl.fromTo(ticks, { opacity: 0 }, { opacity: 0.5, duration: 0.22, stagger: 0.013 }, S.at(6, 0.26));
+      tl.fromTo(nums, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.28, ease: E, stagger: 0.03 }, S.at(6, 0.34));
+      show(S.at(6, 0.42), '#make-unit', {}, 0.3);
+      tl.fromTo('#make-band', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: E, transformOrigin: 'left center' }, S.at(6, 0.45));
+      show(S.at(6, 0.74), '#make-bandlab', { y: -10 }, 0.4);
+      show(S.at(6, 0.84), '#make-bandschem', {}, 0.3);
+      ldr($('make-time'), { x1: 458, y1: 58, x2: 458, y2: 84 }, S.at(6, 0.8), 0.3);
+      show(S.at(6, 0.2), '#make-cred1', {}, 0.5);
+
+      // ============================ 7: and it has to catch a window ============================
+      tl.fromTo('#make-span', { opacity: 0 }, { opacity: 1, duration: 0.2 }, S.at(7));
+      tl.fromTo('#make-span', { width: 0 }, { width: 1218.75, duration: 1.0, ease: 'power2.out' }, S.at(7));
+
+      // ============================ 8: the trial's rule starts at the operation ============================
+      tl.fromTo('#make-pin0', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.4, ease: E, transformOrigin: 'center top' }, S.at(8));
+      show(S.at(8, 0.2), '#make-lab0', { y: 10 }, 0.4);
+      show(S.at(8, 0.1), '#make-cred2', {}, 0.5);
+
+      // ============================ 9: to the first dose, straight under the parked vial ============================
+      tl.fromTo('#make-pin13', { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.4, ease: E, transformOrigin: 'center top' }, S.at(9));
+      show(S.at(9, 0.2), '#make-lab13', { y: 10 }, 0.4);
+
+      // ============================ 10: thirteen weeks at most ============================
+      show(S.at(10), '#make-win', { x: 16 }, 0.5);
+      ldr($('make-time'), { x1: 1295, y1: 118, x2: 1272, y2: 118 }, S.at(10, 0.15), 0.3);
+
+      // ============================ 11: and this again for every single patient ============================
+      const ghosts = [920, 1045, 1170].map((x) => {
+        const v = mk('div', 'vial', `left:${x}px;top:250px;width:120px;height:232px;opacity:0`, $('make'),
+          '<div class="fill" style="height:160px;border-radius:0 0 13px 13px;background:rgba(180,83,9,.52)"></div><div class="cap"></div>');
+        v.setAttribute('data-layout-allow-overflow', '');
+        return v;
+      });
+      ghosts.forEach((v, i) => tl.fromTo(v, { opacity: 0, x: -70 }, { opacity: 0.42, x: 0, duration: 0.5, ease: E }, S.at(11, i * 0.16)));
+
+      // ============================ 12-13: >99% of the 757 got theirs on time ============================
+      show(S.at(12), '#make-arm', { y: 12 }, 0.5);
+      show(S.at(12, 0.2), '#make-cred3', {}, 0.5);
+      show(S.at(13), '#make-pct', { scale: 0.82, y: 10 }, 0.6);
+      show(S.at(13, 0.5), '#make-pctlab', { y: 10 }, 0.5);
+
+      window.__timelines['make'] = tl;
+    })();
+  </script>
+</template>

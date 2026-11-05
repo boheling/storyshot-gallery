@@ -1,0 +1,230 @@
+<template>
+  <style>
+    /* Scene 3 — the brake. It opens on the picture scene 2 ended with (a big crimson tumour cell with
+       neoantigen tiles on its membrane), brings a teal T cell in from the right, builds the PD-L1/PD-1
+       handshake between them, prises it apart with an ochre antibody, and then shows the T cell with a
+       released brake and no address: it steps in place and never reaches the tiles.
+       All numbers below are frame px at 1920x1080. Nothing sits under y = 907 (the subtitle band). */
+    #brake-schem { right: 60px; top: 40px; }
+
+    /* the tumour's fingerprint tiles, in one box so the dashed "unread" frames can sit on them */
+    #brake-peps { position: absolute; left: 540px; top: 140px; width: 320px; height: 400px; }
+    .brake-unread { position: absolute; width: 118px; height: 118px; border-radius: 16px;
+      border: 3px dashed var(--ctrl); opacity: 0; }
+
+    /* PD-L1 reaches out of the tumour (crimson); it grows and later retracts with scaleX */
+    #brake-pdl1 { position: absolute; left: 735px; top: 532px; width: 220px; height: 16px;
+      border-radius: 8px; background: var(--tum); transform-origin: left center; }
+    /* the brake itself: a crimson padlock on the junction. No glow on paper — a lock and a grey cell. */
+    #brake-lock { position: absolute; left: 920px; top: 478px; opacity: 0; }
+
+    /* the T cell and everything bound to it (its TCR, PD-1, the antibody, its labels) move as one */
+    #brake-tcell { position: absolute; left: 860px; top: 40px; width: 950px; height: 660px; }
+    #brake-pd1 { position: absolute; left: 125px; top: 492px; width: 235px; height: 16px;
+      border-radius: 8px; background: var(--imm); transform-origin: right center; }
+    #brake-ab { position: absolute; left: 40px; top: 440px; opacity: 0; }
+    #brake-q { position: absolute; left: 500px; top: 78px; font: 700 112px/1 var(--font);
+      color: var(--ctrl); opacity: 0; }
+
+    /* "lit up" on paper = a ring, never a blur */
+    #brake-ring { position: absolute; left: 872px; top: 442px; width: 196px; height: 196px;
+      border-radius: 50%; border: 3px solid var(--rna); opacity: 0; }
+    #brake-home { position: absolute; left: 1162px; top: 222px; width: 476px; height: 476px;
+      border-radius: 50%; border: 3px dashed var(--ctrl); opacity: 0; }
+
+    #brake-punch { position: absolute; left: 660px; top: 782px; width: 600px; text-align: center;
+      font: 700 46px/1.2 var(--font); color: var(--ink); opacity: 0; }
+    #brake-punch i { font-style: normal; font-family: var(--mono); color: var(--tum); padding: 0 14px; }
+
+    .brake-lab { opacity: 0; }
+  </style>
+
+  <div id="brake" class="world" data-composition-id="brake" data-width="1920" data-height="1080">
+    <div id="brake-schem" class="schem" data-layout-ignore>示意</div>
+
+    <!-- carried over from scene 2: the tumour cell and its tiles are on screen in the first frame -->
+    <div id="brake-peps" data-layout-allow-overlap></div>
+
+    <!-- the handshake, left half -->
+    <div id="brake-pdl1"></div>
+    <div id="brake-lock">
+      <svg viewBox="0 0 64 80" width="100" height="124" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 19 36 V 25 a 13 13 0 0 1 26 0 V 36" fill="none" stroke="#a3203a" stroke-width="7" stroke-linecap="round"/>
+        <rect x="8" y="36" width="48" height="40" rx="9" fill="rgba(163,32,58,.16)" stroke="#a3203a" stroke-width="5"/>
+        <circle cx="32" cy="52" r="5" fill="#a3203a"/>
+        <rect x="30" y="55" width="4" height="13" rx="2" fill="#a3203a"/>
+      </svg>
+    </div>
+
+    <!-- the T cell group -->
+    <div id="brake-tcell" data-layout-allow-overlap data-layout-allow-overflow>
+      <div id="brake-pd1"></div>
+      <div id="brake-ab">
+        <svg viewBox="0 0 140 120" width="140" height="120" xmlns="http://www.w3.org/2000/svg">
+          <g fill="none" stroke="#b45309" stroke-width="13" stroke-linecap="round">
+            <path d="M 8 60 H 72"/>
+            <path d="M 72 60 L 130 18"/>
+            <path d="M 72 60 L 130 102"/>
+          </g>
+        </svg>
+      </div>
+      <div id="brake-q">?</div>
+    </div>
+
+    <div id="brake-ring"></div>
+    <div id="brake-home"></div>
+    <div id="brake-punch">刹车松了<i>≠</i>知道该追谁</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const root = $('brake'), wrap = $('brake-tcell');
+      const WX = 860, WY = 40;                              // the T cell group's origin in frame px
+      const lx = (x) => x - WX, ly = (y) => y - WY;
+
+      // ---- the tumour cell scene 2 left behind, big on the left ----
+      const tum = Kit.cell(root, { x: 520, y: 460, r: 470, cls: 'tum' });
+      tum.id = 'brake-tum';
+
+      // its neoantigen tiles, scattered over the membrane facing the T cell: each notch points a
+      // different way, which is the whole point of this scene.
+      const pbox = $('brake-peps'), PX = 540, PY = 140;
+      const TILES = [[620, 222, -150], [724, 316, -104], [766, 452, -58]];
+      TILES.forEach(([x, y, rot]) => {
+        const p = Kit.pep(pbox, { x: x - PX, y: y - PY, s: 1.2 });
+        p.style.transform = 'rotate(' + rot + 'deg)';       // set once, never tweened
+      });
+      const unread = TILES.map(([x, y]) => {
+        const b = document.createElement('div');
+        b.className = 'brake-unread';
+        b.style.cssText = 'left:' + (x - PX - 59) + 'px;top:' + (y - PY - 59) + 'px';
+        pbox.appendChild(b); return b;
+      });
+
+      // ---- the T cell, its receptor, and the PD-1 stalk that reaches across ----
+      const imm = Kit.cell(wrap, { x: lx(1400), y: ly(460), r: 400, cls: 'imm' });
+      imm.id = 'brake-imm';
+      const tcr = document.createElement('div');            // a V notch on the edge, pointing left
+      tcr.className = 'tcr'; tcr.id = 'brake-tcr';
+      // same spot on the membrane as in scene 4, so the cut between them does not move it
+      tcr.style.cssText = 'left:-23px;top:187px;transform:rotate(-90deg)';
+      imm.appendChild(tcr);
+
+      // ---- labels, each on a leader to the part it names ----
+      function lab(parent, { x, y, t, cls = '' }) {
+        const d = document.createElement('div');
+        d.className = 'label brake-lab' + (cls ? ' ' + cls : '');
+        d.style.cssText = 'left:' + x + 'px;top:' + y + 'px';
+        d.innerHTML = t; parent.appendChild(d); return d;
+      }
+      function leader(parent, x1, y1, x2, y2) {
+        const l = Kit.lead(parent, { x1, y1, x2, y2 });
+        gsap.set([l.line, l.anchor], { opacity: 0 });
+        return l;
+      }
+      const labT = lab(wrap, { x: lx(1645), y: ly(288), t: 'T 细胞' });
+      const ldT = leader(wrap, lx(1635), ly(309), lx(1575), ly(345));
+      const labTum = lab(root, { x: 300, y: 728, t: '癌细胞' });
+      const ldTum = leader(root, 410, 748, 486, 690);
+      const labL1 = lab(root, { x: 760, y: 600, t: 'PD-L1' });
+      const ldL1 = leader(root, 805, 596, 830, 552);
+      const lab1 = lab(wrap, { x: lx(1050), y: ly(600), t: 'PD-1' });
+      const ld1 = leader(wrap, lx(1090), ly(596), lx(1096), ly(552));
+      const labLock = lab(root, { x: 906, y: 392, t: '刹车' });
+      const ldLock = leader(root, 940, 438, 958, 486);
+      const labAb = lab(root, { x: 640, y: 144, t: 'PD-1 抑制剂（帕博利珠单抗）' });
+      const ldAb = leader(root, 1096, 165, 1225, 163);
+      const labAb2 = lab(root, { x: 868, y: 672, t: 'PD-1 抑制剂' });   // after it has wedged in
+      const ldAb2 = leader(root, 960, 668, 1000, 594);
+      const labFit = lab(root, { x: 900, y: 248, t: '形状对不上', cls: 's' });
+      const ldFit = leader(root, 890, 266, 757, 325);
+
+      // ---- the cell's two states: teal and working, warm grey and held ----
+      const TEAL = { borderColor: '#0f766e', backgroundColor: 'rgba(15,118,110,0.12)' };
+      const GREY = { borderColor: '#8a8578', backgroundColor: 'rgba(138,133,120,0.14)' };
+
+      const t0 = S.at(0), t1 = S.at(1), t2 = S.at(2), t3 = S.at(3), t4 = S.at(4);
+      const t5 = S.at(5), t6 = S.at(6), t7 = S.at(7), t8 = S.at(8), t9 = S.at(9);
+      const IN = 'expo.out';
+      const show = (el, at, d = 0.5) => tl.fromTo(el, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: d, ease: IN }, at);
+      // Kit.lead's line carries an inline transform: rotate(), so it is drawn on by its width,
+      // never by a GSAP scaleX (that would hand GSAP the whole transform and lose the angle).
+      const draw = (l, at, d = 0.45) => {
+        const w = parseFloat(l.line.style.width) || 0;
+        tl.fromTo(l.line, { opacity: 0, width: 0 }, { opacity: 0.8, width: w, duration: d, ease: IN }, at);
+        tl.fromTo(l.anchor, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: IN }, at + d * 0.6);
+      };
+      const hide = (el, at, d = 0.4) => tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: d, ease: 'power2.in' }, at);
+
+      // ---- 1. S.at(0) "现在的标准做法" — the T cell comes in from the right and is named ----
+      tl.fromTo(wrap, { x: 560 }, { x: 0, duration: 0.95, ease: IN }, t0);
+      tl.fromTo(imm, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: IN }, t0);
+      show(labT, t0 + 0.55); draw(ldT, t0 + 0.5);
+
+      // ---- 2. S.at(1) "是术后打 PD-1 抑制剂" — the antibody drops in above the gap, named ----
+      tl.fromTo('#brake-ab', { opacity: 0, x: 330, y: -520, rotation: -16 },
+        { opacity: 1, x: 330, y: -380, rotation: -16, duration: 0.65, ease: IN }, t1);
+      show(labAb, t1 + 0.3); draw(ldAb, t1 + 0.35);
+
+      // ---- 3. S.at(2) "癌细胞会按住 T 细胞的刹车" — PD-L1 meets PD-1, a lock, the cell goes grey ----
+      show(labTum, t2); draw(ldTum, t2 + 0.05);
+      tl.fromTo('#brake-pdl1', { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: IN }, t2);
+      tl.fromTo('#brake-pd1', { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: IN }, t2 + 0.12);
+      show(labL1, t2 + 0.28, 0.42); draw(ldL1, t2 + 0.3, 0.38);
+      show(lab1, t2 + 0.38, 0.42); draw(ld1, t2 + 0.4, 0.38);
+      tl.fromTo('#brake-lock', { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.8)' }, t2 + 0.5);
+      tl.fromTo(imm, TEAL, { ...GREY, duration: 0.55, ease: 'power2.inOut' }, t2 + 0.55);
+      tl.fromTo(imm, { scale: 1 }, { scale: 0.9, duration: 0.55, ease: 'power2.inOut' }, t2 + 0.55);
+      tl.fromTo(tcr, { borderBottomColor: '#0f766e' }, { borderBottomColor: '#8a8578', duration: 0.55 }, t2 + 0.55);
+      show(labLock, t2 + 0.95); draw(ldLock, t2 + 1.0);
+
+      // ---- 4. S.at(3) "这个药把刹车松开" — the antibody wedges in; the lock goes; the cell comes back ----
+      tl.fromTo('#brake-ab', { x: 330, y: -380, rotation: -16 },
+        { x: 0, y: 0, rotation: 0, duration: 0.85, ease: IN }, t3 + 0.05);
+      hide(labLock, t3 + 0.45, 0.3); hide(ldLock.line, t3 + 0.45, 0.3); hide(ldLock.anchor, t3 + 0.45, 0.3);
+      tl.fromTo('#brake-lock', { opacity: 1, scale: 1 }, { opacity: 0, scale: 0.5, duration: 0.35, ease: 'power2.in' }, t3 + 0.5);
+      tl.fromTo('#brake-pdl1', { scaleX: 1 }, { scaleX: 0.75, duration: 0.55, ease: IN }, t3 + 0.6);
+      tl.fromTo('#brake-pd1', { scaleX: 1 }, { scaleX: 0.787, duration: 0.55, ease: IN }, t3 + 0.6);
+      tl.fromTo(imm, GREY, { ...TEAL, duration: 0.6, ease: 'power2.out' }, t3 + 0.7);
+      tl.fromTo(imm, { scale: 0.9 }, { scale: 1, duration: 0.6, ease: 'power2.out' }, t3 + 0.7);
+      tl.fromTo(tcr, { borderBottomColor: '#8a8578' }, { borderBottomColor: '#0f766e', duration: 0.6 }, t3 + 0.7);
+      // the antibody has left the spot its first leader pointed at: the name follows it down
+      hide(labAb, t3 + 0.15, 0.3); hide(ldAb.line, t3 + 0.1, 0.25); hide(ldAb.anchor, t3 + 0.1, 0.25);
+      show(labAb2, t3 + 1.05); draw(ldAb2, t3 + 1.1);
+
+      // ---- 5. S.at(4)/S.at(5) — the brake is off, so the T cell steps in place ----
+      const step = (at, dx, dy, out = 0.34, back = 0.42) => {
+        tl.fromTo(wrap, { x: 0 }, { x: dx, duration: out, ease: 'power2.out' }, at);
+        tl.fromTo(wrap, { y: 0 }, { y: dy, duration: out, ease: 'power2.out' }, at);
+        tl.fromTo(wrap, { x: dx }, { x: 0, duration: back, ease: 'power2.inOut' }, at + out + 0.06);
+        tl.fromTo(wrap, { y: dy }, { y: 0, duration: back, ease: 'power2.inOut' }, at + out + 0.06);
+      };
+      step(t4 + 0.15, -42, -48);
+      step(t5 + 0.05, 28, 56);
+      step(t5 + 0.95, -36, 18);
+      tl.fromTo('#brake-punch', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: IN }, t5 + 0.4);
+
+      // ---- 6. S.at(6) "有些病人的 T 细胞" — it has no idea what to look for ----
+      tl.fromTo('#brake-q', { opacity: 0, scale: 0.4, rotation: -12 },
+        { opacity: 1, scale: 1, rotation: 0, duration: 0.55, ease: 'back.out(2)' }, t6 + 0.1);
+
+      // ---- 7. S.at(7) "从一开始就没认出那些指纹" — the tiles stay unread; one lunge, nothing fits ----
+      tl.fromTo(unread, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.45, ease: IN, stagger: 0.18 }, t7 + 0.15);
+      step(t7 + 0.6, -58, -62, 0.4, 0.5);
+      show(labFit, t7 + 1.3); draw(ldFit, t7 + 1.35);
+
+      // ---- 8. S.at(8) "刹车松了" — a ring on the prised-open junction ----
+      tl.fromTo('#brake-ring', { opacity: 0, scale: 0.78 }, { opacity: 1, scale: 1, duration: 0.55, ease: IN }, t8 + 0.1);
+
+      // ---- 9. S.at(9) "车还停在原地" — it settles back onto the spot it never left ----
+      tl.fromTo(wrap, { x: 0 }, { x: -12, duration: 0.22, ease: 'power2.out' }, t9 + 0.05);
+      tl.fromTo(wrap, { x: -12 }, { x: 0, duration: 0.4, ease: 'power2.inOut' }, t9 + 0.3);
+      tl.fromTo('#brake-home', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, ease: IN }, t9 + 0.3);
+
+      window.__timelines['brake'] = tl;
+    })();
+  </script>
+</template>

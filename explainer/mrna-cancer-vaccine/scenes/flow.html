@@ -1,0 +1,243 @@
+<template>
+  <style>
+    /* scene-only bits; everything shared comes from scenes/kit/kit.css */
+    #flow .fsvg { position: absolute; }
+    #flow-seq { position: absolute; left: 1040px; top: 310px; width: 760px; height: 260px; }
+    /* one base of a read: a fixed 36 px cell, so the two rows line up whatever mono face is around */
+    #flow .bch { position: absolute; width: 36px; height: 72px; text-align: center;
+      font: 600 58px/72px var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+    /* a compared column: flat crimson outline + tint behind both rows, never a glow */
+    #flow .bnd { position: absolute; top: 5px; width: 36px; height: 245px; box-sizing: border-box;
+      border: 2px solid rgba(163,32,58,.45); border-radius: 6px; background: var(--tum-soft); }
+    #flow .srow { position: absolute; width: 532px; height: 32px; }
+    #flow .strk { position: absolute; left: 80px; top: 11px; width: 410px; height: 10px; border-radius: 5px; background: var(--line); }
+    #flow .sbar { position: absolute; left: 80px; top: 11px; height: 10px; border-radius: 5px; background: var(--imm); }
+    #flow .stick { position: absolute; top: 6px; width: 2px; height: 20px; background: var(--line); }
+    #flow .more { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: var(--ink-2); opacity: .5; }
+    #flow .sheet-hd { font-size: 28px; }
+    #flow .cell.imm .nuc { background: rgba(15,118,110,.16); border-color: var(--imm); }
+  </style>
+
+  <div id="flow" class="world" data-composition-id="flow" data-width="1920" data-height="1080">
+    <div id="flow-credit" class="credit" data-layout-ignore>Merck/Moderna INTerpath backgrounder, 2026-08<br>最多 34 个新抗原</div>
+
+    <!-- 0: three patients, three different sets of mutations -->
+    <div id="flow-blob1" class="fsvg" style="left:110px;top:230px;width:540px;height:430px"></div>
+    <div id="flow-blob2" class="fsvg" style="left:690px;top:230px;width:540px;height:430px"></div>
+    <div id="flow-blob3" class="fsvg" style="left:1270px;top:230px;width:540px;height:430px"></div>
+    <div id="flow-p1" class="label s" style="left:324px;top:690px">病人 1</div>
+    <div id="flow-p2" class="label s" style="left:904px;top:690px">病人 2</div>
+    <div id="flow-p3" class="label s" style="left:1484px;top:690px">病人 3</div>
+
+    <!-- 1-2: the two things that go to sequencing -->
+    <div id="flow-tumlab" class="label s" style="left:130px;top:700px">手术切下的肿瘤组织</div>
+    <div id="flow-tube" class="fsvg" style="left:720px;top:245px;width:180px;height:400px"></div>
+    <div id="flow-bldlab" class="label s" style="left:660px;top:755px">一管血（正常对照）</div>
+
+    <!-- 3: both read, one under the other -->
+    <div id="flow-tag1" class="label s hl t" style="left:960px;top:348px">肿瘤</div>
+    <div id="flow-tag2" class="label s" style="left:960px;top:488px">对照</div>
+    <div id="flow-seq" data-layout-allow-overlap>
+      <div id="flow-bands"></div>
+      <div id="flow-row1"></div>
+      <div id="flow-row2"></div>
+    </div>
+    <div id="flow-schem" class="schem" style="left:1055px;top:580px" data-layout-ignore>碱基序列为示意</div>
+
+    <!-- 4: the positions only the tumour has -->
+    <div id="flow-mutlab" class="label hl t" style="left:1320px;top:228px">肿瘤独有的突变</div>
+
+    <!-- 5-6: the candidates, ranked by how likely a T cell is to see them -->
+    <div id="flow-sort" class="sheet" style="left:120px;top:165px;width:620px;height:655px">
+      <div class="sheet-hd">算法排序</div>
+      <div id="flow-rows"></div>
+      <div id="flow-more" style="position:absolute;left:44px;top:592px;width:460px;height:44px"></div>
+    </div>
+    <div id="flow-fly"></div>
+    <div id="flow-tcell"></div>
+    <div id="flow-tlab" class="label s hl" style="left:1382px;top:648px">T 细胞</div>
+
+    <!-- 7-8: the ones that go into this patient's dose -->
+    <div id="flow-tray" class="sheet tum" style="left:820px;top:165px;width:700px;height:655px">
+      <div class="sheet-hd">选中的新抗原</div>
+      <div id="flow-grid"></div>
+    </div>
+    <div id="flow-n34" class="big num hl t" style="left:1610px;top:380px">34</div>
+    <div id="flow-rule" style="position:absolute;left:1610px;top:490px;width:136px;height:2px;background:var(--rna)"></div>
+    <div id="flow-one" class="label hl r" style="left:1610px;top:510px">一人一支</div>
+    <div id="flow-why" class="label s" style="left:830px;top:845px">换一个病人，这 34 段就全不同</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const E = 'expo.out';
+      const mk = (tag, cls, css, parent, html) => {
+        const d = document.createElement(tag);
+        if (cls) d.className = cls;
+        if (css) d.style.cssText = css;
+        if (html != null) d.innerHTML = html;
+        parent.appendChild(d); return d;
+      };
+      const show = (t, el, from = {}, dur = 0.6) => tl.fromTo(el, { opacity: 0, ...from }, { opacity: 1, x: 0, y: 0, scale: 1, duration: dur, ease: E }, t);
+      const hide = (t, el, dur = 0.35) => tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: dur, ease: 'power2.in' }, t);
+      // a hairline leader that draws itself from the label to the thing it names
+      // the line carries an inline rotate(), so draw it by its width, never by scaleX
+      const ldr = (parent, p, t, d = 0.45) => {
+        const l = Kit.lead(parent, p), len = Math.hypot(p.x2 - p.x1, p.y2 - p.y1);
+        tl.fromTo(l.line, { width: 0 }, { width: len, duration: d, ease: E }, t);
+        tl.fromTo(l.anchor, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: E }, t + d * 0.7);
+        return [l.line, l.anchor];
+      };
+
+      // ---------- a piece of tumour: a lobed crimson mass with its mutations in it ----------
+      function blob(seed, n) {
+        const r = Kit.rng(seed);
+        let dots = '';
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2 + (r() - 0.5) * 0.9, rr = 0.3 + r() * 0.52;
+          dots += `<circle cx="${(230 + Math.cos(a) * rr * 158).toFixed(1)}" cy="${(184 + Math.sin(a) * rr * 124).toFixed(1)}" r="11" fill="#a3203a"/>`;
+        }
+        return `<svg viewBox="0 0 460 370" width="540" height="430">
+          <path d="M 40 180 C 28 102, 92 34, 162 44 C 198 10, 282 12, 312 54 C 392 46, 438 110, 420 184
+                   C 442 254, 388 332, 310 322 C 262 362, 178 356, 142 314 C 68 320, 24 252, 40 180 Z"
+            fill="rgba(163,32,58,.16)" stroke="#a3203a" stroke-width="5" stroke-linejoin="round"/>${dots}</svg>`;
+      }
+      $('flow-blob1').innerHTML = blob(7, 7);
+      $('flow-blob2').innerHTML = blob(23, 5);
+      $('flow-blob3').innerHTML = blob(91, 9);
+
+      // ---------- a tube of blood ----------
+      $('flow-tube').innerHTML = `<svg viewBox="0 0 170 370" width="180" height="400">
+        <defs><clipPath id="flow-tubeclip"><path d="M 46 36 V 300 Q 46 352 85 352 Q 124 352 124 300 V 36 Z"/></clipPath></defs>
+        <rect id="flow-tubefill" x="46" y="352" width="78" height="0" fill="rgba(138,133,120,.62)" clip-path="url(#flow-tubeclip)"/>
+        <path d="M 46 36 V 300 Q 46 352 85 352 Q 124 352 124 300 V 36" fill="none" stroke="#16181d" stroke-width="6" stroke-linejoin="round"/>
+        <rect x="34" y="8" width="102" height="30" rx="7" fill="#16181d"/>
+      </svg>`;
+
+      // ---------- the two reads: the same stretch, from the tumour and from the blood ----------
+      const N = 20, DIFF = [1, 4, 8, 11, 15, 18], LET = 'ACGT';
+      const rs = Kit.rng(5);
+      const ref = Array.from({ length: N }, () => LET[Math.floor(rs() * 4)]);
+      const tum = ref.slice();
+      DIFF.forEach((i) => { let c = LET[Math.floor(rs() * 4)]; while (c === ref[i]) c = LET[(LET.indexOf(c) + 1) % 4]; tum[i] = c; });
+      const row1 = $('flow-row1'), row2 = $('flow-row2'), bands = $('flow-bands');
+      const ch1 = tum.map((c, i) => mk('div', 'bch', `left:${15 + i * 36}px;top:20px`, row1, c));
+      const ch2 = ref.map((c, i) => mk('div', 'bch', `left:${15 + i * 36}px;top:160px`, row2, c));
+      const bnd = DIFF.map((i) => mk('div', 'bnd', `left:${15 + i * 36}px`, bands));
+      const bandX = DIFF.map((i) => 1055 + i * 36 + 18);   // frame coords of each compared column
+
+      // ---------- the ranking sheet: six candidates, each with a teal score ----------
+      const SCORE = [0.42, 0.88, 0.31, 0.95, 0.63, 0.74];
+      const SLOT = [4, 1, 5, 0, 3, 2];                      // where each candidate sits once sorted
+      const rowsBox = $('flow-rows');
+      const cand = SCORE.map((sc, i) => {
+        const w = mk('div', 'srow', `left:44px;top:${120 + i * 80}px`, rowsBox, '');
+        const tile = mk('div', 'pep s', 'left:0;top:6px', w);
+        mk('div', 'strk', '', w);
+        [0.25, 0.5, 0.75].forEach((f) => mk('div', 'stick', `left:${80 + 410 * f}px`, w));
+        const bar = mk('div', 'sbar', 'width:0', w);
+        return { w, tile, bar, sc, cy: 301 + i * 80 };
+      });
+      const more = $('flow-more');
+      [0, 1, 2].forEach((k) => mk('div', 'more', `left:0;top:${10 + k * 13}px`, more));
+      mk('div', 'label s', 'left:44px;top:4px', more, '还有更多候选');
+
+      // ---------- a T cell: what the ranking is a guess about ----------
+      Kit.cell($('flow-tcell'), { x: 1450, y: 420, r: 340, cls: 'imm' });
+      [160, 180, 200].forEach((deg) => {
+        const a = deg * Math.PI / 180;
+        mk('div', 'tcr', `left:${(1450 + 180 * Math.cos(a) - 17).toFixed(1)}px;top:${(420 + 180 * Math.sin(a) - 13).toFixed(1)}px;transform:rotate(-90deg)`, $('flow-tcell'));
+      });
+
+      // ---------- the tray: the 34 that go into this one dose ----------
+      const grid = $('flow-grid');
+      const tray = [];
+      for (let i = 0; i < 34; i++) {
+        const c = i % 6, r = Math.floor(i / 6);
+        tray.push(Kit.pep(grid, { x: 125 + c * 90, y: 229 + r * 52 }));   // sheet-local; frame: 945 + 90c, 394 + 52r
+      }
+
+      // ============================ 0: every patient's set is different ============================
+      show(S.at(0), '#flow-blob2', { scale: 0.9 }, 0.6);
+      show(S.at(0, 0.15), '#flow-p2', { y: 14 }, 0.5);
+      show(S.at(0, 0.5), '#flow-blob3', { scale: 0.9 }, 0.6);
+      show(S.at(0, 0.65), '#flow-p3', { y: 14 }, 0.5);
+
+      // ============================ 1: keep a piece of the resected tumour ============================
+      hide(S.at(1), ['#flow-blob2', '#flow-blob3', '#flow-p2', '#flow-p3'], 0.35);
+      hide(S.at(1), '#flow-p1', 0.3);
+      show(S.at(1, 0.4), '#flow-tumlab', { y: 12 }, 0.5);
+      const ld1 = ldr($('flow'), { x1: 370, y1: 696, x2: 370, y2: 668 }, S.at(1, 0.4), 0.35);
+
+      // ============================ 2: and a tube of blood as the control ============================
+      show(S.at(2), '#flow-tube', { scale: 0.94 }, 0.5);
+      tl.fromTo('#flow-tubefill', { attr: { y: 352, height: 0 } }, { attr: { y: 176, height: 176 }, duration: 0.7, ease: 'power2.out' }, S.at(2, 0.25));
+      show(S.at(2, 0.5), '#flow-bldlab', { y: 12 }, 0.5);
+      const ld2 = ldr($('flow'), { x1: 810, y1: 751, x2: 810, y2: 657 }, S.at(2, 0.5), 0.4);
+
+      // ============================ 3: both read, one under the other ============================
+      show(S.at(3, 0.05), '#flow-tag1', { x: -16 }, 0.45);
+      show(S.at(3, 0.3), '#flow-tag2', { x: -16 }, 0.45);
+      tl.fromTo(ch1, { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.4, ease: E, stagger: 0.025 }, S.at(3, 0.1));
+      tl.fromTo(ch2, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: E, stagger: 0.025 }, S.at(3, 0.35));
+      show(S.at(3, 1.0), '#flow-schem', {}, 0.4);
+
+      // ============================ 4: only the tumour row changed, here ============================
+      bnd.forEach((b, i) => {
+        tl.fromTo(b, { opacity: 0, scaleY: 0.4 }, { opacity: 1, scaleY: 1, duration: 0.4, ease: E, transformOrigin: '50% 50%' }, S.at(4, i * 0.13));
+        tl.fromTo(ch1[DIFF[i]], { color: '#16181d' }, { color: '#a3203a', duration: 0.3 }, S.at(4, i * 0.13 + 0.1));
+        tl.fromTo(ch1[DIFF[i]], { scale: 1 }, { scale: 1.16, duration: 0.4, ease: E }, S.at(4, i * 0.13 + 0.1));
+      });
+      show(S.at(4, 0.85), '#flow-mutlab', { y: -12 }, 0.5);
+      const ld4 = ldr($('flow'), { x1: 1440, y1: 273, x2: 1440, y2: 307 }, S.at(4, 0.95), 0.3);
+
+      // ============================ 5: the candidates go into the ranking ============================
+      hide(S.at(5), ['#flow-blob1', '#flow-tumlab', '#flow-tube', '#flow-bldlab', '#flow-tag2', ...ld1, ...ld2], 0.4);
+      tl.fromTo([...ch2, ...bnd], { opacity: 1 }, { opacity: 0, duration: 0.35, stagger: 0.012 }, S.at(5));
+      show(S.at(5), '#flow-sort', { scale: 0.96, y: 16 }, 0.5);
+      // one tile leaves each compared column and lands in the sheet
+      const fly = $('flow-fly');
+      bandX.forEach((bx, i) => {
+        const f = mk('div', 'pep s', `position:absolute;left:${bx - 24}px;top:356px`, fly);
+        const dx = 188 - bx, dy = cand[i].cy - 366;
+        const t = S.at(5, 0.05 + i * 0.04);
+        tl.fromTo(f, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.12, ease: E }, t);
+        tl.fromTo(f, { x: 0, y: 0 }, { x: dx, y: dy, duration: 0.42, ease: 'power2.inOut' }, t + 0.1);
+        tl.fromTo(f, { opacity: 1 }, { opacity: 0, duration: 0.1 }, t + 0.52);
+        tl.fromTo(cand[i].tile, { opacity: 0 }, { opacity: 1, duration: 0.1 }, t + 0.52);
+      });
+      // the reads have done their job
+      tl.fromTo(ch1, { opacity: 1 }, { opacity: 0, duration: 0.4 }, S.at(5, 0.9));
+      hide(S.at(5, 0.9), ['#flow-tag1', '#flow-mutlab', '#flow-schem', ...ld4], 0.4);
+
+      // ============================ 6: ranked by how likely a T cell is to see them ============================
+      show(S.at(6), '#flow-tcell', { scale: 0.85 }, 0.6);
+      cand.forEach((c, i) => tl.fromTo(c.bar, { width: 0 }, { width: 410 * c.sc, duration: 0.5, ease: 'power2.out' }, S.at(6, 0.1 + i * 0.08)));
+      show(S.at(6, 0.45), '#flow-tlab', { y: 12 }, 0.45);
+      const ld6 = ldr($('flow'), { x1: 1422, y1: 644, x2: 1422, y2: 616 }, S.at(6, 0.5), 0.3);
+      const ld6b = ldr($('flow'), { x1: 1258, y1: 430, x2: 756, y2: 470 }, S.at(6, 0.6), 0.55);
+      cand.forEach((c, i) => {
+        const dy = (SLOT[i] - i) * 80;
+        if (dy) tl.fromTo(c.w, { y: 0 }, { y: dy, duration: 0.8, ease: 'power2.inOut' }, S.at(6, 1.7));
+      });
+      show(S.at(6, 2.5), '#flow-more', { x: -14 }, 0.45);
+
+      // ============================ 7: the top ones, at most 34 ============================
+      hide(S.at(7), ['#flow-tcell', '#flow-tlab', ...ld6, ...ld6b], 0.35);
+      show(S.at(7, 0.1), '#flow-tray', { scale: 0.96 }, 0.5);
+      tray.forEach((p, i) => tl.fromTo(p, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: E }, S.at(7, 0.35 + i * 0.024)));
+      show(S.at(7, 0.9), '#flow-n34', { scale: 0.8 }, 0.55);
+      show(S.at(7, 0.5), '#flow-credit', {}, 0.5);
+
+      // ============================ 8: one patient, one dose ============================
+      tl.fromTo('#flow-rule', { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: E, transformOrigin: 'left center' }, S.at(8));
+      show(S.at(8, 0.15), '#flow-one', { y: 12 }, 0.5);
+      show(S.at(8, 0.55), '#flow-why', { y: 10 }, 0.5);
+
+      window.__timelines['flow'] = tl;
+    })();
+  </script>
+</template>

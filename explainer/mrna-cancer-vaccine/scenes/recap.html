@@ -1,0 +1,173 @@
+<template>
+  <style>
+    /* scene 11 — the recap: the film's four objects redrawn as one plate, lit a line at a time */
+    #recap .ttl { position: absolute; font: 600 34px/1.2 var(--font); color: var(--ink); white-space: nowrap; }
+    #recap .wk { position: absolute; font: 600 36px/1 var(--font); color: var(--rna); white-space: nowrap; }
+    #recap .chip { position: absolute; border-radius: 14px; border: 3px solid var(--imm); background: var(--imm-soft);
+      color: var(--imm); font: 600 30px/1 var(--font); display: flex; align-items: center; justify-content: center; }
+    #recap .brake { position: absolute; width: 96px; height: 17px; border-radius: 5px; background: var(--tum); }
+    #recap-mhc { width: 120px; height: 72px; border-radius: 0 0 34px 34px; border-width: 5px; border-top: none; }
+    #recap-tcr { border-left-width: 16px; border-right-width: 16px; border-bottom-width: 26px; transform: rotate(-90deg); }
+
+    #recap-vial { left: 880px; top: 560px; width: 122px; height: 182px; }
+    #recap-skin { position: absolute; left: 1096px; top: 538px; width: 112px; height: 112px; }
+    #recap-skin svg { display: block; }
+
+    #recap .nbig { position: absolute; font: 700 92px/1 var(--font); white-space: nowrap; letter-spacing: -.01em; }
+    #recap .nbig.v { color: var(--imm); }
+    #recap .nbig.c { color: var(--ctrl); }
+
+    #recap-end .rule { left: 150px; top: 812px; width: 1590px; transform-origin: left center; }
+    #recap-end .e1 { position: absolute; left: 150px; top: 830px; font: 600 36px/1.2 var(--font); color: var(--ink); white-space: nowrap; }
+    #recap-end .e2 { position: absolute; left: 648px; top: 838px; font: 400 29px/1.2 var(--font); color: var(--ink-2); white-space: nowrap; }
+  </style>
+
+  <div id="recap" class="world" data-composition-id="recap" data-width="1920" data-height="1080">
+    <div class="credit" id="recap-credit" data-layout-ignore>INTerpath-001, ESMO 2026；Merck/Moderna backgrounder 2026-08</div>
+
+    <!-- ① the fingerprint: the tumour cell with its neoantigens -->
+    <div id="recap-a" data-layout-allow-overlap>
+      <div id="recap-peps"></div>
+      <div class="label" id="recap-alb" style="left:566px;top:188px">新抗原</div>
+      <div id="recap-alead"></div>
+    </div>
+
+    <!-- ② handing it over, and taking the brake off -->
+    <div id="recap-b" data-layout-allow-overlap>
+      <div id="recap-arrow"></div>
+      <div class="mhc" id="recap-mhc" style="left:1206px;top:276px"></div>
+      <div id="recap-pep2"></div>
+      <div class="tcr" id="recap-tcr" style="left:1331px;top:297px"></div>
+      <div class="brake" id="recap-br1" style="left:1530px;top:268px"></div>
+      <div class="brake" id="recap-br2" style="left:1530px;top:334px"></div>
+      <div class="chip" id="recap-pd1" style="left:1340px;top:424px;width:286px;height:68px">PD-1 抑制剂</div>
+    </div>
+
+    <!-- ③ one dose per person: sequence, pick, synthesize — weeks -->
+    <div id="recap-c" data-layout-allow-overlap>
+      <div id="recap-steps"></div>
+      <div id="recap-sarrows"></div>
+      <div class="vial" id="recap-vial"><div class="fill" style="height:58%"></div><div class="cap"></div></div>
+      <div class="wk" id="recap-wk" style="left:872px;top:756px">几周</div>
+    </div>
+
+    <!-- ④ what the trial showed -->
+    <div id="recap-d" data-layout-allow-overlap>
+      <div id="recap-skin"></div>
+      <div class="ttl" id="recap-dhd" style="left:1230px;top:574px">24 个月无复发</div>
+      <div class="nbig v num" id="recap-n1" style="left:1100px;top:656px">82.2%</div>
+      <div class="nbig c num" id="recap-n2" style="left:1484px;top:656px">70.0%</div>
+      <div class="label s" id="recap-l1" style="left:1100px;top:760px">疫苗 + PD-1</div>
+      <div class="label s" id="recap-l2" style="left:1484px;top:760px">只打 PD-1</div>
+    </div>
+
+    <!-- the honest last word -->
+    <div id="recap-end">
+      <div class="rule"></div>
+      <div class="e1">更久的生存数据还要等</div>
+      <div class="e2">总生存 HR 0.77（0.45–1.31），P = 0.33，数据未成熟</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+
+      // ---- ① the tumour cell and its fingerprints -------------------------------------------
+      const A = document.getElementById('recap-a');
+      const cell = Kit.cell(A, { x: 350, y: 310, r: 300, cls: 'tum' });
+      const pepBox = document.getElementById('recap-peps');
+      const peps = [[262, 188], [350, 160], [438, 188]].map(([x, y]) => Kit.pep(pepBox, { x, y }));
+      const alead = Kit.lead(document.getElementById('recap-alead'), { x1: 560, y1: 206, x2: 448, y2: 180 });
+
+      // ---- ② the mRNA strand, the MHC holding the peptide, the T cell -----------------------
+      const B = document.getElementById('recap-b');
+      const strand = Kit.strand(B, { x: 700, y: 310, w: 340, amp: 26, waves: 3, ticks: 9 });
+      const arrow = Kit.lead(document.getElementById('recap-arrow'), { x1: 1064, y1: 310, x2: 1184, y2: 310 });
+      const pep2 = Kit.pep(document.getElementById('recap-pep2'), { x: 1266, y: 284, s: 0.9 });
+      const tcell = Kit.cell(B, { x: 1480, y: 310, r: 240, cls: 'imm' });
+
+      // ---- ③ the three steps and the finished dose ------------------------------------------
+      const steps = Kit.steps(document.getElementById('recap-steps'), { items: ['测序', '挑选', '合成'], x: 160, y: 622, gap: 0 });
+      steps.forEach((s, i) => { s.classList.add('on'); s.style.left = (160 + i * 240) + 'px'; });
+      const sar = document.getElementById('recap-sarrows');
+      const sarrows = [[312, 372], [552, 612], [792, 858]].map(([x1, x2]) => Kit.lead(sar, { x1, y1: 648, x2, y2: 648 }));
+
+      // ---- ④ the melanoma, resected: who the numbers are about ------------------------------
+      const INK = '#16181d';
+      document.getElementById('recap-skin').innerHTML =
+        '<svg viewBox="0 0 100 100" width="112" height="112">' +
+        '<rect x="8" y="26" width="84" height="16" rx="3" fill="#efe9dc" stroke="' + INK + '" stroke-width="3"/>' +
+        '<rect x="8" y="42" width="84" height="40" rx="3" fill="#f9f6f0" stroke="' + INK + '" stroke-width="3"/>' +
+        '<path d="M36 42 C 30 26, 70 26, 64 42 C 61 56, 39 56, 36 42 Z" fill="none" stroke="#5c6270" stroke-width="3" stroke-dasharray="7 6"/>' +
+        '</svg>';
+
+      // ---- timeline ---------------------------------------------------------------------------
+      const tl = gsap.timeline({ paused: true });
+      const IN = { duration: 0.6, ease: 'expo.out' };
+
+      tl.fromTo('#recap-credit', { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(0, 0.2));
+
+      // S.at(0) 回顾一下 — the cell the film has carried all along, then the plate pulls back
+      tl.fromTo(cell, { opacity: 0, scale: 1.6, x: 470, y: 124, transformOrigin: 'center center' },
+        { opacity: 1, scale: 1.6, x: 470, y: 110, duration: 0.6, ease: 'expo.out' }, S.at(0));
+      tl.fromTo(cell, { scale: 1.6, x: 470, y: 110 },
+        { scale: 1, x: 0, y: 0, duration: 0.85, ease: 'expo.inOut', transformOrigin: 'center center' }, S.at(1));
+      // S.at(1) 突变会留下指纹
+      peps.forEach((p, i) => tl.fromTo(p, { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(1, 0.6 + i * 0.12)));
+      // S.at(2) 也就是新抗原
+      tl.fromTo(alead.line, { opacity: 0, scaleX: 0 }, { opacity: 0.8, scaleX: 1, duration: 0.4, ease: 'power2.out', transformOrigin: 'left center' }, S.at(2));
+      tl.fromTo(alead.anchor, { opacity: 0 }, { opacity: 0.8, duration: 0.3 }, S.at(2, 0.25));
+      tl.fromTo('#recap-alb', { opacity: 0, x: -10 }, { opacity: 1, x: 0, ...IN }, S.at(2, 0.2));
+
+      // S.at(3) mRNA 把指纹交给免疫系统
+      tl.fromTo(strand.path, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.inOut', autoRound: false }, S.at(3));
+      strand.ticks.forEach((t, i) => tl.fromTo(t, { opacity: 0 }, { opacity: 0.55, duration: 0.3 }, S.at(3, 0.5 + i * 0.04)));
+      tl.fromTo(arrow.line, { opacity: 0, scaleX: 0 }, { opacity: 0.8, scaleX: 1, duration: 0.35, ease: 'power2.out', transformOrigin: 'left center' }, S.at(3, 0.9));
+      tl.fromTo(arrow.anchor, { opacity: 0 }, { opacity: 0.8, duration: 0.3 }, S.at(3, 1.1));
+      tl.fromTo('#recap-mhc', { opacity: 0, y: 16 }, { opacity: 1, y: 0, ...IN }, S.at(3, 1.05));
+      tl.fromTo(pep2, { opacity: 0, y: 16 }, { opacity: 1, y: 0, ...IN }, S.at(3, 1.2));
+      tl.fromTo(tcell, { opacity: 0, x: 30 }, { opacity: 1, x: 0, ...IN }, S.at(3, 1.5));
+      tl.fromTo('#recap-tcr', { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(3, 1.85));
+
+      // S.at(4) PD-1 抑制剂松开刹车: the clamp shows, then lets go
+      tl.fromTo('#recap-br1', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: 'expo.out' }, S.at(4));
+      tl.fromTo('#recap-br2', { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.4, ease: 'expo.out' }, S.at(4));
+      tl.fromTo('#recap-br1', { y: 0 }, { y: -36, duration: 0.6, ease: 'expo.out' }, S.at(4, 1.0));
+      tl.fromTo('#recap-br2', { y: 0 }, { y: 36, duration: 0.6, ease: 'expo.out' }, S.at(4, 1.0));
+      tl.fromTo('#recap-pd1', { opacity: 0, y: 16 }, { opacity: 1, y: 0, ...IN }, S.at(4, 1.15));
+
+      // S.at(5) 药是按人定制的 — the person's own dose, still empty
+      tl.fromTo('#recap-vial', { opacity: 0, y: 18 }, { opacity: 1, y: 0, ...IN }, S.at(5));
+      // S.at(6)–S.at(8) three short beats, one small step each, each joined to the last
+      steps.forEach((s, i) => tl.fromTo(s, { opacity: 0, x: -12 },
+        { opacity: 1, x: 0, duration: 0.35, ease: 'expo.out' }, S.at(6 + i)));
+      sarrows.forEach((a, i) => {
+        tl.fromTo(a.line, { opacity: 0, scaleX: 0 }, { opacity: 0.6, scaleX: 1, duration: 0.35, ease: 'power2.out', transformOrigin: 'left center' }, S.at(7 + i));
+        tl.fromTo(a.anchor, { opacity: 0 }, { opacity: 0.6, duration: 0.25 }, S.at(7 + i, 0.2));
+      });
+      // S.at(9) 几周才做得出来 — the vial fills
+      tl.fromTo('#recap-vial .fill', { scaleY: 0, transformOrigin: 'center bottom' },
+        { scaleY: 1, duration: 0.7, ease: 'power2.out' }, S.at(9, 0.1));
+      tl.fromTo('#recap-wk', { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(9, 0.4));
+
+      // S.at(10)–S.at(12) what the trial showed
+      tl.fromTo('#recap-dhd', { opacity: 0, x: -12 }, { opacity: 1, x: 0, ...IN }, S.at(10));
+      tl.fromTo('#recap-skin', { opacity: 0, scale: 0.7, transformOrigin: 'center center' },
+        { opacity: 1, scale: 1, duration: 0.6, ease: 'expo.out' }, S.at(11));
+      tl.fromTo('#recap-n1', { opacity: 0, y: 18 }, { opacity: 1, y: 0, ...IN }, S.at(12));
+      tl.fromTo('#recap-l1', { opacity: 0 }, { opacity: 1, duration: 0.45 }, S.at(12, 0.3));
+      tl.fromTo('#recap-n2', { opacity: 0, y: 18 }, { opacity: 1, y: 0, ...IN }, S.at(12, 0.3));
+      tl.fromTo('#recap-l2', { opacity: 0 }, { opacity: 1, duration: 0.45 }, S.at(12, 0.6));
+
+      // S.at(13) the last word lands before the last line is spoken; after this nothing moves,
+      // so the film ends on one still plate.
+      tl.fromTo('#recap-end .rule', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: 'expo.out' }, S.at(13));
+      tl.fromTo('#recap-end .e1', { opacity: 0, x: -12 }, { opacity: 1, x: 0, ...IN }, S.at(13, 0.15));
+      tl.fromTo('#recap-end .e2', { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, S.at(13, 0.5));
+
+      window.__timelines['recap'] = tl;
+    })();
+  </script>
+</template>
