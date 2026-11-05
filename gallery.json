@@ -276,6 +276,20 @@
     "storyboard": "explainer/midterms-kids/storyboard.yaml",
     "notes": "explainer/midterms-kids/notes.md",
     "article": null
+   },
+   {
+    "id": "explainer/mrna-cancer-vaccine",
+    "title": "mRNA 癌症疫苗：一人一支，是怎么做出来的",
+    "site": "Oncology",
+    "lang": "zh",
+    "url": null,
+    "request": "帮我做一个关于 moderna 的 mRNA 黑色素瘤癌症疫苗的科普，和在此基础上个性化医疗的话，需要大概什么流程，适用人群，和未来可能适用的癌症类型",
+    "seconds": 297.833333,
+    "video": "explainer/mrna-cancer-vaccine/video.mp4",
+    "poster": "explainer/mrna-cancer-vaccine/poster.jpg",
+    "storyboard": "explainer/mrna-cancer-vaccine/storyboard.yaml",
+    "notes": "explainer/mrna-cancer-vaccine/notes.md",
+    "article": null
    }
   ]
  },

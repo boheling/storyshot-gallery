@@ -1,0 +1,254 @@
+<template>
+  <style>
+    /* print — one tumour cell grows into the hero, a healthy cell of the same size beside it,
+       then the mutations in its nucleus, the odd peptides they put on its membrane, the name
+       for them, the word "指纹", and three other patients whose fingerprints are all different. */
+
+    #print-nuc { position: absolute; left: 65px; top: 130px; width: 340px; height: 210px;
+      border-radius: 50%; background: rgba(163,32,58,.18); border: 2px solid var(--tum); }
+    #print-dna { position: absolute; left: 10px; top: 45px; display: block; }
+    #print-dna path { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; }
+    #print-dna .rung { stroke: var(--ink); stroke-width: 2.5; opacity: .45; }
+    .print-mw { position: absolute; width: 36px; height: 36px; }
+    .print-mw .mut { left: 6px; top: 6px; width: 24px; height: 24px; border-radius: 5px; }
+
+    /* an empty slot on the healthy cell: the same tile, drawn as nothing */
+    .print-slot { position: absolute; width: 74px; height: 30px; border: 3px dashed var(--ctrl);
+      border-radius: 7px 7px 0 0; border-bottom: none; }
+    #print-div { position: absolute; left: 1230px; top: 140px; width: 2px; height: 720px;
+      background: var(--line); }
+
+    #print-q { position: absolute; left: 0; top: 0; width: 150px; height: 150px; display: flex;
+      align-items: center; justify-content: center; font: 700 78px/1 var(--font); color: var(--imm); }
+
+    #print-bridge { position: absolute; left: 905px; top: 418px; width: 270px; height: 0;
+      border-top: 3px dashed var(--ink-2); }
+    #print-l-same { left: 940px; top: 356px; }
+    #print-l-tum  { left: 90px;  top: 300px; color: var(--tum); }
+    #print-l-norm { left: 1330px; top: 118px; }
+    #print-l-t    { left: 830px; top: 775px; }
+    #print-l-dna  { left: 300px; top: 690px; }
+    #print-l-mut  { left: 870px; top: 690px; color: var(--tum); }
+    #print-l-none { left: 1690px; top: 430px; }
+    #print-l-neo  { left: 470px; top: 56px;  color: var(--tum); }
+    #print-l-neo2 { left: 470px; top: 104px; }
+    #print-l-fp   { left: 90px;  top: 486px; color: var(--tum); }
+    #print-l-fp2  { left: 90px;  top: 840px; }
+    #print-fp { position: absolute; left: 86px; top: 590px; display: block; }
+    #print-fp path { fill: none; stroke: var(--tum); stroke-width: 7; stroke-linecap: round; }
+    #print-l-others { left: 1450px; top: 90px; }
+
+    #print-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #print-leads { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #print-sch { left: 1700px; top: 866px; }
+  </style>
+
+  <div id="print" class="world" data-composition-id="print" data-width="1920" data-height="1080">
+
+    <div id="print-stage" data-layout-allow-overlap data-layout-allow-overflow></div>
+    <div id="print-leads" data-layout-allow-overlap></div>
+
+    <div id="print-bridge"></div>
+    <div id="print-l-same" class="label s">同一个人的细胞</div>
+    <div id="print-l-tum"  class="label">肿瘤细胞</div>
+    <div id="print-l-norm" class="label s">正常细胞</div>
+    <div id="print-l-t"    class="label s">T 细胞</div>
+    <div id="print-l-dna"  class="label s">细胞核里的 DNA</div>
+    <div id="print-l-mut"  class="label">突变</div>
+    <div id="print-l-none" class="label s">没有这种片段</div>
+    <div id="print-l-neo"  class="label">新抗原</div>
+    <div id="print-l-neo2" class="label s">neoantigen</div>
+    <div id="print-l-fp"   class="big">指纹</div>
+    <div id="print-l-fp2"  class="label s">这个肿瘤独有</div>
+    <div id="print-l-others" class="label s">另外三位病人</div>
+
+    <svg id="print-fp" viewBox="0 0 180 230" width="180" height="230" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 12 226 C 4 44, 176 44, 168 226" pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"></path>
+      <path d="M 33 222 C 26 70, 154 70, 147 222" pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"></path>
+      <path d="M 54 216 C 48 96, 132 96, 126 216" pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"></path>
+      <path d="M 75 208 C 70 122, 110 122, 105 208" pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"></path>
+      <path d="M 90 196 C 86 150, 94 150, 90 182" pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"></path>
+    </svg>
+    <div id="print-div"></div>
+
+    <div id="print-sch" class="schem" data-layout-ignore>示意</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (s) => document.querySelector(s);
+      const NS = 'http://www.w3.org/2000/svg';
+      const stage = $('#print-stage'), leads = $('#print-leads');
+
+      // ---------- helpers
+      function L(x1, y1, x2, y2, t, d) {
+        const o = Kit.lead(leads, { x1, y1, x2, y2 });
+        const len = Math.hypot(x2 - x1, y2 - y1), dur = d || 0.45;
+        tl.fromTo(o.line, { width: 0 }, { width: len, duration: dur, ease: 'power2.out' }, t);
+        tl.fromTo(o.anchor, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.28, ease: 'expo.out' }, t + dur * 0.65);
+        return [o.line, o.anchor];
+      }
+      const show = (els, t, dy) => tl.fromTo(els, { opacity: 0, y: dy === undefined ? 18 : dy },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, t);
+      const hide = (els, t, d) => tl.fromTo(els, { opacity: 1 }, { opacity: 0, duration: d || 0.35 }, t);
+      const pop = (el, t, d) => tl.fromTo(el, { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: d || 0.5, ease: 'expo.out' }, t);
+
+      // ---------- the hero: one tumour cell. It arrives as the small cell the last scene left
+      // drifting down the vessel, and grows into the subject of this one.
+      const HX = 660, HY = 420, HR = 470;
+      const hero = Kit.cell(stage, { x: HX, y: HY, r: HR, cls: 'tum', nuc: false });
+      hero.id = 'print-tum';
+      const nuc = document.createElement('div'); nuc.id = 'print-nuc'; hero.appendChild(nuc);
+
+      // 0  "癌细胞是从你自己的细胞变来的，"
+      // it arrives exactly where the hook scene left it: 130 px across, at (1150, 608) in the vessel
+      tl.fromTo(hero, { x: 490, y: 188, scale: 130 / HR }, { x: 0, y: 0, scale: 1, duration: 0.95, ease: 'expo.out' }, S.at(0));
+      show('#print-l-tum', S.at(0, 0.7));
+      const lTum = L(238, 330, 451, 518, S.at(0, 0.85), 0.5);
+
+      const norm = Kit.cell(stage, { x: 1420, y: HY, r: HR, cls: '', nuc: true });
+      norm.id = 'print-norm';
+      pop(norm, S.at(0, 1.2), 0.7);
+      show('#print-l-norm', S.at(0, 1.85));
+      const lNorm = L(1388, 154, 1420, 188, S.at(0, 1.95), 0.35);
+      tl.fromTo('#print-bridge', { width: 0 }, { width: 270, duration: 0.7, ease: 'power2.out' }, S.at(0, 2.35));
+      show('#print-l-same', S.at(0, 2.5));
+
+      // 1  "所以免疫系统很难把它当外人。" — a T cell between them, and no way to tell which is which
+      const tcell = Kit.cell(stage, { x: 1040, y: 790, r: 150, cls: 'imm', nuc: false });
+      tcell.id = 'print-tcell';
+      const q = document.createElement('div'); q.id = 'print-q'; q.textContent = '?'; tcell.appendChild(q);
+      pop(tcell, S.at(1), 0.6);
+      show('#print-l-t', S.at(1, 0.45));
+      const lT1 = L(1000, 718, 796, 614, S.at(1, 0.55), 0.5);
+      const lT2 = L(1080, 718, 1283, 614, S.at(1, 0.7), 0.5);
+
+      // 2  "但它在变的过程中攒下了很多突变。" — the DNA in the nucleus, then the mutations on it
+      const dsvg = document.createElementNS(NS, 'svg');
+      dsvg.setAttribute('id', 'print-dna');
+      dsvg.setAttribute('viewBox', '0 0 320 120');
+      dsvg.setAttribute('width', '320'); dsvg.setAttribute('height', '120');
+      nuc.appendChild(dsvg);
+      const W = 300, X0 = 10, MID = 60, AMP = 18, WAVES = 2;
+      const yOf = (t, side) => MID + side * AMP * Math.sin(2 * Math.PI * WAVES * t);
+      const strand = (side) => {
+        let d = '';
+        for (let i = 0; i <= 60; i++) {
+          const t = i / 60;
+          d += (i ? ' L ' : 'M ') + (X0 + t * W).toFixed(1) + ' ' + yOf(t, side).toFixed(1);
+        }
+        const p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', d); p.setAttribute('pathLength', '1');
+        p.style.strokeDasharray = '1'; p.style.strokeDashoffset = '1';
+        dsvg.appendChild(p); return p;
+      };
+      const sA = strand(-1), sB = strand(1);
+      const rungs = document.createElementNS(NS, 'g');
+      for (let i = 1; i <= 11; i++) {
+        const t = i / 12, l = document.createElementNS(NS, 'line');
+        l.setAttribute('x1', (X0 + t * W).toFixed(1)); l.setAttribute('y1', yOf(t, -1).toFixed(1));
+        l.setAttribute('x2', (X0 + t * W).toFixed(1)); l.setAttribute('y2', yOf(t, 1).toFixed(1));
+        l.setAttribute('class', 'rung'); rungs.appendChild(l);
+      }
+      dsvg.appendChild(rungs);
+
+      tl.fromTo([sA, sB], { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, ease: 'power2.out', autoRound: false }, S.at(2));
+      tl.fromTo(rungs, { opacity: 0 }, { opacity: 1, duration: 0.6 }, S.at(2, 0.7));
+
+      // seven mutations, placed once by Kit.rng so every frame and every render matches
+      const rnd = Kit.rng(13);
+      const MUT = [[0.06, -1], [0.19, 1], [0.31, -1], [0.45, 1], [0.57, -1], [0.71, 1], [0.86, -1]]
+        .map(([t, side]) => { const tt = t + (rnd() - 0.5) * 0.03; return { t: tt, side, ix: X0 + tt * W, iy: yOf(tt, side) }; });
+      MUT.forEach((m, k) => {
+        const w = document.createElement('div');
+        w.className = 'print-mw';
+        w.style.cssText = `left:${(10 + m.ix - 18).toFixed(1)}px;top:${(45 + m.iy - 18).toFixed(1)}px`;
+        w.innerHTML = '<div class="mut"></div>';
+        nuc.appendChild(w);
+        m.el = w;
+        // screen centre of this mutation (hero box 425,185 → nucleus 490,315 → svg 500,360)
+        m.sx = 500 + m.ix; m.sy = 360 + m.iy;
+        pop(w, S.at(2, 1.05 + k * 0.2), 0.42);
+      });
+      hide([tcell, '#print-l-t', ...lT1, ...lT2], S.at(2), 0.35);
+      show('#print-l-dna', S.at(2, 0.55));
+      const lDna = L(440, 686, 530, 462, S.at(2, 0.65), 0.5);
+      show('#print-l-mut', S.at(2, 1.5));
+      const lMut = L(866, 692, MUT[6].sx + 4, MUT[6].sy + 14, S.at(2, 1.6), 0.5);
+
+      // 3  "有些突变会让它造出形状古怪的蛋白片段，" — three of them end up as tiles on the membrane
+      const PEP = [
+        { x: 574.5, y: 185.1, rot: -20, from: 1 },
+        { x: 803.4, y: 215.2, rot: 35, from: 6 },
+        { x: 415.4, y: 368.0, rot: -78, from: 0 },
+      ];
+      const pepLeads = [];
+      PEP.forEach((p, k) => {
+        const el = Kit.pep(stage, { x: p.x, y: p.y });
+        p.el = el;
+        const m = MUT[p.from];
+        pepLeads.push(...L(m.sx, m.sy, p.x, p.y, S.at(3, k * 0.55), 0.5));
+        tl.fromTo(el, { scale: 0, opacity: 0, rotation: p.rot },
+          { scale: 1, opacity: 1, rotation: p.rot, duration: 0.55, ease: 'expo.out' }, S.at(3, k * 0.55 + 0.45));
+      });
+
+      // 4  "正常细胞里根本没有。" — the same three places on the healthy cell, empty
+      const SLOT = [{ x: 1505.5, y: 185.1, rot: 20 }, { x: 1276.6, y: 215.2, rot: -35 }, { x: 1664.6, y: 368.0, rot: 78 }];
+      const slots = SLOT.map((s, k) => {
+        const d = document.createElement('div');
+        d.className = 'print-slot';
+        d.style.cssText = `left:${s.x - 37}px;top:${s.y - 15}px`;
+        stage.appendChild(d);
+        tl.fromTo(d, { scale: 0.4, opacity: 0, rotation: s.rot },
+          { scale: 1, opacity: 1, rotation: s.rot, duration: 0.5, ease: 'expo.out' }, S.at(4, k * 0.22));
+        return d;
+      });
+      show('#print-l-none', S.at(4, 0.7));
+      const lNone = L(1684, 448, 1668, 396, S.at(4, 0.8), 0.35);
+
+      // 5  "这些片段叫新抗原。" — one name for all three
+      hide(pepLeads, S.at(5), 0.35);
+      hide([...lDna, '#print-l-dna', ...lMut, '#print-l-mut'], S.at(5, 0.2), 0.35);
+      show('#print-l-neo', S.at(5));
+      show('#print-l-neo2', S.at(5, 0.25));
+      const lNeo = [
+        ...L(545, 146, 574.5, 182, S.at(5, 0.35), 0.35),
+        ...L(600, 140, 803.4, 210, S.at(5, 0.5), 0.5),
+        ...L(500, 146, 415.4, 366, S.at(5, 0.65), 0.5),
+      ];
+
+      // 6  "它们就是这个肿瘤的指纹。"
+      show('#print-l-fp', S.at(6), 24);
+      $('#print-fp').querySelectorAll('path').forEach((p, k) =>
+        tl.fromTo(p, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.8, ease: 'power2.out', autoRound: false }, S.at(6, 0.3 + k * 0.12)));
+      show('#print-l-fp2', S.at(6, 1.1));
+
+      // 7  "而且每个病人的指纹都不一样。" — three other patients, three other arrangements
+      hide([norm, '#print-l-norm', '#print-l-none', '#print-bridge', '#print-l-same', ...lNorm, ...lNone, ...slots], S.at(7), 0.45);
+      const OTHERS = [
+        { y: 240, a: [-120, -40] },
+        { y: 500, a: [-150, -95, -45, 5] },
+        { y: 760, a: [-135, -70, -15] },
+      ];
+      OTHERS.forEach((o, k) => {
+        const t0 = S.at(7, 0.3 + k * 0.28);
+        const c = Kit.cell(stage, { x: 1560, y: o.y, r: 210, cls: 'tum', nuc: true });
+        pop(c, t0, 0.55);
+        o.a.forEach((deg, j) => {
+          const rad = (deg * Math.PI) / 180;
+          const px = 1560 + 115 * Math.cos(rad), py = o.y + 115 * Math.sin(rad);
+          const el = Kit.pep(stage, { x: px, y: py, s: 0.65 });
+          tl.fromTo(el, { scale: 0, opacity: 0, rotation: deg + 90 },
+            { scale: 1, opacity: 1, rotation: deg + 90, duration: 0.4, ease: 'expo.out' }, t0 + 0.28 + j * 0.1);
+        });
+      });
+      tl.fromTo('#print-div', { scaleY: 0, opacity: 1 }, { scaleY: 1, opacity: 1, duration: 0.7, ease: 'power2.out', transformOrigin: 'center top' }, S.at(7, 0.1));
+      show('#print-l-others', S.at(7, 0.35));
+
+      window.__timelines['print'] = tl;
+    })();
+  </script>
+</template>

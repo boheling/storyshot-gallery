@@ -1,0 +1,257 @@
+<template>
+  <style>
+    /* detail — 那条曲线的细节：前 6 个月重合，之后才拉开；总生存还看不出差别。
+       画面左边是一张大的 RFS 曲线图（数据区 894 × 490，0–24 个月 × 60–100%），
+       右边一列是读这张图的注解，底下一张 sheet 放总生存。两个锚点是公开数据，中间是示意。 */
+
+    #detail-schem { left: 100px; top: 98px; }
+
+    /* 图：卡片、网格、坐标轴、两条曲线，都画在同一个数据区里 */
+    #detail-plot { left: 100px; top: 130px; width: 1190px; height: 606px; }
+    #detail-grid, #detail-axes, #detail-curves { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #detail-win { position: absolute; background: var(--ctrl-soft); }
+    #detail-vline { position: absolute; width: 2px; background: var(--ink); opacity: .55; }
+    #detail-band path { fill: var(--imm-soft); }
+    #detail .ylab { width: 76px; text-align: right; }
+    #detail .xlab { width: 90px; text-align: center; }
+
+    /* 终点上的两个数，接住上一场 */
+    #detail-pa, #detail-pb { left: 1110px; }
+    #detail-pa { color: var(--imm); }
+    #detail-pb { color: var(--ctrl); }
+
+    /* 前 6 个月：注解挂在竖线下面，落在曲线够不到的那块空白里 */
+    #detail-e1 { left: 215px; top: 420px; }
+    #detail-e2 { left: 215px; top: 466px; }
+    #detail-e3 { left: 215px; top: 518px; }
+    #detail-n1, #detail-n2 { position: absolute; left: 215px; display: flex; align-items: center; gap: 16px; }
+    #detail-n1 { top: 562px; padding-top: 10px; }
+    #detail-n2 { top: 622px; }
+    #detail-n1 .label, #detail-n2 .label { position: static; }
+    #detail-n1 .vial { position: relative; flex: none; width: 24px; height: 38px; border-width: 3px; border-radius: 5px 5px 9px 9px; }
+    #detail-n1 .vial .cap { top: -8px; height: 9px; left: 22%; right: 22%; border-radius: 3px; }
+    #detail-n1 .vial .fill { height: 56%; border-top-width: 2px; }
+    #detail-n2 .tc { display: flex; align-items: center; gap: 7px; flex: none; }
+    #detail-n2 .cell { position: static; flex: none; border-width: 2px; }
+    #detail-n2 .c1 { width: 12px; height: 12px; }
+    #detail-n2 .c2 { width: 19px; height: 19px; }
+    #detail-n2 .c3 { width: 27px; height: 27px; }
+
+    /* 右边一列：图的名字、6 个月之后、以及最后那两件事 */
+    #detail-t1 { left: 1330px; top: 160px; }
+    #detail-t2 { left: 1330px; top: 208px; }
+    #detail-l1 { left: 1330px; top: 380px; }
+    #detail-l2 { left: 1330px; top: 426px; }
+    #detail-l3 { left: 1330px; top: 480px; }
+
+    /* 总生存：一张白卡，放在字幕安全区以上 */
+    #detail-os { left: 100px; top: 748px; width: 1190px; height: 130px; }
+    #detail-os .sheet-hd { font-size: 28px; }   /* kit 的 27px 低于 28px 的字号下限 */
+    #detail-os-n { left: 136px; top: 822px; }
+    #detail-os-s { left: 900px; top: 826px; }
+
+    /* 结尾：已证实的 / 还不知道的，并排留在画面上 */
+    #detail-c1 { left: 1330px; top: 616px; }
+    #detail-c2 { left: 1330px; top: 716px; }
+    #detail-rule { left: 1330px; top: 692px; width: 480px; }
+    #detail-c1 .mk, #detail-c2 .mk { margin-top: 4px; }
+    #detail-c2 .mk { border-color: var(--ctrl); }
+    #detail-c1 .hd, #detail-c2 .hd { font-size: 42px; font-weight: 700; }
+    #detail-c1 .hd { color: var(--imm); }
+    #detail-c2 .hd { color: var(--ctrl); }
+    #detail-c1 .sub, #detail-c2 .sub { font-size: 30px; font-weight: 500; color: var(--ink-2); margin-left: 14px; }
+  </style>
+
+  <div id="detail" class="world" data-composition-id="detail" data-width="1920" data-height="1080">
+    <div id="detail-credit" class="credit" data-layout-ignore></div>
+    <div id="detail-schem" class="schem" data-layout-ignore></div>
+
+    <div id="detail-plot" class="plot"></div>
+    <div id="detail-grid"></div>
+    <div id="detail-win"></div>
+    <div id="detail-band"></div>
+    <div id="detail-axes"></div>
+    <div id="detail-vline"></div>
+    <div id="detail-curves"></div>
+
+    <div id="detail-pa" class="label num"></div>
+    <div id="detail-pb" class="label num"></div>
+
+    <div id="detail-e1" class="label">前 6 个月</div>
+    <div id="detail-e2" class="label"></div>
+    <div id="detail-e3" class="label s">两条线分不开</div>
+    <div id="detail-n1">
+      <span class="vial"><span class="cap"></span><span class="fill"></span></span>
+      <span class="label s">药要先做出来（几周）</span>
+    </div>
+    <div id="detail-n2">
+      <span class="tc"><span class="cell imm c1"></span><span class="cell imm c2"></span><span class="cell imm c3"></span></span>
+      <span class="label s">T 细胞扩增要时间</span>
+    </div>
+
+    <div id="detail-t1" class="label">无复发生存（RFS）</div>
+    <div id="detail-t2" class="label s">手术后 0–24 个月</div>
+    <div id="detail-l1" class="label">6 个月之后</div>
+    <div id="detail-l2" class="label"></div>
+    <div id="detail-l3" class="label"></div>
+
+    <div id="detail-os" class="sheet">
+      <div class="sheet-hd">总生存期（OS）</div>
+    </div>
+    <div id="detail-os-n" class="label"></div>
+    <div id="detail-os-s" class="label s">数据未成熟，随访仍在继续</div>
+
+    <div id="detail-c1" class="chk yes">
+      <div class="mk"></div>
+      <div class="tx"><span class="hd">复发更少</span><span class="sub">（已证实）</span></div>
+    </div>
+    <div id="detail-rule" class="rule"></div>
+    <div id="detail-c2" class="chk off">
+      <div class="mk"></div>
+      <div class="tx"><span class="hd">活得更久</span><span class="sub">（还不知道）</span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot, K = Kit.TRIAL;
+      const root = document.getElementById('detail');
+      const q = (s) => root.querySelector(s);
+      const NS = 'http://www.w3.org/2000/svg';
+      const ci = (a) => '（' + a.lo.toFixed(2) + '–' + a.hi.toFixed(2) + '）';
+
+      // 数据区（画面坐标）：x 0–24 个月，y 60–100%
+      const X0 = 196, Y0 = 174, W = 894, H = 490, X1 = X0 + W, Y1 = Y0 + H;
+      const mx = (m) => X0 + W * m / 24;
+      const py = (p) => Y0 + H * (1 - (p - 60) / 40);
+      const put = (parent, css, cls) => {
+        const d = document.createElement('div');
+        if (cls) d.className = cls;
+        d.style.cssText = css;
+        parent.appendChild(d); return d;
+      };
+
+      // ---- 数字，全部来自 Kit.TRIAL ----------------------------------------------------------
+      q('#detail-credit').textContent = K.id + ', ESMO 2026 LBA1';
+      q('#detail-schem').textContent = '曲线为示意：按公布的 6 个月与 24 个月数据锚定';
+      q('#detail-pa').textContent = K.rfs.vax.toFixed(1) + '%';          // 82.2%
+      q('#detail-pb').textContent = K.rfs.ctrl.toFixed(1) + '%';         // 70.0%
+      q('#detail-e2').innerHTML = 'HR <span class="num">' + K.early.hr.toFixed(2) + ci(K.early) + '</span>';
+      q('#detail-l2').innerHTML = 'HR <span class="num">' + K.late.hr.toFixed(2) + ci(K.late) + '</span>';
+      q('#detail-l3').innerHTML = '风险低 <span class="num hl">' + K.late.cut + '%</span>';
+      q('#detail-os-n').innerHTML = 'HR <span class="num">' + K.os.hr.toFixed(2) + '（95%CI '
+        + K.os.lo.toFixed(2) + '–' + K.os.hi.toFixed(2) + '）</span>，P = <span class="num">' + K.os.p + '</span>';
+      q('#detail-c1 .mk').innerHTML = Kit.MARK_OK;
+
+      // ---- 图：网格、坐标轴、刻度 --------------------------------------------------------------
+      const grid = q('#detail-grid'), axes = q('#detail-axes');
+      for (const p of [90, 80, 70]) put(grid, 'left:' + X0 + 'px;top:' + py(p).toFixed(1) + 'px;width:' + W + 'px;height:1px', 'grid');
+      put(axes, 'left:' + X0 + 'px;top:' + Y1 + 'px;width:' + W + 'px;height:2px', 'axis');
+      put(axes, 'left:' + X0 + 'px;top:' + Y0 + 'px;width:2px;height:' + H + 'px', 'axis');
+      for (const p of [100, 90, 80, 70, 60]) {
+        const l = put(axes, 'left:106px;top:' + (py(p) - 18).toFixed(1) + 'px', 'label s num ylab');
+        l.textContent = p + '%';
+      }
+      for (const m of [0, 6, 12, 18, 24]) {
+        put(axes, 'left:' + (mx(m) - 1).toFixed(1) + 'px;top:' + Y1 + 'px;width:2px;height:10px', 'tickmark');
+        const l = put(axes, 'left:' + (mx(m) - 45).toFixed(1) + 'px;top:' + (Y1 + 16) + 'px', 'label s num xlab');
+        l.textContent = String(m);
+      }
+      const unit = put(axes, 'left:' + (mx(24) + 50) + 'px;top:' + (Y1 + 16) + 'px', 'label s');
+      unit.textContent = '个月';
+
+      // ---- 前 6 个月那一段，和第 6 个月的竖线 ----------------------------------------------------
+      const CUT = 6, xcut = mx(CUT), ywin = 410;
+      const win = q('#detail-win');
+      win.style.cssText = 'left:' + X0 + 'px;top:' + Y0 + 'px;width:' + (xcut - X0).toFixed(1) + 'px;height:' + (ywin - Y0) + 'px';
+      q('#detail-vline').style.cssText = 'left:' + (xcut - 1).toFixed(1) + 'px;top:' + Y0 + 'px;width:2px;height:' + (ywin - Y0) + 'px';
+
+      // ---- 6 个月之后，两条线之间那块 ----------------------------------------------------------
+      const after = (a) => a.filter((p) => p[0] >= CUT / 24 - 1e-9);
+      const vaxPts = Kit.RFS_PTS('vax'), ctrlPts = Kit.RFS_PTS('ctrl');
+      const band = q('#detail-band');
+      band.style.cssText = 'position:absolute;left:' + X0 + 'px;top:' + Y0 + 'px;width:' + W + 'px;height:' + H + 'px';
+      {
+        const svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        const pt = (p) => (p[0] * W).toFixed(1) + ' ' + ((1 - p[1]) * H).toFixed(1);
+        const d = 'M ' + after(vaxPts).map(pt).join(' L ') + ' L ' + after(ctrlPts).reverse().map(pt).join(' L ') + ' Z';
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d);
+        svg.appendChild(path); band.appendChild(svg);
+      }
+
+      // ---- 两条曲线，自己画出来 ----------------------------------------------------------------
+      const curves = q('#detail-curves');
+      const cVax = Kit.curve(curves, { pts: vaxPts, x: X0, y: Y0, w: W, h: H, cls: 'imm' });
+      const cCtrl = Kit.curve(curves, { pts: ctrlPts, x: X0, y: Y0, w: W, h: H, cls: 'ctrl' });
+      // 自画：dasharray 留一截空白，起点 offset 1.1，圆头线帽才不会在零长虚线处点一个点
+      for (const c of [cVax, cCtrl]) c.path.style.strokeDasharray = '1 1.2';
+      q('#detail-pa').style.top = (py(K.rfs.vax) - 21).toFixed(1) + 'px';
+      q('#detail-pb').style.top = (py(K.rfs.ctrl) - 21).toFixed(1) + 'px';
+
+      // 从右边那一列指回色块里
+      const lead = Kit.lead(root, { x1: 1318, y1: 452, x2: X1 + 2, y2: 470 });
+      lead.line.id = 'detail-lead';
+      lead.anchor.id = 'detail-leaddot';
+      // 引线上已经有内联的 rotate，所以不补 scaleX，补 width（0 → 它本来的长度）
+      const LEADW = parseFloat(lead.line.style.width);
+
+      // ---- 时间线 ------------------------------------------------------------------------------
+      const tl = gsap.timeline({ paused: true });
+      const show = (t, at, { d = 0.55, dy = 14, e = 'expo.out' } = {}) =>
+        tl.fromTo(t, { opacity: 0, y: dy }, { opacity: 1, y: 0, duration: d, ease: e }, at);
+      const fade = (t, at, d = 0.5) => tl.fromTo(t, { opacity: 0 }, { opacity: 1, duration: d, ease: 'none' }, at);
+
+      // 0 ── 这条曲线：图长出来，终点接住上一场的两个数
+      fade('#detail-credit', S.at(0));
+      fade('#detail-schem', S.at(0) + 0.2);
+      show('#detail-plot', S.at(0), { dy: 10, d: 0.6 });
+      fade('#detail-grid', S.at(0) + 0.25);
+      fade('#detail-axes', S.at(0) + 0.25);
+      show('#detail-t1', S.at(0) + 0.35);
+      show('#detail-t2', S.at(0) + 0.45);
+      tl.fromTo(cVax.path, { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 1.5, ease: 'none', autoRound: false }, S.at(0) + 0.45);
+      tl.fromTo(cCtrl.path, { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 1.5, ease: 'none', autoRound: false }, S.at(0) + 0.45);
+      show('#detail-pa', S.at(0) + 1.75, { dy: 0 });
+      show('#detail-pb', S.at(0) + 1.75, { dy: 0 });
+
+      // 1 ── 头六个月：把那一段框出来
+      fade('#detail-win', S.at(1), 0.45);
+      tl.fromTo('#detail-vline', { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: 'expo.out', transformOrigin: 'center top' }, S.at(1));
+      show('#detail-e1', S.at(1) + 0.15);
+
+      // 2 ── 两组几乎重合
+      show('#detail-e2', S.at(2), { dy: 10 });
+      show('#detail-e3', S.at(2) + 0.25, { dy: 10 });
+
+      // 3 ── 药要先做出来
+      show('#detail-n1', S.at(3), { dy: 10 });
+
+      // 4 ── T 细胞要时间
+      show('#detail-n2', S.at(4), { dy: 10 });
+
+      // 5 ── 差距从第六个月以后才拉开
+      tl.fromTo('#detail-band', { clipPath: 'inset(0% 100% 0% 25%)' }, { clipPath: 'inset(0% 0% 0% 25%)', duration: 1.1, ease: 'none' }, S.at(5));
+      show('#detail-l1', S.at(5) + 0.3);
+      show('#detail-l2', S.at(5) + 0.45, { dy: 10 });
+      tl.fromTo('#detail-lead', { width: 0 }, { width: LEADW, duration: 0.45, ease: 'none' }, S.at(5) + 0.6);
+      fade('#detail-leaddot', S.at(5) + 0.95, 0.3);
+
+      // 6 ── 那之后风险低 58%
+      show('#detail-l3', S.at(6), { dy: 10 });
+
+      // 7–9 ── 总生存：还看不出差别
+      show('#detail-os', S.at(7), { dy: 12, d: 0.5 });
+      show('#detail-os-n', S.at(8), { dy: 10 });
+      show('#detail-os-s', S.at(9), { dy: 10 });
+
+      // 10–11 ── 能说的，和还不能说的
+      show('#detail-c1', S.at(10), { dy: 12 });
+      fade('#detail-rule', S.at(11), 0.4);
+      show('#detail-c2', S.at(11), { dy: 12 });
+
+      window.__timelines['detail'] = tl;
+    })();
+  </script>
+</template>

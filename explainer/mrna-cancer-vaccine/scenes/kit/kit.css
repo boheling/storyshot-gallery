@@ -1,0 +1,152 @@
+/* Shared look for every scene of the mRNA cancer-vaccine explainer. Loaded before each scene; scenes
+   use these tokens and classes and never redefine them. Sizes are px at 1920x1080.
+
+   THE LOOK: a medical atlas printed on paper. Off-white ground, deep ink linework, flat illustration
+   (no glows, no gradients on objects), thin leader lines instead of legends, numbers in a mono face.
+   The film is LIGHT (`ground: light` in the storyboard), so the burned-in subtitles come out in ink
+   with a white edge and the scenes need NO bar drawn under them. Keep content above var(--safe-bottom).
+
+   WHAT EACH COLOUR MEANS — one meaning each, in every scene:
+     --tum  crimson  tumour cells, mutations, neoantigens, the "fingerprint", the recurrence side
+     --imm  teal     the immune system, T cells, MHC, the vaccine arm, whatever is working
+     --rna  ochre    the mRNA itself, the lipid particle, the vial, and TIME (weeks, the window)
+     --ctrl warm grey  healthy cells, the control arm, anything the story is not pointing at
+   On paper a glow is a smudge: a thing that "lights up" gets a flat tint fill or a ring, never a blur.
+   Shadows stay at or under rgba(22,24,29,.12), or the paper looks dirty. */
+:root {
+  --paper: #f6f4ef;       /* the film's ground */
+  --paper-2: #ffffff;     /* a sheet, a card, a panel laid on the paper: needs its own rule/shadow */
+  --line: #d9d4c7;        /* hairlines, rules, panel edges, the edge of a plot */
+  --ink: #16181d;         /* text and main linework */
+  --ink-2: #5c6270;       /* secondary text, labels, leader lines */
+  --tum: #a3203a;         /* 7.4:1 on paper — safe as text at any size */
+  --tum-soft: rgba(163,32,58,.12);   /* a tinted fill instead of a glow */
+  --imm: #0f766e;         /* 4.6:1 on paper — safe as text (= theme accent) */
+  --imm-soft: rgba(15,118,110,.12);
+  --rna: #b45309;         /* 4.5:1 on paper — safe as text */
+  --rna-soft: rgba(180,83,9,.12);
+  --ctrl: #8a8578;        /* 3.8:1 — large text and fills only, never small labels */
+  --ctrl-soft: rgba(138,133,120,.14);
+  --mono: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+}
+
+/* a scene's root: full frame, paper, clipped. No ::after bar — the subtitles are ink on paper. */
+.world { position: absolute; inset: 0; overflow: hidden; color: var(--ink); font-family: var(--font);
+  background: radial-gradient(ellipse 130% 95% at 50% 36%, #fffdf8 0%, var(--paper) 72%); }
+
+/* ---- type ---- */
+/* the kicker: a plate number in an atlas. Small caps feel, with a short rule under it. */
+.kicker { position: absolute; left: 110px; top: 76px; font: 600 30px/1 var(--font); letter-spacing: .14em; color: var(--ink-2); }
+.kicker::after { content: ''; position: absolute; left: 0; bottom: -16px; width: 64px; height: 3px; background: var(--ink); opacity: .55; }
+.label { position: absolute; font: 600 34px/1.25 var(--font); color: var(--ink); white-space: nowrap; }
+.label.s { font-size: 29px; font-weight: 500; color: var(--ink-2); }
+.label.w { white-space: normal; }
+.big { position: absolute; font: 700 92px/1 var(--font); color: var(--ink); white-space: nowrap; letter-spacing: -.01em; }
+.huge { position: absolute; font: 700 150px/1 var(--font); color: var(--ink); white-space: nowrap; letter-spacing: -.02em; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.hl { color: var(--imm); }           /* the colour the film points with */
+.hl.t { color: var(--tum); }
+.hl.r { color: var(--rna); }
+/* source credit, top right: small on purpose — give it data-layout-ignore */
+.credit { position: absolute; right: 60px; top: 38px; font: 400 20px/1.4 var(--font); color: #8d8676; text-align: right; }
+/* "示意图" mark, for anything drawn rather than measured — also data-layout-ignore */
+.schem { position: absolute; font: 400 20px/1 var(--font); color: #8d8676; letter-spacing: .08em; }
+
+/* ---- a sheet: white paper on paper. Always carries a rule inside so it is not a blank rectangle. ---- */
+.sheet { position: absolute; background: var(--paper-2); border: 2px solid var(--line); border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(22,24,29,.10); }
+.sheet.tum { border-color: rgba(163,32,58,.45); }
+.sheet.imm { border-color: rgba(15,118,110,.45); }
+.sheet.rna { border-color: rgba(180,83,9,.45); }
+/* 28px is the layout check's floor for on-screen text — do not drop below it. */
+.sheet-hd { position: absolute; left: 0; right: 0; top: 0; height: 64px; border-bottom: 2px solid var(--line);
+  font: 600 28px/64px var(--font); color: var(--ink-2); padding-left: 26px; letter-spacing: .04em; }
+.rule { position: absolute; height: 1px; background: var(--line); }
+.rule.v { width: 1px; height: auto; }
+
+/* ---- a cell: flat body, thin ink outline, a nucleus. The film's recurring object. ---- */
+.cell { position: absolute; border-radius: 48% 52% 50% 50% / 52% 48% 52% 48%;
+  background: var(--ctrl-soft); border: 3px solid var(--ctrl); }
+.cell.tum { background: var(--tum-soft); border-color: var(--tum); border-radius: 46% 54% 52% 48% / 54% 46% 50% 50%; }
+.cell.imm { background: var(--imm-soft); border-color: var(--imm); border-radius: 50%; }
+.cell .nuc { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 42%; height: 42%; border-radius: 50%; background: rgba(138,133,120,.3); border: 2px solid var(--ctrl); }
+.cell.tum .nuc { background: rgba(163,32,58,.18); border-color: var(--tum); }
+
+/* ---- a mutation: a small crimson lozenge sitting on a strand or in a nucleus ---- */
+.mut { position: absolute; width: 18px; height: 18px; border-radius: 4px; background: var(--tum); transform: rotate(45deg); }
+/* ---- a neoantigen peptide: a notched crimson tile. The "fingerprint" in every scene. ---- */
+.pep { position: absolute; width: 74px; height: 30px; background: var(--tum); border-radius: 6px 6px 0 0;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 72% 100%, 62% 58%, 38% 58%, 28% 100%, 0 100%); }
+.pep.s { width: 48px; height: 20px; }
+/* ---- MHC: a cradle on the membrane that holds a peptide up ---- */
+.mhc { position: absolute; width: 90px; height: 54px; border: 4px solid var(--imm); border-top: none;
+  border-radius: 0 0 26px 26px; background: var(--imm-soft); }
+/* ---- a T cell receptor: a V notch on the T cell's edge ---- */
+.tcr { position: absolute; width: 0; height: 0; border-left: 17px solid transparent; border-right: 17px solid transparent;
+  border-bottom: 26px solid var(--imm); }
+
+/* ---- the mRNA strand: an ochre line with codon ticks. Draw it as an SVG path (Kit.strandPath). ---- */
+.strand { position: absolute; }
+.strand path { fill: none; stroke: var(--rna); stroke-width: 7; stroke-linecap: round; }
+.strand .tick { stroke: var(--rna); stroke-width: 4; opacity: .55; }
+/* ---- a lipid nanoparticle: a ring of dots around the strand ---- */
+.lnp { position: absolute; border-radius: 50%; border: 3px dashed var(--rna); background: var(--rna-soft); }
+/* ---- a vial / a syringe barrel: the finished dose ---- */
+.vial { position: absolute; border: 4px solid var(--ink); border-radius: 8px 8px 16px 16px; background: var(--paper-2); }
+.vial .fill { position: absolute; left: 0; right: 0; bottom: 0; background: var(--rna-soft); border-top: 3px solid var(--rna); }
+.vial .cap { position: absolute; left: 18%; right: 18%; top: -16px; height: 18px; border-radius: 5px; background: var(--ink); }
+
+/* ---- a flow step: a numbered chip on a spine. Used by the two pipeline scenes. ---- */
+.step { position: absolute; display: flex; align-items: center; gap: 20px; }
+.step .ix { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid var(--ink-2);
+  font: 600 28px/46px var(--mono); text-align: center; color: var(--ink-2); background: var(--paper-2); }
+.step .tx { font: 600 32px/1.3 var(--font); color: var(--ink); white-space: nowrap; }
+.step.on .ix { border-color: var(--imm); color: var(--imm); background: var(--imm-soft); }
+.step.on .tx { color: var(--ink); }
+.spine { position: absolute; width: 3px; background: var(--line); }
+
+/* ---- a leader line: a hairline from a label to the thing it names, with a dot at the anchor ---- */
+.lead { position: absolute; height: 2px; background: var(--ink-2); transform-origin: left center; opacity: .8; }
+.lead.v { width: 2px; height: auto; transform-origin: center top; }
+.anchor { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--ink-2); }
+
+/* ---- a plot: hairline axes on white, two curves. No grid heavier than the data. ---- */
+.plot { position: absolute; background: var(--paper-2); border: 2px solid var(--line); border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(22,24,29,.08); }
+.axis { position: absolute; background: var(--ink); opacity: .7; }
+.grid { position: absolute; background: var(--line); }
+.curve { position: absolute; }
+.curve path { fill: none; stroke-width: 7; stroke-linecap: round; }
+.curve.imm path { stroke: var(--imm); }
+.curve.ctrl path { stroke: var(--ctrl); }
+.curve.ctrl.dash path { stroke-dasharray: 14 12; }
+.bar { position: absolute; border-radius: 4px; background: var(--ctrl); }
+.bar.imm { background: var(--imm); }
+.bar.tum { background: var(--tum); }
+.swatch { position: absolute; width: 30px; height: 12px; border-radius: 3px; background: var(--ctrl); }
+.swatch.imm { background: var(--imm); }
+.swatch.tum { background: var(--tum); }
+.swatch.rna { background: var(--rna); }
+
+/* ---- a dot matrix: 100 people, 435 seats, 34 peptides. Kit.dots builds it. ---- */
+.dots { position: absolute; }
+.dot { position: absolute; border-radius: 50%; background: var(--ctrl-soft); border: 2px solid var(--ctrl); }
+.dot.tum { background: var(--tum); border-color: var(--tum); }
+.dot.imm { background: var(--imm); border-color: var(--imm); }
+.dot.rna { background: var(--rna); border-color: var(--rna); }
+.dot.sq { border-radius: 4px; }
+
+/* ---- a week ruler: time, in ochre. Used by the manufacturing window. ---- */
+.ruler { position: absolute; height: 4px; background: var(--line); border-radius: 2px; }
+.tickmark { position: absolute; width: 2px; background: var(--ink-2); opacity: .5; }
+.span { position: absolute; border-radius: 6px; background: var(--rna-soft); border: 2px solid var(--rna); }
+.pin { position: absolute; width: 4px; background: var(--ink); }
+.pin::before { content: ''; position: absolute; left: -9px; top: -9px; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); }
+
+/* ---- a checklist row: used by "who it is for" ---- */
+.chk { position: absolute; display: flex; align-items: flex-start; gap: 22px; font: 500 34px/1.3 var(--font); color: var(--ink); }
+.chk .mk { flex: none; width: 40px; height: 40px; border-radius: 9px; border: 3px solid var(--line); background: var(--paper-2); position: relative; }
+.chk.yes .mk { border-color: var(--imm); background: var(--imm-soft); }
+.chk.no .mk { border-color: var(--tum); background: var(--tum-soft); }
+.chk.no, .chk.off { color: var(--ink-2); }

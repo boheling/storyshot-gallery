@@ -1,0 +1,255 @@
+<template>
+  <style>
+    /* hook — three pictures on one plate:
+       A (0–5 s)   the skin cross-section: a wide excision, the lesion lifted out, a clean margin
+       B (5–14 s)  the count: 100 dots, ~30 crimson, all of them already on PD-1
+       C (14–23 s) the cells the knife never reached, carried off down a vessel  */
+
+    /* ---- A: the atlas plate (skin + the surgical margin drawn over it) ---- */
+    #hook-plate { position: absolute; left: 330px; top: 215px; width: 1280px; height: 512px; }
+    #hook-skin, #hook-cut { position: absolute; left: 0; top: 0; }
+    #hook-skin svg, #hook-cut { display: block; }
+    #hook-ticks line { stroke: var(--ink); stroke-width: 3; opacity: .75; }
+
+    #hook-l-epi  { left: 170px; top: 235px; }
+    #hook-l-derm { left: 170px; top: 410px; }
+    #hook-l-mel  { left: 880px; top: 132px; color: var(--tum); }
+    #hook-l-margin { left: 1180px; top: 756px; }
+    #hook-l-path { left: 1180px; top: 812px; }
+    #hook-l-wide { left: 420px; top: 756px; }
+
+    /* ---- B: 100 patients ---- */
+    #hook-frame { position: absolute; left: 200px; top: 160px; width: 640px; height: 640px;
+      border: 2px solid rgba(22,24,29,0); border-radius: 14px; }
+    #hook-grid { left: 30px; top: 30px; width: 580px; height: 580px; }
+    #hook-dotlab { left: 200px; top: 104px; }
+    #hook-yrbar { position: absolute; left: 980px; top: 140px; width: 120px; height: 4px;
+      background: var(--rna); border-radius: 2px; }
+    #hook-yr    { left: 980px; top: 156px; color: var(--rna); }
+    #hook-count { left: 980px; top: 274px; }
+    #hook-count .tot { color: var(--ink-2); }
+    #hook-rec   { left: 980px; top: 392px; color: var(--tum); }
+    #hook-pd    { left: 980px; top: 520px; width: 820px; }
+    #hook-pd2   { left: 980px; top: 574px; width: 820px; }
+
+    /* ---- C: a vessel running out of the dermis towards the rest of the body ---- */
+    #hook-vessel { position: absolute; left: 0; top: 425px; display: block; }
+    #hook-vessel .wall { fill: none; stroke: var(--ink); stroke-width: 5; }
+    #hook-vessel #hook-lumen { fill: rgba(22,24,29,.045); stroke: none; }
+    #hook-l-ves  { left: 1400px; top: 410px; }
+    #hook-flow   { left: 1560px; top: 795px; }
+    #hook-l-cut  { left: 800px; top: 95px; color: var(--ctrl); }
+    #hook-l-mrd  { left: 1180px; top: 120px; color: var(--tum); }
+    #hook-l-mrd2 { left: 1180px; top: 172px; }
+    #hook-cells { position: absolute; left: 0; top: 0; width: 1920px; height: 900px; }
+    #hook-cells .cell { border-width: 4px; }
+
+    #hook-leads { position: absolute; left: 0; top: 0; width: 1920px; height: 900px; }
+    #hook-sch { left: 64px; top: 866px; }
+  </style>
+
+  <div id="hook" class="world" data-composition-id="hook" data-width="1920" data-height="1080">
+
+    <div id="hook-plate" data-layout-allow-overlap data-layout-allow-overflow>
+      <div id="hook-skin"></div>
+      <svg id="hook-cut" viewBox="0 0 900 360" width="1280" height="512" xmlns="http://www.w3.org/2000/svg">
+        <path id="hook-margin" d="M 352 54 C 290 54, 276 140, 330 192 C 386 246, 516 246, 562 190 C 614 128, 600 54, 548 54"
+          fill="none" stroke="#16181d" stroke-width="5" stroke-linecap="round" pathLength="1"
+          style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"></path>
+        <g id="hook-ticks"></g>
+      </svg>
+    </div>
+
+    <div id="hook-frame" data-layout-allow-overlap>
+      <div id="hook-grid" class="dots"></div>
+    </div>
+
+    <svg id="hook-vessel" viewBox="0 0 1920 355" width="1920" height="355" xmlns="http://www.w3.org/2000/svg"
+      data-layout-allow-overlap>
+      <path id="hook-lumen" d="M 0 20 L 1920 75 L 1920 335 L 0 280 Z" style="opacity: 0"></path>
+      <path id="hook-v1" class="wall" d="M 0 20 L 1920 75" pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"></path>
+      <path id="hook-v2" class="wall" d="M 0 280 L 1920 335" pathLength="1" style="stroke-dasharray: 1 1.2; stroke-dashoffset: 1.1"></path>
+    </svg>
+
+    <div id="hook-cells" data-layout-allow-overflow data-layout-allow-overlap></div>
+    <div id="hook-leads" data-layout-allow-overlap></div>
+
+    <div id="hook-l-epi"  class="label s">表皮</div>
+    <div id="hook-l-derm" class="label s">真皮</div>
+    <div id="hook-l-mel"  class="label">黑色素瘤</div>
+    <div id="hook-l-margin" class="label">手术切缘</div>
+    <div id="hook-l-path" class="label s">病理：切缘未见肿瘤细胞</div>
+    <div id="hook-l-wide" class="label">连同周围一圈正常组织</div>
+
+    <div id="hook-dotlab" class="label s">1 个点 = 1 位病人</div>
+    <div id="hook-yrbar"></div>
+    <div id="hook-yr" class="label">术后 <span class="num">24</span> 个月</div>
+    <div id="hook-count" class="big"><span class="num hl t">≈30</span><span class="num tot"> / 100</span></div>
+    <div id="hook-rec" class="label">复发</div>
+    <div id="hook-pd" class="label w">这 <span class="num">100</span> 人都在用 <span class="hl">PD-1 抑制剂</span></div>
+    <div id="hook-pd2" class="label s w">术后标准免疫治疗</div>
+
+    <div id="hook-l-cut" class="label">手术切口</div>
+    <div id="hook-l-mrd" class="label">微小残留病灶</div>
+    <div id="hook-l-mrd2" class="label s">单个细胞，影像看不到</div>
+    <div id="hook-l-ves" class="label">血管</div>
+    <div id="hook-flow" class="label s">血流方向 →</div>
+
+    <div id="hook-sch" class="schem" data-layout-ignore>示意</div>
+    <div id="hook-cr" class="credit" data-layout-ignore>INTerpath-001 对照组：24 个月无复发率 70.0%<br>（100 − 70.0 ≈ 30）· ESMO 2026</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (s) => document.querySelector(s);
+      const INK = '#16181d', GREY = '#8a8578';
+
+      // ---------- the plate: the skin cross-section is on screen from frame 0 (the film's cover)
+      $('#hook-skin').innerHTML = Kit.SKIN_SVG
+        .replace('width="900" height="360"', 'width="1280" height="512"')
+        .replace('id="lesion"', 'id="hook-lesion"');
+
+      // hatch marks across the margin, for "the edge was looked at and it was clean"
+      const marg = $('#hook-margin'), tg = $('#hook-ticks'), ticks = [];
+      if (marg.getTotalLength) {
+        const TL = marg.getTotalLength(), CX = 448, CY = 128;
+        for (let i = 0; i < 13; i++) {
+          const s = ((i + 0.5) / 13) * TL;
+          const p = marg.getPointAtLength(s), q = marg.getPointAtLength(Math.min(TL, s + 1.2));
+          const dx = q.x - p.x, dy = q.y - p.y, m = Math.hypot(dx, dy) || 1;
+          let nx = -dy / m, ny = dx / m;
+          if ((p.x - CX) * nx + (p.y - CY) * ny < 0) { nx = -nx; ny = -ny; }
+          const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          l.setAttribute('x1', p.x.toFixed(1)); l.setAttribute('y1', p.y.toFixed(1));
+          l.setAttribute('x2', (p.x + nx * 15).toFixed(1)); l.setAttribute('y2', (p.y + ny * 15).toFixed(1));
+          tg.appendChild(l); ticks.push(l);
+        }
+      }
+
+      // ---------- leader lines: width 0 → full draws them on; t === null means "already drawn"
+      const leads = $('#hook-leads');
+      function L(x1, y1, x2, y2, t, d) {
+        const o = Kit.lead(leads, { x1, y1, x2, y2 });
+        const len = Math.hypot(x2 - x1, y2 - y1);
+        if (t !== null) {
+          const dur = d || 0.45;
+          tl.fromTo(o.line, { width: 0 }, { width: len, duration: dur, ease: 'power2.out' }, t);
+          tl.fromTo(o.anchor, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.28, ease: 'expo.out' }, t + dur * 0.65);
+        }
+        return [o.line, o.anchor];
+      }
+      const show = (els, t, dy) => tl.fromTo(els, { opacity: 0, y: dy === undefined ? 18 : dy },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, t);
+      const hide = (els, t, d) => tl.fromTo(els, { opacity: 1 }, { opacity: 0, duration: d || 0.35 }, t);
+
+      // ---------- A. the plate, labelled like an atlas, from the first frame
+      const lEpi = L(244, 253, 352, 253, null);
+      const lDerm = L(244, 428, 352, 428, null);
+      const lMel = L(950, 180, 962, 296, null);
+      const plateA = ['#hook-l-epi', '#hook-l-derm', ...lEpi, ...lDerm];
+
+      // 0  "手术很顺利。" — a line of ink is laid round the lesion, outside it
+      tl.fromTo('#hook-margin', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 1.5, ease: 'power1.inOut', autoRound: false }, S.at(0));
+      show('#hook-l-margin', S.at(0, 0.9));
+      const lMarg = L(1250, 752, 1194, 566, S.at(0, 1.0), 0.5);
+
+      // 1  "肿瘤被完整切掉，" — the lesion is lifted out of the skin, leaving the cut empty
+      tl.fromTo('#hook-lesion', { y: 0 }, { y: -130, duration: 0.9, ease: 'power2.in' }, S.at(1));
+      tl.fromTo('#hook-lesion', { x: 0 }, { x: 95, duration: 0.9, ease: 'power1.in' }, S.at(1));
+      tl.fromTo('#hook-lesion', { opacity: 1 }, { opacity: 0, duration: 0.5 }, S.at(1, 0.25));
+      hide(['#hook-l-mel', ...lMel], S.at(1), 0.3);
+      show('#hook-l-wide', S.at(1, 0.55));
+      const lWide = L(560, 752, 737, 432, S.at(1, 0.65), 0.55);
+
+      // 2  "切缘干净。" — hatch marks across the margin, and what the pathologist saw.
+      //    That line stays up through the count: it is the premise the 30 argue with.
+      ticks.forEach((l, k) => tl.fromTo(l, { opacity: 0 }, { opacity: 0.75, duration: 0.25 }, S.at(2, k * 0.035)));
+      show('#hook-l-path', S.at(2, 0.15));
+
+      // ---------- B. 3  "但两年之后，" — the plate goes, time comes up in ochre
+      tl.fromTo('#hook-yrbar', { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: 'power2.out', transformOrigin: 'left center' }, S.at(3));
+      show('#hook-yr', S.at(3, 0.1));
+
+      // 4  "一百个这样的病人里，" — 100 dots, one per patient
+      hide(['#hook-plate', '#hook-l-margin', '#hook-l-wide', ...plateA, ...lMarg, ...lWide], S.at(4), 0.35);
+      const dots = Kit.dots($('#hook-grid'), { n: 100, cols: 10, size: 40, gap: 20 });
+      dots.forEach((d, i) => tl.fromTo(d, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'expo.out' },
+        S.at(4, 0.25 + (i % 10) * 0.02 + Math.floor(i / 10) * 0.05)));
+      show('#hook-dotlab', S.at(4, 0.6));
+      const lDot = L(282, 144, 254, 194, S.at(4, 0.7), 0.35);
+      tl.fromTo('#hook-cr', { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(4));
+
+      // 5  "大约有三十个复发了。" — 30 of them turn crimson, one at a time
+      const order = [...Array(100).keys()], rnd = Kit.rng(7);
+      for (let i = 99; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
+      order.slice(0, 30).sort((a, b) => a - b).forEach((i, k) => {
+        tl.fromTo(dots[i], { backgroundColor: 'rgba(138,133,120,.14)', borderColor: GREY },
+          { backgroundColor: '#a3203a', borderColor: '#a3203a', duration: 0.3 }, S.at(5, k * 0.04));
+      });
+      show('#hook-count', S.at(5, 0.75), 26);
+      show('#hook-rec', S.at(5, 1.05));
+
+      // 6  "注意，" — a frame is put round the whole hundred
+      tl.fromTo('#hook-frame', { borderColor: 'rgba(22,24,29,0)' }, { borderColor: 'rgba(22,24,29,1)', duration: 0.5 }, S.at(6));
+
+      // 7  "这是已经用上标准免疫治疗的那一组。" — all hundred are already on PD-1
+      show('#hook-pd', S.at(7));
+      show('#hook-pd2', S.at(7, 0.35));
+      const lPd = L(970, 540, 850, 540, S.at(7, 0.2), 0.45);
+
+      // ---------- C. 8  "问题不在刀口上。" — the plate comes back small, the cut goes grey,
+      //    and a vessel is drawn running out of the dermis towards the rest of the body
+      hide(['#hook-frame', '#hook-dotlab', '#hook-yrbar', '#hook-yr', '#hook-count', '#hook-rec',
+        '#hook-pd', '#hook-pd2', '#hook-cr', '#hook-l-path', ...lDot, ...lPd], S.at(8), 0.4);
+      tl.fromTo('#hook-plate', { opacity: 0 }, { opacity: 1, duration: 0.55 }, S.at(8, 0.15));
+      tl.fromTo('#hook-plate', { x: 0, y: 0, scale: 1 }, { x: -500, y: -300, scale: 0.45, duration: 1.0, ease: 'power3.inOut' }, S.at(8, 0.15));
+      tl.fromTo('#hook-margin', { stroke: INK }, { stroke: GREY, duration: 0.6 }, S.at(8, 0.5));
+      ticks.forEach((l) => tl.fromTo(l, { stroke: INK }, { stroke: GREY, duration: 0.6 }, S.at(8, 0.5)));
+      show('#hook-l-cut', S.at(8, 0.5));
+      const lCut = L(792, 112, 572, 148, S.at(8, 0.6), 0.45);
+      tl.fromTo(['#hook-v1', '#hook-v2'], { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 1.0, ease: 'power2.out', autoRound: false }, S.at(8, 0.2));
+      tl.fromTo('#hook-lumen', { opacity: 0 }, { opacity: 1, duration: 0.7 }, S.at(8, 0.55));
+      show('#hook-l-ves', S.at(8, 1.25));
+      const lVes = L(1435, 456, 1432, 482, S.at(8, 1.35), 0.3);
+
+      // 9  "问题在手术看不见、" — a few single cells, left behind in the resection bed
+      const cellBox = $('#hook-cells');
+      // homes sit in the tissue just under the wound; `down` is inside the lumen,
+      // `out` is where the flow takes them. The vessel's mid-line is y = 575 + 0.02865 x.
+      const SPEC = [
+        { x: 320, y: 358, r: 130, down: [420, 587], out: [1150, 608] },
+        { x: 470, y: 366, r: 112, down: [620, 593], out: [1540, 619] },
+        { x: 610, y: 353, r: 120, down: [810, 598], out: [2070, 634] },
+        { x: 195, y: 368, r: 100, down: [250, 582], out: [790, 598] },
+      ];
+      const cells = SPEC.map((c, k) => {
+        const el = Kit.cell(cellBox, { x: c.x, y: c.y, r: c.r, cls: 'tum' });
+        tl.fromTo(el, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'expo.out' }, S.at(9, k * 0.14));
+        return el;
+      });
+      show('#hook-l-mrd', S.at(9, 0.5));
+      show('#hook-l-mrd2', S.at(9, 0.7));
+      const lMrd = L(1170, 146, 662, 305, S.at(9, 0.6), 0.6);
+
+      // 10 "也切不到的那些细胞。" — they slip out of the bed and into the vessel
+      SPEC.forEach((c, k) => {
+        tl.fromTo(cells[k], { x: 0, y: 0 }, { x: c.down[0] - c.x, y: c.down[1] - c.y, duration: 0.9, ease: 'power1.inOut' }, S.at(10, k * 0.07));
+      });
+      hide(lMrd, S.at(10), 0.35);
+
+      // 11 "它们可能早就随着血液走了。" — the flow carries them off, one straight out of frame
+      SPEC.forEach((c, k) => {
+        tl.fromTo(cells[k], { x: c.down[0] - c.x, y: c.down[1] - c.y },
+          { x: c.out[0] - c.x, y: c.out[1] - c.y, duration: 2.0 + k * 0.1, ease: 'power1.inOut' }, S.at(11));
+      });
+      tl.fromTo(cells[2], { opacity: 1 }, { opacity: 0, duration: 0.6 }, S.at(11, 1.5));
+      show('#hook-flow', S.at(11, 0.2));
+      // once they have arrived, the "微小残留病灶" note points at one of them again
+      L(1230, 212, 1154, 540, S.at(11, 1.85), 0.5);
+
+      window.__timelines['hook'] = tl;
+    })();
+  </script>
+</template>

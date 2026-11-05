@@ -1,0 +1,353 @@
+<template>
+  <style>
+    /* Scene 4 — one mRNA, thirty-four fingerprints. It opens on the picture scene 3 ended with
+       (tumour + tiles on the left, the prised-open PD-L1/antibody/PD-1 junction, the teal T cell on
+       the right), lifts the fingerprint tiles off the tumour, writes them onto a synthetic mRNA
+       strand that spans the frame, packs it into a lipid particle, injects it into a muscle cell,
+       and ends with the T cell's receptor sitting in the peptide the cell has put on its surface.
+       Every part is sized to be read at a glance: the strand is 1620 px wide with a 100 px swing,
+       the muscle cell is 680 px across, and the MHC cradles are 150x90 so the final fit is obvious.
+       All numbers are frame px at 1920x1080; nothing sits under y = 907 (the subtitle band). */
+    #mrna-credit { right: 60px; top: 36px; }
+    #mrna-schem { right: 60px; top: 108px; }
+
+    /* paint order (the parts are built by script, so z-index decides, not document order) */
+    #mrna-tum { z-index: 1; }
+    #mrna-pdl1, #mrna-ab, #mrna-pd1 { z-index: 2; }
+    #mrna-tiles, #mrna-rna { z-index: 3; }
+    #mrna-muscle { z-index: 4; }
+    #mrna-nuc { z-index: 5; }
+    #mrna-track { z-index: 5; }
+    #mrna-lnp, #mrna-dna, .mrna-bit { z-index: 6; }
+    #mrna-tgroup { z-index: 7; }
+    #mrna .mhc { z-index: 8; }
+    #mrna .pep { z-index: 9; }
+    #mrna-frame, #mrna-wanted { z-index: 10; }
+    #mrna .label, #mrna .lead, #mrna .anchor { z-index: 11; }
+    #mrna-tiles .pep { z-index: 3; }
+
+    /* ---- carried over from scene 3 ---- */
+    #mrna-tiles { position: absolute; left: 540px; top: 140px; width: 320px; height: 400px; }
+    #mrna-pdl1 { position: absolute; left: 735px; top: 532px; width: 165px; height: 16px;
+      border-radius: 8px; background: var(--tum); }
+    #mrna-ab { position: absolute; left: 900px; top: 480px; }
+    #mrna-pd1 { position: absolute; left: 1035px; top: 532px; width: 185px; height: 16px;
+      border-radius: 8px; background: var(--imm); }
+
+    /* ---- the strand that spans the frame, with its 34 coding stretches ---- */
+    #mrna-rna { position: absolute; left: 150px; top: 200px; width: 1620px; height: 540px; }
+    #mrna-seg { position: absolute; left: 0; top: 0; width: 1620px; height: 540px; }
+    #mrna-rna .strand path { stroke-width: 12; }
+    #mrna-lnp .strand path { stroke-width: 9; }
+
+    /* ---- the muscle cell, its nucleus, and the lipid particle that lands inside it ---- */
+    #mrna-nuc { position: absolute; left: 475px; top: 575px; width: 250px; height: 250px;
+      border-radius: 50%; background: rgba(138,133,120,.3); border: 2px solid var(--ctrl); opacity: 0; }
+    #mrna-track { position: absolute; left: 600px; top: 150px; width: 950px; height: 250px; opacity: 0; }
+    #mrna-lnp { position: absolute; left: 490px; top: 200px; width: 300px; height: 300px; opacity: 0; }
+    #mrna-dna { position: absolute; left: 490px; top: 647px; opacity: 0; }
+    .mrna-helix { stroke-dasharray: 1 1.2; }
+    .mrna-bit { position: absolute; width: 70px; height: 9px; border-radius: 5px;
+      background: var(--rna); opacity: 0; }
+
+    /* the cradles are big on purpose: this fit is the point of the scene */
+    #mrna .mhc { border-width: 6px; border-top: none; border-radius: 0 0 32px 32px; }
+
+    /* ---- the wanted poster: a bracket open towards the T cell ---- */
+    #mrna-frame { position: absolute; left: 975px; top: 255px; width: 145px; height: 510px;
+      border: 3px solid var(--ink); border-right: none; border-radius: 18px 0 0 18px;
+      transform-origin: left center; opacity: 0; }
+    #mrna-wanted { left: 900px; top: 120px; opacity: 0; }
+
+    /* ---- the T cell, its receptor and its label travel together ---- */
+    #mrna-tgroup { position: absolute; left: 1090px; top: 290px; width: 650px; height: 440px; }
+
+    #mrna-n34 { left: 118px; top: 160px; opacity: 0; }
+    .mrna-lab { opacity: 0; }
+  </style>
+
+  <div id="mrna" class="world" data-composition-id="mrna" data-width="1920" data-height="1080">
+    <div id="mrna-credit" class="credit" data-layout-ignore>最多 34 个新抗原：Merck/Moderna INTerpath backgrounder, 2026-08<br>用法：INTerpath-001（ESMO 2026 / NCT05933577）</div>
+    <div id="mrna-schem" class="schem" data-layout-ignore>示意</div>
+
+    <!-- the junction scene 3 left prised open -->
+    <div id="mrna-pdl1"></div>
+    <div id="mrna-ab">
+      <svg viewBox="0 0 140 120" width="140" height="120" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="#b45309" stroke-width="13" stroke-linecap="round">
+          <path d="M 8 60 H 72"/><path d="M 72 60 L 130 18"/><path d="M 72 60 L 130 102"/>
+        </g>
+      </svg>
+    </div>
+    <div id="mrna-pd1"></div>
+    <div id="mrna-tiles" data-layout-allow-overlap></div>
+
+    <!-- the synthetic strand -->
+    <div id="mrna-rna" data-layout-allow-overlap data-layout-allow-overflow>
+      <div id="mrna-seg"></div>
+    </div>
+    <div id="mrna-n34" class="big num hl t">34</div>
+
+    <!-- inside the muscle cell -->
+    <div id="mrna-nuc"></div>
+    <div id="mrna-track">
+      <svg viewBox="0 0 950 250" width="950" height="250" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 900 80 Q 550 10, 40 200" fill="none" stroke="#b45309" stroke-width="4"
+          stroke-linecap="butt" stroke-dasharray="12 16" opacity=".55"/>
+      </svg>
+    </div>
+    <div id="mrna-lnp" class="lnp"></div>
+    <div id="mrna-dna">
+      <svg viewBox="0 0 170 86" width="220" height="106" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="#16181d" stroke-width="5" stroke-linecap="round">
+          <path class="mrna-helix" d="M 8 43 C 30 6, 56 6, 78 43 C 100 80, 126 80, 148 43" pathLength="1"/>
+          <path class="mrna-helix" d="M 8 43 C 30 80, 56 80, 78 43 C 100 6, 126 6, 148 43" pathLength="1"/>
+        </g>
+        <g id="mrna-rungs" stroke="#16181d" stroke-width="3.5" stroke-linecap="round" opacity=".7">
+          <line x1="31" y1="23" x2="31" y2="63"/><line x1="55" y1="23" x2="55" y2="63"/>
+          <line x1="101" y1="23" x2="101" y2="63"/><line x1="125" y1="23" x2="125" y2="63"/>
+        </g>
+      </svg>
+    </div>
+
+    <div id="mrna-frame"></div>
+    <div id="mrna-wanted" class="big">通缉令</div>
+
+    <div id="mrna-tgroup" data-layout-allow-overlap data-layout-allow-overflow></div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      const root = $('mrna');
+
+      // ---- 1. the synthetic strand, and a point-on-the-curve helper -------------------------------
+      // Kit.strand's wave is a chain of cubics whose visible swing is only ~0.385 * amp, so amp is
+      // large here. The 34 stretches are placed by solving x(t) on the same cubics, which keeps them
+      // evenly spread over the WHOLE strand (getPointAtLength is not needed and not even in length).
+      const RX = 150, RY = 200, RW = 1620, RAMP = 240, RWAVES = 4;
+      const rna = Kit.strand($('mrna-rna'), { x: 0, y: 270, w: RW, amp: RAMP, waves: RWAVES, ticks: 0 });
+      rna.path.style.strokeDasharray = '1 1.2';          // a round cap dots a zero-length dash
+      const RH = rna.h, SEG = RW / RWAVES;
+      // where the curve is at a fraction of the strand's width, in frame px
+      function onStrand(f) {
+        const tx = Math.min(0.999999, Math.max(0, f)) * RW;
+        const i = Math.min(RWAVES - 1, Math.floor(tx / SEG)), u = (tx - i * SEG) / SEG;
+        let lo = 0, hi = 1, t = u;
+        for (let k = 0; k < 24; k++) {                   // x(t) = 0.75t + 0.75t^2 - 0.5t^3, monotonic
+          t = (lo + hi) / 2;
+          (0.75 * t + 0.75 * t * t - 0.5 * t * t * t < u) ? (lo = t) : (hi = t);
+        }
+        const s = i % 2 ? 1 : -1;
+        return { x: RX + tx, y: RY + RH / 2 + 3 * s * RAMP * t * (1 - t) * (1 - 2 * t) };
+      }
+
+      const segBox = $('mrna-seg'), N = Kit.DRUG.peptides, BD = 34;   // 34 stretches, 34 px each
+      const segs = [];
+      for (let i = 0; i < N; i++) {
+        const p = onStrand((i + 0.5) / N);
+        const d = document.createElement('div');
+        d.className = 'dot tum sq';
+        d.style.cssText = 'left:' + (p.x - RX - BD / 2) + 'px;top:' + (p.y - RY - BD / 2) +
+          'px;width:' + BD + 'px;height:' + BD + 'px;border-radius:8px';
+        segBox.appendChild(d); segs.push(d);
+      }
+
+      // ---- 2. the picture scene 3 ended on -------------------------------------------------------
+      const tum = Kit.cell(root, { x: 520, y: 460, r: 470, cls: 'tum' });
+      tum.id = 'mrna-tum';
+
+      const tbox = $('mrna-tiles'), TX = 540, TY = 140;
+      const LAND = [onStrand(0.36), onStrand(0.47), onStrand(0.58)];   // three points on the curve
+      // [home x, home y, rotation on the membrane, lift dx, lift dy]
+      const TILES = [[620, 222, -150, 15, -37], [724, 316, -104, 33, -23], [766, 452, -58, 40, -1]];
+      const tiles = TILES.map(([x, y]) => Kit.pep(tbox, { x: x - TX, y: y - TY, s: 1.2 }));
+
+      // ---- 3. the T cell group: it steps aside for the strand, and comes back to dock ------------
+      const g = $('mrna-tgroup'), GX = 1090, GY = 290;
+      const gx = (x) => x - GX, gy = (y) => y - GY;
+      const imm = Kit.cell(g, { x: 260, y: 220, r: 400, cls: 'imm' });   // frame 1150..1550, 310..710
+      imm.id = 'mrna-imm';
+      const tcr = document.createElement('div');            // the V notch, pointing left
+      tcr.className = 'tcr'; tcr.id = 'mrna-tcr';
+      tcr.style.cssText = 'left:-23px;top:187px';           // same membrane spot as in scene 3
+      imm.appendChild(tcr);
+
+      // ---- 4. labels, each on a leader to the part it names --------------------------------------
+      function lab(parent, { x, y, t, cls = '' }) {
+        const d = document.createElement('div');
+        d.className = 'label mrna-lab' + (cls ? ' ' + cls : '');
+        d.style.cssText = 'left:' + x + 'px;top:' + y + 'px';
+        d.innerHTML = t; parent.appendChild(d); return d;
+      }
+      function leader(parent, x1, y1, x2, y2) {
+        const l = Kit.lead(parent, { x1, y1, x2, y2 });
+        gsap.set([l.line, l.anchor], { opacity: 0 });
+        return l;
+      }
+      const anchorRna = onStrand(0.70);
+      const labPrint = lab(root, { x: 480, y: 230, t: '指纹（新抗原）' });
+      const ldPrint = leader(root, 700, 252, LAND[0].x + 8, LAND[0].y - 48);
+      const labRna = lab(root, { x: 1250, y: 230, t: 'mRNA' });
+      const ldRna = leader(root, 1302, 276, anchorRna.x + 6, anchorRna.y - 30);
+      const labMost = lab(root, { x: 120, y: 120, t: '最多', cls: 's' });
+      const labSeg = lab(root, { x: 250, y: 206, t: '段新抗原' });
+      const labFrom = lab(root, { x: 120, y: 276, t: '来自你自己的肿瘤', cls: 's' });
+      const bead5 = onStrand(5.5 / N);
+      const ld34 = leader(root, 368, 250, bead5.x, bead5.y);
+      const labDose = lab(root, { x: 120, y: 150, cls: 's',
+        t: '用法：' + Kit.DRUG.dose + ' 肌注，每 ' + Kit.DRUG.every + ' 周一次，最多 ' + Kit.DRUG.doses + ' 针' });
+      const labCell = lab(root, { x: 90, y: 300, t: '肌肉细胞' });
+      const ldCell = leader(root, 236, 318, 402, 330);
+      const labLnp = lab(root, { x: 90, y: 430, t: '脂质颗粒' });
+      const ldLnp = leader(root, 236, 448, 495, 362);
+      const labMhc = lab(root, { x: 920, y: 800, t: 'MHC' });
+      const ldMhc = leader(root, 962, 796, 1030, 750);
+      const labDna = lab(root, { x: 90, y: 790, t: 'mRNA 不进入 DNA' });
+      const ldDna = leader(root, 400, 802, 500, 772);
+      const ldWanted = leader(root, 1035, 220, 1035, 250);
+      const labT = lab(g, { x: gx(1610), y: gy(490), t: 'T 细胞' });
+      const ldT = leader(g, gx(1600), gy(511), gx(1556), gy(508));
+
+      // ---- 5. the muscle cell, the particle, and what the cell makes -----------------------------
+      const muscle = Kit.cell(root, { x: 690, y: 510, r: 680, nuc: false });   // 350..1030, 170..850
+      muscle.id = 'mrna-muscle';
+      const small = Kit.strand($('mrna-lnp'), { x: 35, y: 150, w: 230, amp: 70, waves: 3, ticks: 0 });
+      small.path.style.strokeDasharray = '1 1.2';
+
+      // three peptides: born in the cytosol beside the particle, seated in a cradle on the membrane
+      const SEAT = [[1023, 340, 480, 440], [1069, 510, 800, 300], [1023, 680, 820, 500]];
+      const MHC = [[1017, 340], [1063, 510], [1017, 680]];
+      const peps = SEAT.map(([x, y]) => Kit.pep(root, { x, y, s: 1.8 }));
+      const mhcs = MHC.map(([x, y]) => {
+        const d = document.createElement('div');
+        d.className = 'mhc';
+        d.style.cssText = 'left:' + (x - 75) + 'px;top:' + (y - 33) + 'px;width:150px;height:66px';
+        root.appendChild(d); return d;
+      });
+      // the strand comes apart into four ochre pieces
+      const BITS = [[570, 366, -16], [630, 334, 12], [700, 368, -8], [752, 338, 18]];
+      const bits = BITS.map(([x, y]) => {
+        const d = document.createElement('div');
+        d.className = 'mrna-bit';
+        d.style.cssText = 'left:' + (x - 35) + 'px;top:' + (y - 4) + 'px';
+        root.appendChild(d); return d;
+      });
+
+      // ---- 6. the timeline -----------------------------------------------------------------------
+      const t0 = S.at(0), t1 = S.at(1), t2 = S.at(2), t3 = S.at(3), t4 = S.at(4);
+      const t5 = S.at(5), t6 = S.at(6), t7 = S.at(7), t8 = S.at(8), t9 = S.at(9);
+      const IN = 'expo.out';
+      const show = (el, at, d = 0.5) => tl.fromTo(el, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: d, ease: IN }, at);
+      // Kit.lead's line carries an inline transform: rotate(), so it is drawn on by its width,
+      // never by a GSAP scaleX (that would hand GSAP the whole transform and lose the angle).
+      const draw = (l, at, d = 0.45) => {
+        const w = parseFloat(l.line.style.width) || 0;
+        tl.fromTo(l.line, { opacity: 0, width: 0 }, { opacity: 0.8, width: w, duration: d, ease: IN }, at);
+        tl.fromTo(l.anchor, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: IN }, at + d * 0.6);
+      };
+      const hide = (el, at, d = 0.4) => tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: d, ease: 'power2.in' }, at);
+      const hideLead = (l, at, d = 0.4) => { hide(l.line, at, d); hide(l.anchor, at, d); };
+
+      // S.at(0) "这支疫苗做的是另一件事：" — the brake story closes, the fingerprints lift off
+      hide('#mrna-pdl1', t0, 0.5); hide('#mrna-ab', t0, 0.5); hide('#mrna-pd1', t0, 0.5);
+      tiles.forEach((p, i) => {
+        const [, , rot, dx, dy] = TILES[i];
+        tl.fromTo(p, { rotation: rot, x: 0, y: 0 }, { rotation: 0, x: dx, y: dy, duration: 0.7, ease: IN }, t0 + 0.2 + i * 0.1);
+      });
+
+      // S.at(1) "把指纹直接交给免疫系统。" — they cross to the immune side and grow as they go
+      tiles.forEach((p, i) => {
+        const [hx, hy, , dx, dy] = TILES[i];
+        tl.fromTo(p, { x: dx, y: dy }, { x: LAND[i].x - hx, y: LAND[i].y - hy, duration: 1.0, ease: IN }, t1 + i * 0.12);
+        tl.fromTo(p, { scale: 1 }, { scale: 1.5, duration: 1.0, ease: IN }, t1 + i * 0.12);
+      });
+      tl.fromTo(tum, { opacity: 1, scale: 1 }, { opacity: 0, scale: 0.86, duration: 0.7, ease: 'power2.in' }, t1 + 0.5);
+      show(labPrint, t1 + 1.1); draw(ldPrint, t1 + 1.15);
+
+      // S.at(2) "它是一条人工合成的 mRNA，" — the T cell steps aside, the strand draws itself in
+      tl.fromTo(g, { x: 50, y: -50 }, { x: 1000, y: -50, duration: 0.7, ease: 'power2.in' }, t2);
+      tl.fromTo(rna.path, { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.95, ease: 'power2.out', autoRound: false }, t2 + 0.05);
+      show(labRna, t2 + 0.7); draw(ldRna, t2 + 0.75);
+
+      // S.at(3) "上面最多编码三十四段来自你自己肿瘤的新抗原。" — all 34, over the whole strand
+      tiles.forEach((p, i) => tl.fromTo(p, { opacity: 1 }, { opacity: 0, duration: 0.3 }, t3 + 0.05 + i * 0.05));
+      hide(labPrint, t3 + 0.05, 0.3); hideLead(ldPrint, t3 + 0.05, 0.3);
+      tl.fromTo(segs, { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.3, ease: IN, stagger: 0.017 }, t3 + 0.1);
+      show(labMost, t3 + 0.45, 0.45);
+      tl.fromTo('#mrna-n34', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: IN }, t3 + 0.55);
+      show(labSeg, t3 + 0.7, 0.45);
+      draw(ld34, t3 + 0.65, 0.5);
+      // lands on "来自你自己肿瘤", late in this long phrase, so the frame keeps moving
+      show(labFrom, t3 + 2.35, 0.5);
+      tl.fromTo('#mrna-credit', { opacity: 0 }, { opacity: 1, duration: 0.5 }, t3 + 0.5);
+
+      // S.at(4) "打进肌肉以后，" — packed into a lipid particle, along a track, into the muscle
+      hide('#mrna-rna', t4, 0.55);
+      tl.fromTo('#mrna-rna', { scale: 1, x: 0, y: 0 }, { scale: 0.14, x: 540, y: -240, duration: 0.6, ease: 'power2.in' }, t4);
+      hide(labRna, t4, 0.35); hideLead(ldRna, t4, 0.35);
+      [labMost, '#mrna-n34', labSeg, labFrom].forEach((e) => hide(e, t4, 0.35));
+      hideLead(ld34, t4, 0.35);
+      tl.fromTo(muscle, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.6, ease: IN }, t4 + 0.2);
+      tl.fromTo('#mrna-nuc', { opacity: 0 }, { opacity: 1, duration: 0.5 }, t4 + 0.4);
+      tl.fromTo('#mrna-lnp', { opacity: 0, scale: 0.5, x: 860, y: -120 },
+        { opacity: 1, scale: 1, x: 860, y: -120, duration: 0.4, ease: IN }, t4 + 0.35);
+      tl.fromTo(small.path, { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.4, ease: 'power1.out', autoRound: false }, t4 + 0.45);
+      tl.fromTo('#mrna-track', { opacity: 0 }, { opacity: 1, duration: 0.3 }, t4 + 0.55);
+      tl.fromTo('#mrna-lnp', { x: 860, y: -120 }, { x: 0, y: 0, duration: 0.8, ease: 'power2.inOut' }, t4 + 0.75);
+      show(labCell, t4 + 0.55); draw(ldCell, t4 + 0.6);
+      show(labDose, t4 + 1.0, 0.55);
+
+      // the receptor grows to match the bigger cradles while the T cell is off screen
+      tl.fromTo(tcr, { rotation: -90, x: 0, y: 0, borderLeftWidth: 17, borderRightWidth: 17, borderBottomWidth: 26 },
+        { rotation: -90, x: -33, y: -7, borderLeftWidth: 26, borderRightWidth: 26, borderBottomWidth: 40, duration: 0.3 }, t4);
+
+      // S.at(5) "你的细胞照着它把这些片段造出来，" — peptides come off the strand
+      hide('#mrna-track', t5, 0.4);
+      show(labLnp, t5 + 0.2); draw(ldLnp, t5 + 0.25);
+      peps.forEach((p, i) => {
+        const [sx, sy, bx, by] = SEAT[i];
+        tl.fromTo(p, { opacity: 0, scale: 0.3, rotation: 0, x: bx - sx, y: by - sy },
+          { opacity: 1, scale: 1, rotation: 0, x: bx - sx, y: by - sy, duration: 0.5, ease: 'back.out(1.6)' }, t5 + 0.5 + i * 0.6);
+      });
+
+      // S.at(6) "摆到表面给 T 细胞看。" — MHC cradles hold them up on the membrane
+      tl.fromTo('#mrna-lnp', { borderColor: 'rgba(180,83,9,1)', backgroundColor: 'rgba(180,83,9,0.12)' },
+        { borderColor: 'rgba(180,83,9,0)', backgroundColor: 'rgba(180,83,9,0)', duration: 0.5 }, t6 + 0.1);
+      hide(labLnp, t6 + 0.1, 0.35); hideLead(ldLnp, t6 + 0.1, 0.35);
+      mhcs.forEach((m, i) => tl.fromTo(m, { opacity: 0, scale: 0.3, rotation: 90 },
+        { opacity: 1, scale: 1, rotation: 90, duration: 0.5, ease: IN }, t6 + 0.1 + i * 0.12));
+      peps.forEach((p, i) => tl.fromTo(p, { x: SEAT[i][2] - SEAT[i][0], y: SEAT[i][3] - SEAT[i][1], rotation: 0 },
+        { x: 0, y: 0, rotation: -90, duration: 0.75, ease: IN }, t6 + 0.2 + i * 0.12));
+      show(labMhc, t6 + 0.95); draw(ldMhc, t6 + 1.0);
+      tl.fromTo(g, { x: 1000, y: -50 }, { x: 130, y: 0, duration: 0.9, ease: IN }, t6 + 0.5);
+      show(labT, t6 + 1.15); draw(ldT, t6 + 1.2);
+
+      // S.at(7) "相当于一张通缉令。" — the poster is framed, and the receptor drops into the notch
+      tl.fromTo('#mrna-frame', { opacity: 0, scaleX: 0.7 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: IN }, t7 + 0.1);
+      tl.fromTo('#mrna-wanted', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: IN }, t7 + 0.3);
+      draw(ldWanted, t7 + 0.55, 0.35);
+      tl.fromTo(g, { x: 130 }, { x: -24, duration: 0.75, ease: IN }, t7 + 1.0);
+
+      // S.at(8) "mRNA 本身很快就降解了，" — the strand comes apart and goes
+      tl.fromTo(small.path, { opacity: 1 }, { opacity: 0, duration: 0.4 }, t8 + 0.25);
+      bits.forEach((b, i) => tl.fromTo(b, { opacity: 0, rotation: BITS[i][2], x: 0, y: 0 },
+        { opacity: 1, rotation: BITS[i][2], x: 0, y: 0, duration: 0.3 }, t8 + 0.2 + i * 0.08));
+      const DRIFT = [[-70, -58], [-30, 70], [54, -64], [82, 50]];
+      bits.forEach((b, i) => {
+        tl.fromTo(b, { x: 0, y: 0 }, { x: DRIFT[i][0], y: DRIFT[i][1], duration: 1.3, ease: 'power1.out' }, t8 + 0.85);
+        tl.fromTo(b, { opacity: 1 }, { opacity: 0, duration: 0.8, ease: 'power2.in' }, t8 + 1.35 + i * 0.1);
+      });
+
+      // S.at(9) "不会进到你的 DNA 里。" — ink DNA in the nucleus, and no ochre anywhere near it
+      tl.fromTo('#mrna-dna', { opacity: 0 }, { opacity: 1, duration: 0.3 }, t9 + 0.1);
+      tl.fromTo('.mrna-helix', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.85, ease: 'power1.inOut', autoRound: false }, t9 + 0.12);
+      tl.fromTo('#mrna-rungs', { opacity: 0 }, { opacity: 0.7, duration: 0.4 }, t9 + 0.75);
+      show(labDna, t9 + 0.5); draw(ldDna, t9 + 0.55);
+
+      window.__timelines['mrna'] = tl;
+    })();
+  </script>
+</template>
