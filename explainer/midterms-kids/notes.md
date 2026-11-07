@@ -10,8 +10,8 @@ Asked on 4 November 2026, the day after Election Day.
 - **Voice:** Kokoro `af_heart` at speed 0.95, free and local. Slower than the default because the
   audience is eight to eleven years old.
 - **Sound:** Storyshot's own synth soundtrack, `calm` at 72 bpm. −13.8 LUFS, LRA 5.2.
-- **Captions:** the narration burned in (`subtitles: burn`, 124 lines, word-by-word highlight), plus
-  `subtitles.srt` and `chapters.txt`.
+- **Captions:** none on the picture. `subtitles.srt` and `chapters.txt` only — the burned-in
+  karaoke line was removed on 2026-11-06 (see "Revised 2026-11-06" at the end).
 - **Wall-clock time:** 1 h 15 m from the request to the first finished file, plus about 1 h 10 m to
   repaint it from a dark world into this light one (see "The look, and why it changed" below). Roughly: 16 min for the sources,
   the story, the narration, the scene kit and the brief (the voice synthesises in the background during
@@ -138,3 +138,57 @@ machinery a child can see — who writes the rules, who holds the money, and wha
 show up — instead of telling them voting matters. The Virginia bowl is the detail that will survive the
 week. The main risk in a film like this is looking partisan, and the way to beat it turned out to be
 removing the means: a palette with no red and no blue in it cannot take a side by accident.
+
+## Revised 2026-11-06
+
+**It had no ending.** Motion stopped three seconds before the file did, on the fullest frame of the
+film: the whole chain, every label, all seven links. The recap now gives it back — the term bar, the
+House and Senate dots, the local rows, the law, the jar of money and the crowd all dissolve over the
+last 2.3 seconds, and what is left is the question from scene 1, *Who gets to decide?*, with its
+answer under it: the three who walked over, still walking the last few steps into the box.
+
+**The burned-in subtitles are gone** (`subtitles: burn` → `subtitles: true`; `subtitles.srt` still
+ships). That also retires the dark caption bar described above, and at no cost: it is drawn as
+`height: var(--safe-bottom, 173px)`, and storyshot injects `--safe-bottom: 0px` whenever subtitles
+are not burned in (`src/scenes.mjs:121`), so the bar is already zero-height in every scene. The rule
+can stay in the kit; it costs nothing and comes back correctly if subtitles are ever burned again.
+(An earlier note here said the bar was still being drawn. It is not — that was wrong.)
+
+Storyshot changed with it: the `calm` soundtrack now resolves on the tonic instead of being cut off
+mid-loop, the picture settles to the film's ground over the last 0.9 s, and `preview_scene` warns
+`frozen_ending` when the last scene has not changed for 2.5 seconds — a warning this film's old recap
+triggered, which is how the check was verified. Re-rendered from the same storyboard and narration;
+231.1 s, unchanged.
+
+## Revised 2026-11-07 — the ending, again
+
+Yesterday's fix was the wrong fix. The frozen last frame, the truncated music and the missing fade
+were all real, and they are all still fixed, but they were not what made these films feel like they
+had no ending. > 结尾的问题不是渐变与否，而是没有很好的结论，结束语，展望，思考这样一个句点的感觉
+
+— which is exactly right.
+
+A recap is not an ending. It re-counts what the film already said and then runs out — and every one
+of these films had its last spoken line land on a list item, a caveat or a footnote. No fade repairs
+a script with nothing left to say.
+
+So each film now has **a closing scene of its own, after the recap** (step 11, `scenes/close.html`, 35.7 s), written to do three
+things: say what this actually means now that the viewer has seen all of it, name what is still open,
+and leave one thought — in the film's own images, with the final words landing on it.
+
+It goes back to the question scene 1 opened with and answers it. *Somebody decides everything — when
+recess is, what is for lunch, where the money goes. The only question is ever who.* Right now it is
+the grown ups who show up; in a few years it will be you. Not dramatically — just a line, a curtain,
+a piece of paper, on a Tuesday in November. The last words, *so when it is your turn, show up*, land
+on the kid walking the line into the booth, and the curtain closes over them while the file is still
+running. 231.1 s → 265.5 s.
+
+The rule is now in `skills/storyshot/SKILL.md` ("How an explainer ends"), rewritten to lead with the
+writing rather than the picture, and `frozen_ending` now says to read the last `say:` line before
+touching the animation. One trap worth recording: the voice breaks cues on **commas** as well as full
+stops, so a line like "a line, a curtain, a piece of paper" is three cues — key beats to what `cues`
+prints, not to the sentences you counted.
+
+The recap in each film keeps its dissolve but no longer holds a long tail for an ending it no longer
+has: `tail` 3.5 s → 2.2 s, and the dissolve now lands with its last words, so it reads as a page turn
+into the closing scene.

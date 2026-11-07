@@ -161,11 +161,20 @@
       tl.fromTo('#recap-n2', { opacity: 0, y: 18 }, { opacity: 1, y: 0, ...IN }, S.at(12, 0.3));
       tl.fromTo('#recap-l2', { opacity: 0 }, { opacity: 1, duration: 0.45 }, S.at(12, 0.6));
 
-      // S.at(13) the last word lands before the last line is spoken; after this nothing moves,
-      // so the film ends on one still plate.
+      // S.at(13) the honest last word
       tl.fromTo('#recap-end .rule', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: 'expo.out' }, S.at(13));
       tl.fromTo('#recap-end .e1', { opacity: 0, x: -12 }, { opacity: 1, x: 0, ...IN }, S.at(13, 0.15));
       tl.fromTo('#recap-end .e2', { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, S.at(13, 0.5));
+
+      // the last beat: the recap has been adding for half a minute and its final frame is the fullest
+      // of the film, held still until the file stops. So take it back. The mechanism goes — the
+      // fingerprints, the T cell, the brake, the three steps, the trial's two bars — and the film
+      // ends on the one thing it is named after, one person's own vial, over the line that says the
+      // survival data is not in yet.
+      // A slow dissolve, not a cut: it runs almost to the last frame, so the tail is the film letting
+      // go rather than a still plate waiting for the file to stop.
+      tl.fromTo(['#recap-a', '#recap-b', '#recap-d', '#recap-steps', '#recap-sarrows', '#recap-credit'],
+        { opacity: 1 }, { opacity: 0, duration: 1.5, ease: 'power1.inOut' }, S.duration - 2.1);
 
       window.__timelines['recap'] = tl;
     })();

@@ -17,7 +17,7 @@
 #  - 截至 2026-11-04，该疗法尚未在任何国家获批，仍为研究性药物。
 name: mrna-cancer-vaccine
 purpose: explainer
-out: mrna-cancer-vaccine.mp4
+out: video.mp4            # gallery convention — keeps compose writing in place
 lang: zh
 ground: light
 voice:
@@ -28,7 +28,7 @@ voice:
     PD-1: P D 一
     DNA: D N A
     T: T
-subtitles: burn
+subtitles: true          # sidecar .srt only — not burned into the picture
 music: { style: calm, bpm: 68 }
 theme: { accent: "#0f766e", ink: "#16181d" }   # accent = 字幕里"正在念到"的那个词的颜色，也是片中免疫一侧的青色
 scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js }
@@ -64,5 +64,10 @@ steps:
   - scene: { file: scenes/next.html, title: 下一步是哪些癌, lead: 0.6 }
     say: 同一套思路正在别的癌种上试。现在有九个二期和三期试验：肺癌四个，膀胱癌两个，黑色素瘤两个，肾癌一个。为什么先挑这些？它们突变多，指纹就多。很多病人能手术切除，正好留得下组织。而且这些癌种本来就在用免疫治疗，疫苗是加在现有方案上。突变少的癌种，比如胰腺癌，这条路要难得多。
 
-  - scene: { file: scenes/recap.html, title: 回顾, lead: 0.6, tail: 3.5 }
+  - scene: { file: scenes/recap.html, title: 回顾, lead: 0.6, tail: 2.2 }
     say: 回顾一下。癌细胞的突变会留下指纹，也就是新抗原。mRNA 把指纹交给免疫系统，PD-1 抑制剂负责松开刹车。药是按人定制的，要测序、挑选、合成，几周才做得出来。目前的证据是，完整切除的黑色素瘤，两年内复发更少。更长的生存数据，还要等。
+
+  # 回顾只是把讲过的东西再数一遍，数完就停，所以听起来没有结局。这一场才是结局：
+  # 说清楚这件事到底意味着什么、哪些还没有答案，然后留下一句话。
+  - scene: { file: scenes/close.html, title: 新在哪里, lead: 0.7, tail: 2.6 }
+    say: 最后说清楚，这件事新在哪里。新的不是 mRNA，也不是"个体化"这个词。新的是，一支只给一个人用的药，能在手术之后的几周里，设计出来、造出来、放行，运到他住院的城市。打疫苗的那七百五十七个人里，超过百分之九十九都赶上了那扇窗。过去的抗癌药，是为一种病做的。这一支，是为一个人做的。但到今天为止，它能说的只有一句：两年之内，复发的人更少。更久的事，要等这批病人再走几年，曲线才会告诉我们。而且它还没有在任何一个国家获批。手术之后那段时间，过去只能松开刹车。现在，还可以递上一张通缉令。

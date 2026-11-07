@@ -1,0 +1,210 @@
+<template>
+  <style>
+    /* scene-local only: everything else comes from scenes/kit/kit.css */
+    /* The recap summed the film up. This scene is the film's last word: it goes back to the question
+       scene 1 asked, answers it, and then hands the answer to the viewer. Nothing new is taught here —
+       everything on screen is something the film already showed, said once more and then cleared away,
+       until only the kid and the booth are left. */
+    #close-q      { transform-origin: 50% 50%; }
+    #close-card   { padding: 0; }
+    #close-ct     { letter-spacing: .01em; }
+    #close-rod    { position: absolute; height: 14px; border-radius: 7px; background: var(--chalk); opacity: .8; }
+    .cur          { position: absolute; border-radius: 10px 10px 14px 14px;
+                    background: repeating-linear-gradient(90deg, #4a5468 0 26px, #3d4659 26px 52px); }
+    #close-table  { position: absolute; border-radius: 12px 12px 6px 6px; background: #fff;
+                    border: 5px solid var(--chalk); }
+    #close-paper  { position: absolute; border-radius: 6px; background: #fff; border: 4px solid var(--chalk-2); }
+    #close-paper i{ position: absolute; left: 14px; right: 14px; height: 5px; border-radius: 3px;
+                    background: var(--off); display: block; }
+    #close-show   { padding: 26px 40px; }
+    #close-line   { border-radius: 3px; transform-origin: 0% 50%;
+                    background: repeating-linear-gradient(90deg, var(--chalk-2) 0 20px, transparent 20px 38px); }
+    #close-trail  { border-radius: 3px; transform-origin: 0% 50%; background: var(--you); }
+    #close-rule   { position: absolute; height: 7px; border-radius: 4px; background: var(--you); transform-origin: 0% 50%; }
+  </style>
+
+  <div id="close" class="world" data-composition-id="close" data-width="1920" data-height="1080">
+    <div id="close-kicker" class="kicker">One last thing</div>
+
+    <!-- scene 1's question, come back -->
+    <div id="close-q" class="big" style="left:420px; top:214px;">Who gets to decide?</div>
+
+    <div id="close-rule" style="left:798px; top:322px; width:260px;"></div>
+
+    <!-- …and the answer: somebody decides everything -->
+    <div id="close-card" class="card" style="left:170px; top:366px; width:700px; height:400px;"></div>
+    <div id="close-ct" class="label" style="left:222px; top:410px;">Somebody decides:</div>
+    <div id="close-r1" class="label s" style="left:318px; top:506px;">when recess is</div>
+    <div id="close-r2" class="label s" style="left:318px; top:606px;">what is for lunch</div>
+    <div id="close-r3" class="label s" style="left:318px; top:706px;">where the money goes</div>
+
+    <!-- the only part that is still open -->
+    <div id="close-who" class="huge hl" style="left:1150px; top:430px;">WHO?</div>
+
+    <!-- the booth: a line, a curtain, a piece of paper -->
+    <div id="close-booth" style="position:absolute; left:520px; top:330px; width:880px; height:600px;" data-layout-allow-overlap>
+      <div id="close-rod" style="left:20px; top:0; width:840px;"></div>
+      <div id="close-cl" class="cur" style="left:60px; top:10px; width:250px; height:590px;"></div>
+      <div id="close-cr" class="cur" style="left:570px; top:10px; width:250px; height:590px;"></div>
+      <div id="close-table" style="left:340px; top:420px; width:200px; height:130px;"></div>
+      <div id="close-paper" style="left:370px; top:368px; width:140px; height:95px;">
+        <i style="top:18px"></i><i style="top:40px"></i><i style="top:62px"></i>
+      </div>
+    </div>
+
+    <div id="close-line" style="position:absolute; left:330px; top:978px; width:580px; height:5px;"></div>
+    <div id="close-trail" style="position:absolute; left:330px; top:978px; width:580px; height:5px;"></div>
+    <div id="close-crowd" style="position:absolute; left:380px; top:850px; width:1340px; height:120px;"></div>
+    <div id="close-show" class="bubble" style="left:1360px; top:250px;">Show up.</div>
+    <div id="close-youlbl" class="big hl" style="left:196px; top:692px;">you</div>
+
+    <div id="close-credit" class="credit" data-layout-ignore>Election Day: the Tuesday after the<br>first Monday in November</div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const K = window.Kit;
+      const A = (k, o) => S.at(k) + (o || 0);
+      const root = document.getElementById('close');
+      const ID = (s) => document.getElementById('close-' + s);
+
+      const INK2 = '#5d6578', OFF = '#b3ab99', YOU = '#d97706';
+      const GROUND = 958;          /* everyone in this scene stands on this line */
+
+      /* ---- the three deciders in the card: one grey person per row ---- */
+      const deciders = [506, 606, 706].map((top) => K.person(root, { x: 256, y: top + 46, h: 74 }));
+      deciders.forEach((d, i) => { d.id = 'close-dec' + i; d.setAttribute('data-layout-ignore', ''); });
+
+      /* ---- the grown ups ---- */
+      const crowd = K.people(ID('crowd'), { n: 13, cols: 13, w: 1340, h: 120, size: 120, seed: 7 });
+      crowd.forEach((p, i) => { p.id = 'close-p' + i; p.setAttribute('data-layout-ignore', ''); });
+      /* who shows up and who does not: a fixed pattern, so it is the same in every render */
+      const SHOWS = [1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0];
+
+      /* ---- the viewer: a kid at the left of the queue, drawn at grown-up size and scaled down,
+             so the scale can simply run back to 1 when the film hands them the vote ---- */
+      const you = K.person(root, { x: 300, y: GROUND, h: 120, cls: 'on' });
+      you.id = 'close-you';
+      you.setAttribute('data-layout-ignore', '');
+      gsap.set(you, { transformOrigin: '50% 100%' });
+
+      /* ---- the booth starts parted; its two halves close at the very end ---- */
+      const CL = ID('cl'), CR = ID('cr');
+
+      const tl = gsap.timeline({ paused: true });
+
+      /* The cue list this is keyed to — the voice breaks on commas as well as full stops, so the
+         four things in "a line, a curtain, a piece of paper, on a Tuesday in November" are four
+         separate cues, and each one gets its own thing on screen:
+           0 One last thing.                     11 In a few years,
+           1 At the beginning we asked…          12 it will be you.
+           2 Who gets to decide?                 13 Not in some big dramatic way.
+           3 Here is the real answer.            14 Just a line,
+           4 Somebody decides everything.        15 a curtain,
+           5 When recess is.                     16 a piece of paper,
+           6 What is for lunch.                  17 on a Tuesday in November.
+           7 Where the money goes.               18 And on that Tuesday,
+           8 The only question is ever who.      19 …are the people who decide.
+           9 Right now,                          20 So when it is your turn,
+          10 it is the grown ups who show up.    21 show up.                                      */
+
+      gsap.set([ID('q'), ID('rule'), ID('card'), ID('ct'), ID('r1'), ID('r2'), ID('r3'), ID('who'),
+        ID('booth'), ID('line'), ID('trail'), ID('crowd'), ID('show'), ID('youlbl'), ID('credit'),
+        you, ...deciders], { opacity: 0 });
+      tl.fromTo(ID('kicker'), { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, 0);
+
+      /* (1)(2) scene 1's question, asked again */
+      tl.fromTo(ID('q'), { opacity: 0, y: 26, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'expo.out' }, A(1, 0.1));
+      tl.fromTo(ID('rule'), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: 'power2.out' }, A(2, 0.1));
+
+      /* (3) Here is the real answer — the question steps back to make room for it */
+      tl.fromTo([ID('q'), ID('rule')], { opacity: 1 }, { opacity: 0.4, duration: 0.7, ease: 'power1.inOut' }, A(3));
+      tl.fromTo(ID('q'), { scale: 1 }, { scale: 0.86, duration: 0.7, ease: 'power1.inOut' }, A(3));
+
+      /* (4) Somebody decides everything. */
+      tl.fromTo(ID('card'), { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, A(4));
+      tl.fromTo(ID('ct'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, A(4, 0.25));
+
+      /* (5)(6)(7) the three things, one per phrase */
+      [['r1', 5], ['r2', 6], ['r3', 7]].forEach(([id, k], i) => {
+        tl.fromTo(deciders[i], { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.42, ease: 'expo.out' }, A(k));
+        tl.fromTo(ID(id), { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, A(k, 0.12));
+      });
+
+      /* (8) The only question is ever who. — the three rows go quiet and WHO? lands */
+      tl.fromTo([ID('r1'), ID('r2'), ID('r3'), ID('ct'), ...deciders],
+        { opacity: 1 }, { opacity: 0.34, duration: 0.6, ease: 'power1.inOut' }, A(8));
+      tl.fromTo(ID('who'), { opacity: 0, scale: 0.72 }, { opacity: 1, scale: 1, duration: 0.7, ease: 'expo.out' }, A(8, 0.3));
+
+      /* (9) Right now, — the grown ups arrive */
+      tl.fromTo(ID('crowd'), { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(9));
+      crowd.forEach((p, i) => {
+        tl.fromTo(p, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: 'expo.out' }, A(9, 0.1 + i * 0.045));
+      });
+
+      /* (10) it is the grown ups who show up. — "showing up" has to be a MOVE, not a tint: the ones
+             who vote take a step towards the front, the ones who do not fall back and go grey. */
+      crowd.forEach((p, i) => {
+        const t = A(10, 0.1 + i * 0.05);
+        if (SHOWS[i]) {
+          tl.fromTo(p, { y: 0, scale: 1 }, { y: 30, scale: 1.1, duration: 0.6, ease: 'back.out(1.4)' }, t);
+        } else {
+          tl.fromTo(p.querySelectorAll('.hd, .bd'), { backgroundColor: INK2 },
+            { backgroundColor: OFF, duration: 0.55, ease: 'power1.inOut' }, t);
+          tl.fromTo(p, { y: 0, opacity: 1, scale: 1 }, { y: -26, opacity: 0.5, scale: 0.9, duration: 0.6, ease: 'power2.out' }, t);
+        }
+      });
+
+      /* (11) In a few years, — the card has said everything it had to say, so it goes, and the kid
+             who has been standing at the head of the queue all along is what is left to look at */
+      tl.fromTo(ID('card'), { opacity: 1 }, { opacity: 0, duration: 0.8, ease: 'power1.inOut' }, A(11));
+      tl.fromTo([ID('ct'), ID('r1'), ID('r2'), ID('r3'), ...deciders],
+        { opacity: 0.34 }, { opacity: 0, duration: 0.8, ease: 'power1.inOut' }, A(11));
+      tl.fromTo(you, { opacity: 0 }, { opacity: 1, duration: 0.45 }, A(11, 0.3));
+      /* (12) it will be you. — and grows into the person who gets to walk in */
+      tl.fromTo(you, { scale: 0.54 }, { scale: 1, duration: 1.2, ease: 'power2.inOut' }, A(12));
+      tl.fromTo(ID('youlbl'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, A(12, 0.55));
+      /* and the queue steps back, so the one person the sentence is about is the one you look at */
+      tl.fromTo(ID('crowd'), { opacity: 1 }, { opacity: 0.45, duration: 0.9, ease: 'power1.inOut' }, A(12, 0.3));
+
+      /* (13) Not in some big dramatic way. — the answer is given, so the words come down */
+      tl.fromTo(ID('q'), { opacity: 0.4 }, { opacity: 0, duration: 0.8, ease: 'power1.inOut' }, A(13));
+      tl.fromTo(ID('rule'), { opacity: 0.4 }, { opacity: 0, duration: 0.8, ease: 'power1.inOut' }, A(13));
+      tl.fromTo(ID('who'), { opacity: 1 }, { opacity: 0, duration: 0.8, ease: 'power1.inOut' }, A(13));
+
+      /* (14) Just a line, — the queue clears and leaves the line itself, on the floor */
+      tl.fromTo(ID('crowd'), { opacity: 0.45 }, { opacity: 0, duration: 0.9, ease: 'power1.inOut' }, A(14));
+      tl.fromTo(ID('line'), { opacity: 0, scaleX: 0 }, { opacity: 0.55, scaleX: 1, duration: 1.0, ease: 'power2.out' }, A(14, 0.2));
+
+      /* (15) a curtain, */
+      tl.fromTo(ID('booth'), { opacity: 0 }, { opacity: 1, duration: 0.35 }, A(15));
+      tl.fromTo(ID('rod'), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: 'power2.out' }, A(15, 0.05));
+      tl.fromTo([CL, CR], { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.55, stagger: 0.1, ease: 'expo.out' }, A(15, 0.3));
+
+      /* (16) a piece of paper, */
+      tl.fromTo(ID('table'), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(16));
+      tl.fromTo(ID('paper'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(16, 0.2));
+
+      /* (17) on a Tuesday in November. */
+      tl.fromTo(ID('credit'), { opacity: 0 }, { opacity: 1, duration: 0.5 }, A(17, 0.1));
+
+      /* (18)(19) And on that Tuesday, the people who show up are the people who decide.
+             THE LAST BEAT. Everything the film had to say is said; the only thing left moving is the
+             one person it was said to, walking the line it just drew. */
+      tl.fromTo(you, { x: 0 }, { x: 660, duration: 4.4, ease: 'power1.inOut' }, A(18, 0.3));
+      tl.fromTo(ID('trail'), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 4.4, ease: 'power1.inOut' }, A(18, 0.3));
+      tl.fromTo(ID('youlbl'), { opacity: 1 }, { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, A(18, 0.3));
+
+      /* (21) show up. — the words land, and then the curtain closes over the booth, so the picture
+             is still moving when the film stops and the last thing on screen is the whole point. */
+      tl.fromTo(ID('show'), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, A(21));
+      tl.fromTo(CL, { x: 0 }, { x: 130, duration: 1.8, ease: 'power2.inOut' }, S.duration - 2.0);
+      tl.fromTo(CR, { x: 0 }, { x: -130, duration: 1.8, ease: 'power2.inOut' }, S.duration - 2.0);
+      tl.fromTo([ID('line'), ID('trail')], { opacity: 0.55 }, { opacity: 0.2, duration: 1.5, ease: 'power1.inOut' }, S.duration - 1.8);
+
+      window.__timelines['close'] = tl;
+    })();
+  </script>
+</template>

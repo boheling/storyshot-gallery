@@ -5,7 +5,7 @@
 # Hanna et al. 2021 Cell (base editor screens); Findlay et al. 2018 Nature (BRCA1, 3,893 SNVs).
 name: crispr-screen-explainer
 purpose: explainer
-out: crispr-screen-explainer.mp4
+out: video.mp4            # gallery convention — keeps compose writing in place
 lang: zh
 voice:
   provider: qwen
@@ -23,7 +23,7 @@ voice:
     MED12: M E D 十二
     p53: P 五十三
     BRCA1: B R C A 一
-subtitles: burn
+subtitles: true          # sidecar .srt only — not burned into the picture
 theme: { accent: "#f4a62a", ink: "#17181b" }
 scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js }
 
@@ -58,5 +58,10 @@ steps:
   - scene: { file: scenes/base.html, title: 改一个碱基：突变扫描, lead: 0.6 }
     say: 想问某一个突变，可以换一种工具，碱基编辑器。它不把 DNA 剪断，而是把一个 C 直接改成 T。把向导铺满一个基因，每条向导做出一个点突变。加药，测序，数条形码，和刚才一样。2021 年，有人这样找到了改变药效的点突变。另一种做法，是把突变直接换进基因里。2018 年，有人用它把 BRCA1 关键区域的 3893 个单碱基突变，逐个测了一遍。
 
-  - scene: { file: scenes/recap.html, title: 回顾, lead: 0.6, tail: 3.5 }
+  - scene: { file: scenes/recap.html, title: 回顾, lead: 0.6, tail: 2.2 }
     say: 回到开头的问题，药为什么失效？CRISPR 筛选，把每个细胞变成一个小实验，各敲掉一个基因。向导是剪刀的地址，也是细胞的条形码。加药让细胞自己选，测序数条形码，就知道谁让癌细胞活了下来。想问具体哪个突变，就换成只改一个碱基的编辑器。
+
+  # 回顾只是把讲过的东西再数一遍，数完就停，所以听起来没有结局。这一场才是结局：
+  # 说清楚这件事到底意味着什么、哪些还没有答案，然后留下一句话。
+  - scene: { file: scenes/close.html, title: 退一步看, lead: 0.7, tail: 2.6 }
+    say: 最后退一步看。这套方法真正关键的那一下，不是剪刀，也不是测序。是把一个要问两万次的问题，交给细胞自己回答。它不懂生物学，它只会数数。所以细胞自己的事，活不活，长得快不快，它都问得出来。细胞和细胞之间的事，它问不出来。十二年前，NF2 是在一瓶细胞里数出来的。现在同一个办法在往下走，从哪个基因，到哪一个碱基。但一瓶细胞不是一个人。筛选给出的从来不是答案，是一份名单。名单后面的事，还得一个一个去做。

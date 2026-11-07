@@ -249,6 +249,17 @@
       tl.fromTo('#recap-boxwrap', { scale: 1.05 },
         { scale: 1, duration: 0.55, ease: 'power2.inOut', transformOrigin: '50% 100%' }, at(8, 0.4));
 
+      // the last beat: a recap that keeps the whole chain leaves the film on its fullest frame, held
+      // still until the file stops. So once "decide." has landed, the chain goes and what is left is
+      // the question at the top and its answer underneath — the few who walked over, and the box.
+      tl.fromTo(['#recap-bar', '#recap-pin', '#recap-mt', '#recap-4y',
+        '#recap-hl', '#recap-hd', '#recap-sl', '#recap-sd', '#recap-ll',
+        '#recap-lr0', '#recap-lr1', '#recap-lr2', '#recap-law', '#recap-jar', '#recap-crowd',
+        '#recap-chev0', '#recap-chev1', '#recap-chev2', '#recap-chev3'],
+        { opacity: 1 }, { opacity: 0, duration: 1.5, ease: 'power1.inOut' }, S.duration - 2.1);
+      // and the three who did show up keep walking the last few steps to the box
+      tl.fromTo(walkers, { x: 200 }, { x: 300, duration: 1.4, ease: 'power1.inOut', stagger: 0.08 }, S.duration - 2.0);
+
       window.__timelines['recap'] = tl;
     })();
   </script>
