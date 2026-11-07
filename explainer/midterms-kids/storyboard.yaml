@@ -9,15 +9,15 @@
 # each, tie broken by a name drawn from a bowl, 4 Jan 2018); 26th Amendment (voting age 18).
 name: midterms-for-kids
 purpose: explainer
-out: midterms-for-kids.mp4
+out: video.mp4            # gallery convention — keeps compose writing in place
 lang: en
 voice:
   provider: kokoro
   voice: af_heart
   speed: 0.95
-subtitles: burn
+subtitles: true          # sidecar .srt only — not burned into the picture
 music: { style: calm, bpm: 72 }
-theme: { accent: "#d97706", ink: "#101624" }   # accent = the burned subtitles' spoken-word sweep; ink = their outline
+theme: { accent: "#d97706", ink: "#101624" }   # accent = the one colour that points; ink = the type on the paper
 scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js }
 
 steps:
@@ -48,5 +48,10 @@ steps:
   - scene: { file: scenes/you.html, title: What you can do now, lead: 0.6 }
     say: You cannot vote until you are eighteen. That does not leave you out of it. You can find out who represents your neighborhood, by name. You can go along with a grown up when they vote. You can watch what the school board decides, because that one is about you. And you can ask the grown ups in your house one question. Did you vote?
 
-  - scene: { file: scenes/recap.html, title: Recap, lead: 0.6, tail: 3.5 }
+  - scene: { file: scenes/recap.html, title: Recap, lead: 0.6, tail: 2.2 }
     say: So, a midterm is the election in the middle of a President's term. The whole House, a third of the Senate, and a long list of local jobs. Those people write the laws and decide where the money goes. Fewer people show up to choose them. Which means the ones who do show up, decide.
+
+  # The recap is a summary, and a summary that runs out is not an ending. This scene is the ending:
+  # it goes back to the question scene 1 opened with, answers it, and hands the answer to the viewer.
+  - scene: { file: scenes/close.html, title: Your turn, lead: 0.6, tail: 2.6 }
+    say: One last thing. At the beginning we asked a question. Who gets to decide? Here is the real answer. Somebody decides everything. When recess is. What is for lunch. Where the money goes. The only question is ever who. Right now, it is the grown ups who show up. In a few years, it will be you. Not in some big dramatic way. Just a line, a curtain, a piece of paper, on a Tuesday in November. And on that Tuesday, the people who show up are the people who decide. So when it is your turn, show up.

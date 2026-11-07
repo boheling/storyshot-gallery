@@ -1,0 +1,250 @@
+<template>
+  <style>
+    /* scene-local only: everything else comes from scenes/kit/kit.css */
+    /* 第 11 场是回顾 —— 把讲过的再数一遍，数完就停。那不是结局。
+       这一场才是：说清楚这套方法真正做到的是哪一下、它问不出来的是什么，最后落在一份名单上，
+       和名单后面那件必须一个一个去做的事。片子停在那几条还在画的线上，不是停在一张总结图上。
+       五段各装在一个铺满画面的容器里（#close-a…e），到点整段淡掉。 */
+    .gold          { color: var(--nf2); }
+    .dim           { color: var(--chalk-2); }
+    .strike        { position: absolute; height: 6px; border-radius: 3px; background: var(--chalk);
+                     transform-origin: 0% 50%; }
+    .rule          { position: absolute; height: 3px; border-radius: 2px; background: var(--nf2);
+                     transform-origin: 0% 50%; }
+    .mk            { position: absolute; width: 20px; height: 20px; border-radius: 5px;
+                     background: var(--nf2); }
+    .mk.no         { background: var(--cut); }
+    .seqrow        { position: absolute; }
+    #close-genebar { position: absolute; border-radius: 8px; background: var(--nf2); }
+    .dish          { position: absolute; width: 46px; height: 46px; border-radius: 50%;
+                     border: 3px solid var(--chalk-2); background: var(--ground-2); }
+    .wire          { position: absolute; height: 2px; background: var(--chalk-2);
+                     transform-origin: 0% 50%; opacity: .75; }
+    .nm            { position: absolute; font: 600 34px/1 var(--mono); color: var(--chalk); }
+    #close-lst     { position: absolute; font: 700 76px/1 var(--font); color: var(--nf2); white-space: nowrap; }
+    .tick          { position: absolute; font: 600 44px/1 var(--font); }
+  </style>
+
+  <div id="close" class="world" data-composition-id="close" data-width="1920" data-height="1080">
+    <div id="close-kicker" class="kicker">最后</div>
+    <div id="close-tag" class="tag-schematic" data-layout-ignore>示意</div>
+    <div id="close-credit" class="credit" data-layout-ignore>Shalem et al., Science 2014<br>Hanna et al., Cell 2021 / Findlay et al., Nature 2018</div>
+
+    <!-- 甲 (0)–(3)：真正关键的那一下，不是剪刀，也不是测序 -->
+    <div id="close-a" style="position:absolute; inset:0;">
+      <div id="close-at" class="label" style="left:300px; top:276px;">真正关键的那一下，不是这两样</div>
+      <div id="close-atr" class="rule" style="left:300px; top:334px; width:320px;"></div>
+      <div id="close-cas" style="position:absolute; left:320px; top:430px; width:460px; height:300px;"></div>
+      <div id="close-s1" class="strike" style="left:330px; top:578px; width:440px;"></div>
+      <div id="close-l1" class="label dim" style="left:470px; top:770px;">剪刀</div>
+      <div id="close-bc0" class="barcode" style="left:1180px; top:470px; width:300px;"></div>
+      <div id="close-bc1" class="barcode" style="left:1180px; top:540px; width:300px;"></div>
+      <div id="close-bc2" class="barcode" style="left:1180px; top:610px; width:300px;"></div>
+      <div id="close-s2" class="strike" style="left:1170px; top:578px; width:330px;"></div>
+      <div id="close-l2" class="label dim" style="left:1290px; top:770px;">测序</div>
+    </div>
+
+    <!-- 乙 (4)–(7)：是把两万次实验交给细胞自己回答，而它只会数数 -->
+    <div id="close-b" style="position:absolute; inset:0;">
+      <div id="close-bt" class="label" style="left:300px; top:256px;">是把两万次实验，交给细胞自己回答</div>
+      <div id="close-flask" class="plot" style="left:280px; top:360px; width:1360px; height:360px;"></div>
+      <div id="close-field" class="cellfield" style="left:300px; top:380px; width:1320px; height:320px;"></div>
+      <div id="close-nob" class="label" style="left:300px; top:790px;">它不懂生物学，它只会数数</div>
+      <div id="close-cnt" class="barcode nf2" style="left:1060px; top:782px; width:300px;"></div>
+      <div id="close-cntn" class="label gold" style="left:1400px; top:786px;">几百 → 上万</div>
+    </div>
+
+    <!-- 丙 (8)–(13)：细胞自己的事问得出来，细胞之间的事问不出来 -->
+    <div id="close-c" style="position:absolute; inset:0;">
+      <div id="close-ct" class="label" style="left:300px; top:256px;">所以它能问什么，是定死的</div>
+      <div id="close-canl" class="label s" style="left:300px; top:406px;">细胞自己的事</div>
+      <div id="close-can" class="plot" style="left:280px; top:470px; width:720px; height:300px;"></div>
+      <div id="close-k0" class="mk" style="left:330px; top:546px;"></div>
+      <div id="close-r0" class="label" style="left:376px; top:532px;">活不活</div>
+      <div id="close-k1" class="mk" style="left:330px; top:646px;"></div>
+      <div id="close-r1" class="label" style="left:376px; top:632px;">长得快不快</div>
+      <div id="close-y" class="tick gold" style="left:880px; top:700px;">✓</div>
+
+      <div id="close-cantl" class="label s" style="left:1080px; top:406px;">细胞和细胞之间的事</div>
+      <div id="close-cant" class="plot" style="left:1060px; top:470px; width:580px; height:300px;"></div>
+      <div id="close-k2" class="mk no" style="left:1110px; top:546px;"></div>
+      <div id="close-r2" class="label" style="left:1156px; top:532px;">谁在影响谁</div>
+      <div id="close-n" class="tick" style="left:1530px; top:700px; color:var(--cut);">✕</div>
+    </div>
+
+    <!-- 丁 (14)–(18)：同一个办法在往下走，从哪个基因到哪一个碱基 -->
+    <div id="close-d" style="position:absolute; inset:0;">
+      <div id="close-dt" class="label" style="left:300px; top:256px;">同一个办法，还在往下走</div>
+      <div id="close-plot" class="plot" style="left:300px; top:440px; width:680px; height:300px;"></div>
+      <div id="close-plab" class="label s" style="left:300px; top:770px;">十二年前，NF2 是在一瓶细胞里数出来的</div>
+      <div id="close-arr" class="wire" style="left:1020px; top:590px; width:140px; height:3px;"></div>
+      <div id="close-gl1" class="label s" style="left:1220px; top:460px;">从“哪个基因”</div>
+      <div id="close-genebar" style="left:1220px; top:510px; width:400px; height:44px;"></div>
+      <div id="close-gl2" class="label s" style="left:1220px; top:630px;">到“哪一个碱基”</div>
+      <div id="close-bases" class="strand" style="left:1220px; top:676px;"></div>
+    </div>
+
+    <!-- 戊 (19)–(23)：最后一拍 —— 一瓶细胞不是一个人，名单后面还得一个一个做 -->
+    <div id="close-e" style="position:absolute; inset:0;">
+      <div id="close-e0" class="label" style="left:300px; top:250px;">但一瓶细胞，不是一个人</div>
+      <div id="close-ans" class="label dim" style="left:300px; top:350px;">筛选给出的，从来不是答案</div>
+      <div id="close-lst" style="left:300px; top:410px;">是一份名单</div>
+      <div id="close-dlab" class="label s" style="left:1250px; top:494px;">名单后面：一个一个去做</div>
+      <div id="close-names" style="position:absolute; inset:0;"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const K = window.Kit;
+      const A = (k, o) => S.at(k) + (o || 0);
+      const ID = (s) => document.getElementById('close-' + s);
+
+      /* 甲：剪刀，和三条读出来的条形码 */
+      ID('cas').innerHTML = K.CAS9_SVG;
+      [0, 1, 2].forEach((i) => K.barcode(ID('bc' + i), 11 + i, 20));
+
+      /* 乙：一瓶细胞，每个细胞身上一个条形码 */
+      const cells = K.cells(ID('field'), { w: 1320, h: 320, n: 210, r: 21, seed: 5, nf2: [38, 97, 151] });
+      const bcs = cells.map((c) => c.el.querySelector('.bc'));
+      K.barcode(ID('cnt'), 3, 20);
+
+      /* 丁：十二年前那张图，和从基因走到碱基 */
+      const HITS = [3, 7, 11, 16, 22, 29, 38, 47, 58, 71, 86, 104, 126, 155, 198, 266];
+      const bars = HITS.map((v, i) => {
+        const b = document.createElement('div');
+        b.className = 'bar' + (i === HITS.length - 1 ? ' nf2' : '');
+        const h = Math.round((v / 266) * 250);
+        b.style.cssText = `left:${26 + i * 40}px; bottom:0; width:26px; height:${h}px`;
+        b.id = 'close-bar' + i;
+        ID('plot').appendChild(b);
+        return b;
+      });
+      const nf2lab = document.createElement('div');
+      nf2lab.className = 'label s gold'; nf2lab.id = 'close-nf2lab';
+      nf2lab.style.cssText = 'left:900px; top:400px; position:absolute';
+      nf2lab.textContent = 'NF2';
+      ID('d').appendChild(nf2lab);
+      const bases = K.strand(ID('bases'), 'ACCTCTTTGATT', (i) => (i === 6 ? 'edit' : ''));
+
+      /* 戊：名单，和名单后面那一个一个要做的实验 */
+      const NAMES = ['NF2', 'CUL3', 'TADA2B', 'TADA1', 'NF1', 'MED12'];
+      const rows = NAMES.map((n, i) => {
+        const y = 560 + i * 62;
+        const nm = document.createElement('div');
+        nm.className = 'nm'; nm.id = 'close-nm' + i;
+        nm.style.cssText = `left:330px; top:${y}px`;
+        nm.textContent = n;
+        const wire = document.createElement('div');
+        wire.className = 'wire'; wire.id = 'close-w' + i;
+        wire.style.cssText = `left:640px; top:${y + 16}px; width:620px`;
+        const dish = document.createElement('div');
+        dish.className = 'dish'; dish.id = 'close-ds' + i;
+        dish.style.cssText = `left:1290px; top:${y - 8}px`;
+        ID('names').append(nm, wire, dish);
+        return { nm, wire, dish };
+      });
+
+      const INSIDE = (w) => [...ID(w).children];
+      const ALL = [...INSIDE('a'), ...INSIDE('b'), ...INSIDE('c'), ...INSIDE('d'), ...INSIDE('e'),
+        nf2lab, ID('credit'), ...rows.flatMap((r) => [r.nm, r.wire, r.dish])];
+      gsap.set(ALL, { opacity: 0 });
+      gsap.set([ID('atr'), ID('s1'), ID('s2'), ID('arr'), ...rows.map((r) => r.wire)],
+        { scaleX: 0, transformOrigin: '0% 50%' });
+      gsap.set(bcs, { opacity: 0 });
+      gsap.set(bars, { transformOrigin: '50% 100%' });
+      gsap.set(ID('genebar'), { transformOrigin: '0% 50%' });
+
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(ID('kicker'), { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, 0);
+      tl.fromTo(ID('tag'), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.2);
+      /* 名单上那六个名字是真的，所以牌子到那一段就撤掉 */
+      tl.fromTo(ID('tag'), { opacity: 1 }, { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, A(19));
+
+      /* ---------- 甲 (0)–(3) 不是剪刀，也不是测序 ---------- */
+      tl.fromTo(ID('at'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, A(0, 0.1));
+      tl.fromTo(ID('atr'), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.8, ease: 'power2.out', immediateRender: false }, A(1, 0.1));
+      /* (2) 不是剪刀 */
+      tl.fromTo([ID('cas'), ID('l1')], { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.12, ease: 'expo.out' }, A(2));
+      tl.fromTo(ID('s1'), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: 'power2.inOut', immediateRender: false }, A(2, 0.55));
+      tl.fromTo(ID('cas'), { opacity: 1 }, { opacity: 0.4, duration: 0.5, ease: 'power1.inOut' }, A(2, 0.75));
+      /* (3) 也不是测序 */
+      tl.fromTo([ID('bc0'), ID('bc1'), ID('bc2'), ID('l2')], { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.45, stagger: 0.1, ease: 'expo.out' }, A(3));
+      tl.fromTo(ID('s2'), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: 'power2.inOut', immediateRender: false }, A(3, 0.6));
+      tl.fromTo([ID('bc0'), ID('bc1'), ID('bc2')], { opacity: 1 }, { opacity: 0.4, duration: 0.5, ease: 'power1.inOut' }, A(3, 0.8));
+
+      /* ---------- 乙 (4)–(7) 是把两万次实验交给细胞自己回答 ---------- */
+      tl.fromTo(ID('a'), { opacity: 1 }, { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, A(4));
+      tl.fromTo(ID('bt'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, A(4, 0.7));
+      tl.fromTo(ID('flask'), { opacity: 0, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'expo.out' }, A(4, 1.1));
+      tl.fromTo(ID('field'), { opacity: 0 }, { opacity: 1, duration: 0.3 }, A(4, 1.2));
+      tl.fromTo(cells.map((c) => c.el), { opacity: 0, scale: 0.4 },
+        { opacity: 1, scale: 1, duration: 0.3, stagger: 0.008, ease: 'expo.out' }, A(4, 1.3));
+      /* (5) 交给细胞自己回答 —— 每个细胞身上的条形码亮起来 */
+      tl.fromTo(bcs, { opacity: 0 }, { opacity: 1, duration: 0.35, stagger: 0.006, ease: 'power1.out' }, A(5, 0.1));
+      /* (6) 它不懂生物学 (7) 它只会数数 */
+      tl.fromTo(ID('nob'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, A(6));
+      tl.fromTo(ID('cnt'), { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, A(7));
+      tl.fromTo(ID('cntn'), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.8)' }, A(7, 0.3));
+
+      /* ---------- 丙 (8)–(13) 能问的，和问不出来的 ---------- */
+      tl.fromTo(ID('b'), { opacity: 1 }, { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, A(8));
+      tl.fromTo(ID('ct'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, A(8, 0.7));
+      tl.fromTo([ID('canl'), ID('can')], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'expo.out' }, A(8, 1.1));
+      /* (9) 活不活 (10) 长得快不快 (11) 它都问得出来 */
+      tl.fromTo([ID('k0'), ID('r0')], { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, stagger: 0.08, ease: 'expo.out' }, A(9));
+      tl.fromTo([ID('k1'), ID('r1')], { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, stagger: 0.08, ease: 'expo.out' }, A(10));
+      tl.fromTo(ID('y'), { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, A(11, 0.1));
+      /* (12) 细胞和细胞之间的事 (13) 它问不出来 */
+      tl.fromTo([ID('cantl'), ID('cant')], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'expo.out' }, A(12));
+      tl.fromTo([ID('k2'), ID('r2')], { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.45, stagger: 0.08, ease: 'expo.out' }, A(12, 0.5));
+      tl.fromTo(ID('n'), { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, A(13, 0.1));
+
+      /* ---------- 丁 (14)–(18) 从"哪个基因"到"哪一个碱基" ---------- */
+      tl.fromTo(ID('c'), { opacity: 1 }, { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, A(14));
+      tl.fromTo(ID('dt'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, A(14, 0.7));
+      /* (15) 十二年前，NF2 是在一瓶细胞里数出来的 */
+      tl.fromTo(ID('plot'), { opacity: 0 }, { opacity: 1, duration: 0.4 }, A(15));
+      tl.fromTo(bars, { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.45, stagger: 0.05, ease: 'power2.out' }, A(15, 0.1));
+      tl.fromTo([nf2lab, ID('plab')], { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.15, ease: 'expo.out' }, A(15, 1.1));
+      /* (16) 现在同一个办法在往下走 */
+      tl.fromTo(ID('arr'), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.7, ease: 'power2.out', immediateRender: false }, A(16, 0.2));
+      /* (17) 从哪个基因 */
+      tl.fromTo(ID('gl1'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(17));
+      tl.fromTo(ID('genebar'), { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: 'power2.out', immediateRender: false }, A(17, 0.15));
+      /* (18) 到哪一个碱基 */
+      tl.fromTo(ID('gl2'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, A(18));
+      tl.fromTo(ID('bases'), { opacity: 0 }, { opacity: 1, duration: 0.3 }, A(18, 0.1));
+      tl.fromTo(bases, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.045, ease: 'expo.out' }, A(18, 0.2));
+
+      /* ---------- 戊 (19)–(23) 最后一拍 ----------
+         筛选给出的是一份名单，不是答案。名单上每一个名字后面都还有一个单独的实验要做，
+         那几条线一条接一条地画过去，最后一条到影片的最后一帧都还没画完 —— 这部片子不是
+         讲完就停，是停在"后面还有活要干"这件事上。 */
+      tl.fromTo(ID('d'), { opacity: 1 }, { opacity: 0, duration: 0.7, ease: 'power1.inOut' }, A(19));
+      tl.fromTo(ID('e0'), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, A(19, 0.8));
+      /* (20) 筛选给出的从来不是答案 */
+      tl.fromTo(ID('ans'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, A(20));
+      /* (21) 是一份名单 */
+      tl.fromTo(ID('lst'), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, A(21));
+      tl.fromTo(rows.map((r) => r.nm), { opacity: 0, x: -16 },
+        { opacity: 1, x: 0, duration: 0.4, stagger: 0.16, ease: 'expo.out' }, A(21, 0.45));
+      /* (22) 名单后面的事 */
+      tl.fromTo(ID('names'), { opacity: 0 }, { opacity: 1, duration: 0.3 }, A(21, 0.35));
+      tl.fromTo(ID('dlab'), { opacity: 0 }, { opacity: 1, duration: 0.45 }, A(22));
+      tl.fromTo(rows.map((r) => r.dish), { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.4, stagger: 0.12, ease: 'back.out(1.8)' }, A(22, 0.25));
+      /* (23) 还得一个一个去做 —— 一条一条画过去，画到最后一帧 */
+      rows.forEach((r, i) => {
+        tl.fromTo(r.wire, { opacity: 0.75, scaleX: 0 },
+          { opacity: 0.75, scaleX: 1, duration: 0.85, ease: 'power1.inOut', immediateRender: false }, A(23, 0.3 + i * 0.55));
+        tl.fromTo(r.dish, { borderColor: '#8d93a0' },
+          { borderColor: '#f4a62a', duration: 0.4, ease: 'power1.inOut' }, A(23, 1.0 + i * 0.55));
+      });
+
+      window.__timelines['close'] = tl;
+    })();
+  </script>
+</template>

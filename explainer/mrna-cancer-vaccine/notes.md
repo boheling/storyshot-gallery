@@ -12,8 +12,8 @@ and the film is built so each one has its own chapters rather than being folded 
 - **Voice:** Qwen3-TTS 0.6B CustomVoice, `dylan`, free and local on an Apple Silicon Mac. A `pronounce` map
   spells out the abbreviations the model otherwise mangles (`mRNA` → m R N A, `PD-1` → P D 一, `DNA` → D N A).
 - **Sound:** Storyshot's own synth soundtrack, `calm` at 68 bpm, no clicks and no whooshes. −14.7 LUFS, LRA 3.6.
-- **Captions:** the narration burned in (`subtitles: burn`, 107 lines, word-by-word highlight), plus
-  `subtitles.srt` and `chapters.txt`.
+- **Captions:** none on the picture. `subtitles.srt` and `chapters.txt` only — the burned-in
+  karaoke line was removed on 2026-11-06 (see "Revised 2026-11-06" at the end).
 - **Wall-clock time:** 1 h 09 m from the finished storyboard (18:40) to the finished file (19:49); the
   sources, the narration and the brief came before that. The render itself was 3 m 03 s. Five sub-agents
   wrote the eleven scenes in parallel between 19:21 and 19:46, overlapping my own review and six fixes.
@@ -166,3 +166,55 @@ colour contract is what makes the rest of it legible across eleven scenes writte
 once crimson means tumour and teal means immune everywhere, the viewer stops reading legends by scene 3, and
 the one place the film breaks that habit — giving time the mRNA's ochre — is the place where the schedule and
 the drug really are the same constraint.
+
+## Revised 2026-11-06
+
+**It had no ending.** Motion stopped three seconds before the file did, on the fullest frame of the
+film — the tumour, the neoantigens, the T cell, the brake, the three manufacturing steps, both trial
+numbers, all still on screen. The recap now dissolves all of it over the last 2.5 seconds and ends on
+the one object the film is named after, a single person's vial, over the line that says the survival
+data is not in yet. The honest caveat gets the last frame to itself, which is where it belongs.
+
+**The burned-in subtitles are gone** (`subtitles: burn` → `subtitles: true`; `subtitles.srt` still
+ships). `ground: light` did put them in ink with a white edge, as described above, and that part
+worked — the reason for removing them is that a line lighting up word by word at the bottom pulls the
+eye off a drawing that is already carrying its own labels. The poster was re-cut from the new render,
+because the old one had a subtitle across it.
+
+Storyshot changed with it: the `calm` soundtrack reaches IV one chord before the end and lands on the
+tonic rather than being truncated wherever the video finishes; the picture settles to the film's
+ground (white here) over the last 0.9 s; `preview_scene` warns `frozen_ending` when a last scene has
+not changed for 2.5 seconds. Re-rendered from the same storyboard and narration; 297.8 s, unchanged.
+
+## Revised 2026-11-07 — the ending, again
+
+Yesterday's fix was the wrong fix. The frozen last frame, the truncated music and the missing fade
+were all real, and they are all still fixed, but they were not what made these films feel like they
+had no ending. > 结尾的问题不是渐变与否，而是没有很好的结论，结束语，展望，思考这样一个句点的感觉
+
+— which is exactly right.
+
+A recap is not an ending. It re-counts what the film already said and then runs out — and every one
+of these films had its last spoken line land on a list item, a caveat or a footnote. No fade repairs
+a script with nothing left to say.
+
+So each film now has **a closing scene of its own, after the recap** (step 12, `scenes/close.html`, 58.2 s), written to do three
+things: say what this actually means now that the viewer has seen all of it, name what is still open,
+and leave one thought — in the film's own images, with the final words landing on it.
+
+It says what is actually new here, which is not mRNA and not the word "个体化": it is that a drug for
+one named person can be designed, made, released and shipped inside the weeks after their surgery —
+and that over 99% of the 757 people in the vaccine arm made that window. Past cancer drugs were made for a disease; this one is
+made for a person. Then what can honestly be claimed: fewer recurrences at two years, nothing yet
+about living longer, and no approval anywhere. It ends on the film's own two pictures side by side —
+the brake lifting off the T cell, and the wanted poster being handed to it. 297.8 s → 353.5 s.
+
+The rule is now in `skills/storyshot/SKILL.md` ("How an explainer ends"), rewritten to lead with the
+writing rather than the picture, and `frozen_ending` now says to read the last `say:` line before
+touching the animation. One trap worth recording: the voice breaks cues on **commas** as well as full
+stops, so a line like "a line, a curtain, a piece of paper" is three cues — key beats to what `cues`
+prints, not to the sentences you counted.
+
+The recap in each film keeps its dissolve but no longer holds a long tail for an ending it no longer
+has: `tail` 3.5 s → 2.2 s, and the dissolve now lands with its last words, so it reads as a page turn
+into the closing scene.

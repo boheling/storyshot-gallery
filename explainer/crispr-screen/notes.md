@@ -10,8 +10,8 @@ It followed a TaqMan SNP-genotyping explainer made the same way, but unlike that
 - **Voice:** Qwen3-TTS 0.6B CustomVoice, `dylan`, free and local on an Apple Silicon Mac. A `pronounce` map
   reads the gene and drug names (`NF2` → N F 二, `Cas9` → Cas 九, `V600E` → V 六百 E, `p53` → P 五十三 …).
 - **Sound:** Storyshot's own synth soundtrack, `calm` at 64 bpm, no clicks and no whooshes. −15.1 LUFS, LRA 4.1.
-- **Captions:** the narration burned in (`subtitles: burn`, 126 lines, word-by-word highlight), plus
-  `subtitles.srt` and `chapters.txt`.
+- **Captions:** none on the picture. `subtitles.srt` and `chapters.txt` only — the burned-in
+  karaoke line was removed on 2026-11-06 (see "Revised 2026-11-06" at the end).
 - **Wall-clock time:** 46 minutes, from the request to the finished file. 7 of those were the render.
 - **Cost:** none beyond the agent itself. Local voice, local render, synth music, no API calls for media.
 
@@ -98,3 +98,63 @@ The film earns its length: every claim in it is sourced, the sequence is real, a
 usually get wrong about pooled screens (why one guide is not enough, and that cutting is not the same as
 knocking out) each get their own chapter instead of a sentence. The scene mode is what made it possible to
 make at all, since none of this exists as a website to record.
+
+## Revised 2026-11-06
+
+Two things the first cut got wrong, both found by watching it rather than by any check.
+
+**It had no ending.** Measured: motion stopped three seconds before the file did, and the frame it
+froze on was the fullest of the whole video — six stations, six labels, every object the film had
+drawn. A recap only ever adds, so its last frame is always the most crowded one, and the viewer is
+still reading it when the video stops. The recap scene now takes it back instead: over the last
+2.5 seconds the chain dissolves and what stays is the question the film opened with, 药为什么失效？,
+and the thing that answers it — NF2 knocked out, and the cells that lived through the drug.
+
+**Still weak:** the last spoken line is "想问具体哪个突变，就换成只改一个碱基的编辑器" — the fourth item of
+a four-item list. The picture now closes; the narration still stops mid-enumeration. Fixing that means
+rewriting the last one or two sentences, which has not been done.
+
+**The burned-in subtitles are gone.** `subtitles: burn` → `subtitles: true`: nothing is drawn on the
+picture, `subtitles.srt` still ships. A line lighting up word by word at the bottom competes with
+scenes that are already carrying their own text.
+
+Storyshot changed with it, so this is not a per-film patch: the `calm` soundtrack now reaches IV one
+chord before the end and lands on the tonic, which rings through the tail (it used to be truncated
+wherever the video happened to finish); the picture settles to the film's ground over the last
+0.9 s; and `preview_scene` warns `frozen_ending` when a film's last scene has not changed for
+2.5 seconds. Re-rendered from the same storyboard and the same narration — 338.2 s, unchanged.
+
+## Revised 2026-11-07 — the ending, again
+
+Yesterday's fix was the wrong fix. The frozen last frame, the truncated music and the missing fade
+were all real, and they are all still fixed, but they were not what made these films feel like they
+had no ending. > 结尾的问题不是渐变与否，而是没有很好的结论，结束语，展望，思考这样一个句点的感觉
+
+— which is exactly right.
+
+A recap is not an ending. It re-counts what the film already said and then runs out — and every one
+of these films had its last spoken line land on a list item, a caveat or a footnote. No fade repairs
+a script with nothing left to say.
+
+So each film now has **a closing scene of its own, after the recap** (step 12, `scenes/close.html`, 51.0 s), written to do three
+things: say what this actually means now that the viewer has seen all of it, name what is still open,
+and leave one thought — in the film's own images, with the final words landing on it.
+
+This film had the worst of the four: its last line was literally the fourth item of a list. The new
+scene steps back — the move that matters is not the scissors and not the sequencer, it is turning a
+question you would have to ask twenty thousand times into one the cells answer themselves. It does
+not understand biology; it only counts. So it can ask what a cell does on its own and cannot ask what
+cells do to each other. Twelve years on, the same method is going from "which gene" to "which base".
+But a flask is not a person: a screen never returns an answer, it returns a list — and the film ends
+on that list, with a line drawing out to a separate dish for each name, one at a time, the last one
+still being drawn on the final frame. 338.2 s → 387.9 s.
+
+The rule is now in `skills/storyshot/SKILL.md` ("How an explainer ends"), rewritten to lead with the
+writing rather than the picture, and `frozen_ending` now says to read the last `say:` line before
+touching the animation. One trap worth recording: the voice breaks cues on **commas** as well as full
+stops, so a line like "a line, a curtain, a piece of paper" is three cues — key beats to what `cues`
+prints, not to the sentences you counted.
+
+The recap in each film keeps its dissolve but no longer holds a long tail for an ending it no longer
+has: `tail` 3.5 s → 2.2 s, and the dissolve now lands with its last words, so it reads as a page turn
+into the closing scene.
