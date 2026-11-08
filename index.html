@@ -1,175 +1,456 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Storyshot Gallery</title>
-<meta name="description" content="Promos, tutorials, lessons, explainers and help-center docs, each made by an AI coding agent with Storyshot from a one-paragraph request.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap">
-<style>
-  :root {
-    --bg: #f6f7f9; --panel: #ffffff; --ink: #0f172a; --muted: #5b6474; --line: #e3e7ee;
-    --accent: #d9f75b; --accent-ink: #0f172a; --chip: #eef1f5; --shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0b1020; --panel: #121933; --ink: #e8ecf5; --muted: #9aa4b8; --line: #222b45; --chip: #1b2442;
-      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px rgba(0,0,0,.35);
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0b1020; --panel: #121933; --ink: #e8ecf5; --muted: #9aa4b8; --line: #222b45; --chip: #1b2442;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px rgba(0,0,0,.35);
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 Inter, -apple-system, "Segoe UI", sans-serif; }
-  a { color: inherit; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
-  header { padding: 56px 0 28px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.01em; }
-  .brand i { width: 14px; height: 14px; border-radius: 4px; background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); }
-  h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-spacing: -.03em; margin: 18px 0 12px; }
-  h1 em { font-style: normal; background: linear-gradient(transparent 62%, var(--accent) 62%); color: var(--ink); }
-  .lede { color: var(--muted); max-width: 720px; margin: 0; }
-  .pitch { margin: 28px 0 0; max-width: 960px; }
-  .pitch video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; background: #0b1020; box-shadow: var(--shadow); }
-  .pitch p { color: var(--muted); font-size: 14px; margin: 10px 0 0; }
-  .lede code { font: 14px "JetBrains Mono", ui-monospace, monospace; background: var(--chip); padding: 2px 6px; border-radius: 6px; color: var(--ink); }
-  nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
-  nav .wrap { display: flex; gap: 6px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; }
-  nav a { text-decoration: none; padding: 7px 14px; border-radius: 999px; font-weight: 500; font-size: 14px; color: var(--muted); white-space: nowrap; }
-  nav a:hover { background: var(--chip); color: var(--ink); }
-  nav a b { font-weight: 600; color: var(--ink); margin-left: 4px; }
-  section { padding: 40px 0 8px; scroll-margin-top: 60px; }
-  section h2 { font-size: 24px; letter-spacing: -.02em; margin: 0 0 4px; }
-  section > .wrap > p { color: var(--muted); margin: 0 0 20px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 20px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
-  .thumb { position: relative; aspect-ratio: 16 / 9; background: #0b1020; cursor: pointer; border: 0; padding: 0; display: block; width: 100%; }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
-  .thumb:hover img { transform: scale(1.03); }
-  .thumb .play { position: absolute; inset: 0; margin: auto; width: 58px; height: 58px; border-radius: 50%; background: rgba(15,23,42,.72); display: grid; place-items: center; box-shadow: 0 6px 20px rgba(0,0,0,.35); }
-  .thumb .play::after { content: ""; border-left: 18px solid #fff; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 5px; }
-  .thumb .len { position: absolute; right: 10px; bottom: 10px; background: rgba(15,23,42,.8); color: #fff; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
-  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-  .site { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-  .lang { margin-left: 6px; padding: 1px 7px; border-radius: 6px; background: var(--accent); color: var(--accent-ink); letter-spacing: 0; text-transform: none; }
-  .title { font-weight: 600; font-size: 17px; line-height: 1.3; letter-spacing: -.01em; margin: 0; }
-  .req { margin: 0; font-size: 14px; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 10px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-  .req::before { content: "Asked for: "; font-weight: 600; color: var(--ink); }
-  .links { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
-  .links button, .links a { font: 500 13px Inter, sans-serif; border: 1px solid var(--line); background: var(--chip); color: var(--ink); padding: 6px 11px; border-radius: 8px; cursor: pointer; text-decoration: none; }
-  .links button:hover, .links a:hover { border-color: var(--muted); }
-  .empty { color: var(--muted); font-style: italic; }
-  dialog { border: 0; padding: 0; border-radius: 14px; background: var(--panel); color: var(--ink); width: min(1100px, calc(100vw - 32px)); max-height: calc(100vh - 32px); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
-  dialog::backdrop { background: rgba(5,8,18,.72); }
-  dialog .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 14px; }
-  dialog .bar button { border: 0; background: var(--chip); color: var(--ink); width: 32px; height: 32px; border-radius: 8px; font-size: 18px; cursor: pointer; }
-  dialog video { display: block; width: 100%; max-height: calc(100vh - 110px); background: #000; }
-  dialog .article { padding: 8px 22px 22px; max-height: calc(100vh - 110px); overflow: auto; }
-  dialog .article h2 { font-size: 22px; letter-spacing: -.02em; }
-  dialog .article h3 { font-size: 17px; margin: 22px 0 6px; }
-  dialog .article img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); margin: 8px 0; }
-  dialog pre { margin: 0; padding: 16px 18px; max-height: calc(100vh - 110px); overflow: auto; font: 13px/1.55 "JetBrains Mono", ui-monospace, monospace; white-space: pre-wrap; }
-  footer { color: var(--muted); font-size: 14px; padding: 48px 0 64px; }
-  @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } header { padding-top: 36px; } }
-</style>
-</head>
-<body>
-<header class="wrap">
-  <div class="brand"><i></i>Storyshot</div>
-  <h1>Real web apps, made into <em>videos by an agent</em></h1>
-  <p class="lede">Each video below started as a one-paragraph request to an AI coding agent with the
-    <a href="https://github.com/boheling/storyshot">Storyshot</a> skill. The agent looked at the site (or, for the
-    explainers, drew the thing itself), wrote the storyboard, rendered, checked the frames and fixed what it found.
-    Every example comes with its storyboard, so you can copy it, change the URL and make your own: <code>npx -y storyshot setup claude</code> (or <code>cursor</code>, <code>codex</code>, <code>gemini</code>, <code>vscode</code>, <code>windsurf</code>, <code>cline</code>)</p>
-  <div class="pitch">
-    <video src="pitch/video.mp4" poster="pitch/poster.jpg" controls preload="none" playsinline></video>
-    <p>The 68-second pitch, made with <a href="https://github.com/heygen-com/hyperframes">HyperFrames</a> and a free local voice (Kokoro).
-      The request, storyboard, recording, contact sheet and render log in it, and the 16 videos on the wall, are real Storyshot output from this gallery.</p>
-  </div>
-</header>
-<nav><div class="wrap" id="nav"></div></nav>
-<main id="main"></main>
-<footer class="wrap">Voices are free and local: Kokoro for English, Qwen3-TTS 0.6B CustomVoice (voice dylan) for the Chinese lessons and the Chinese explainer, and Qwen3-TTS (voice aiden) for the Spanish one. Title and section cards, and every frame of the explainers, are <a href="https://github.com/heygen-com/hyperframes">HyperFrames</a> animations (<code>hyperframes: true</code>, or <code>scene:</code> steps, in the storyboard). Sites shown belong to their owners and are used as public examples.
-  Notes for each video say how long it took, what went wrong and what the agent thought of the result.</footer>
-
-<dialog id="dlg"><div class="bar"><span id="dlgTitle"></span><button id="dlgClose" aria-label="Close">×</button></div><div id="dlgBody"></div></dialog>
-
-<script>
-const LANGS = { zh: '中文', es: 'Español', pt: 'Português', fr: 'Français', de: 'Deutsch', ja: '日本語' };
-const dlg = document.getElementById('dlg'), body = document.getElementById('dlgBody');
-const close = () => { body.innerHTML = ''; dlg.close(); };
-document.getElementById('dlgClose').onclick = close;
-dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
-dlg.addEventListener('close', () => { body.innerHTML = ''; });
-const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const clock = (s) => s == null ? '' : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
-function play(item) {
-  document.getElementById('dlgTitle').textContent = item.title;
-  body.innerHTML = `<video src="${esc(item.video)}" poster="${esc(item.poster)}" controls autoplay playsinline></video>`;
-  dlg.showModal();
-}
-async function showText(title, file) {
-  document.getElementById('dlgTitle').textContent = title;
-  body.innerHTML = '<pre>Loading…</pre>';
-  dlg.showModal();
-  try { const r = await fetch(file); body.firstChild.textContent = r.ok ? await r.text() : `Could not load ${file}`; }
-  catch { body.firstChild.textContent = `Could not load ${file}`; }
-}
-// the help article Storyshot writes (steps/README.md): title, numbered bold step headings, text, images
-async function showArticle(title, file) {
-  document.getElementById('dlgTitle').textContent = title;
-  body.innerHTML = '<div class="article">Loading…</div>';
-  dlg.showModal();
-  const base = file.replace(/[^/]+$/, '');
-  try {
-    const md = await (await fetch(file)).text();
-    body.firstChild.innerHTML = md.split('\n').map((l) => {
-      let m;
-      if ((m = l.match(/^# (.+)/))) return `<h2>${esc(m[1])}</h2>`;
-      if ((m = l.match(/^(\d+)\. \*\*(.+)\*\*/))) return `<h3>${m[1]}. ${esc(m[2])}</h3>`;
-      if ((m = l.match(/^\s*!\[(.*)\]\((.+)\)/))) return `<img src="${esc(base + m[2])}" alt="${esc(m[1])}" loading="lazy">`;
-      return l.trim() ? `<p>${esc(l.trim())}</p>` : '';
-    }).join('');
-  } catch { body.firstChild.textContent = `Could not load ${file}`; }
-}
-fetch('gallery.json').then((r) => r.json()).then((types) => {
-  document.getElementById('nav').innerHTML = types.map((t) => `<a href="#${t.id}">${esc(t.label)}<b>${t.items.length}</b></a>`).join('');
-  const main = document.getElementById('main');
-  for (const t of types) {
-    const sec = document.createElement('section');
-    sec.id = t.id;
-    sec.innerHTML = `<div class="wrap"><h2>${esc(t.label)}</h2><p>${esc(t.blurb)}</p><div class="grid"></div></div>`;
-    const grid = sec.querySelector('.grid');
-    if (!t.items.length) grid.innerHTML = '<p class="empty">Coming soon.</p>';
-    for (const it of t.items) {
-      const card = document.createElement('article');
-      card.className = 'card';
-      card.innerHTML = `
-        <button class="thumb" aria-label="Play ${esc(it.title)}"><img src="${esc(it.poster)}" alt="" loading="lazy"><span class="play"></span><span class="len">${clock(it.seconds)}</span></button>
-        <div class="body">
-          <div class="site">${esc(it.site ?? '')}${LANGS[it.lang] ? ` <span class="lang">${LANGS[it.lang]}</span>` : ''}</div>
-          <h3 class="title">${esc(it.title)}</h3>
-          ${it.request ? `<p class="req">${esc(it.request)}</p>` : ''}
-          <div class="links">
-            <button data-k="storyboard">Storyboard</button>
-            <button data-k="notes">How it went</button>
-            ${it.article ? '<button data-k="article">Article</button>' : ''}
-            ${it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">Site ↗</a>` : ''}
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f2f7" />
+    <title>Storyshot · 把好奇心拍成小电影</title>
+    <meta
+      name="description"
+      content="boheling 的私人放映间。关于科学、历史和小实验的影片，以及一路留下的制作手记。A personal collection of little films and the notes behind them."
+    />
+    <meta
+      property="og:title"
+      content="Storyshot · A little cinema for curious minds"
+    />
+    <meta
+      property="og:description"
+      content="Little films about science, history and the things worth understanding. 科学、历史与好奇心，一部一部慢慢拍。"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://boheling.github.io/storyshot-gallery/assets/still-mrna.jpg"
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Noto+Serif+SC:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+    <script type="module" src="assets/gallery.mjs"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#films" data-i18n="skip">跳到影片</a>
+    <header class="site-header page-width">
+      <a
+        class="brand"
+        href="./"
+        aria-label="Storyshot 首页"
+        data-i18n-aria="home"
+      >
+        <svg
+          class="brand-mark"
+          viewBox="0 0 44 44"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M8 15.5 20 9l15 6.5v17L21 39 8 32.5z"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+          <circle
+            cx="15"
+            cy="9"
+            r="5.5"
+            fill="var(--paper)"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+          <circle
+            cx="29"
+            cy="7"
+            r="6.5"
+            fill="var(--paper)"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+          <path d="m18 20 9 5-9 5z" fill="currentColor" />
+          <path
+            d="m35 21 7-4v15l-7-4"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span class="brand-name"
+          >Storyshot<span data-i18n="brandNote">boheling 的影像手记</span></span
+        >
+      </a>
+      <nav class="main-nav" aria-label="主导航" data-i18n-aria="mainNav">
+        <a href="#films" data-i18n="navFilms">放映室</a
+        ><a href="#notebook" data-i18n="navNotebook">手记</a
+        ><a href="#about" data-i18n="navAbout">关于</a>
+      </nav>
+      <div
+        class="language-switch"
+        role="group"
+        aria-label="网站语言 / Site language"
+      >
+        <button
+          type="button"
+          data-language="zh"
+          lang="zh-CN"
+          aria-pressed="true"
+        >
+          中文</button
+        ><span aria-hidden="true">/</span
+        ><button
+          type="button"
+          data-language="en"
+          lang="en"
+          aria-pressed="false"
+        >
+          EN
+        </button>
+      </div>
+    </header>
+    <main>
+      <section class="hero page-width" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <h1 id="hero-title" data-i18n="heroTitle">把好奇心， 拍成小电影。</h1>
+          <p class="hero-translation" data-i18n="heroTranslation" lang="en">
+            Little films. Big curiosities.
+          </p>
+          <p class="hero-description" data-i18n="heroDescription">
+            细胞如何治病？一面旗帜为谁而插？偶尔也学一个新工具。这里收着我用代码做的小电影，和一路留下的笔记。
+          </p>
+          <a class="browse-link" href="#films"
+            ><span data-i18n="browse">找一部，慢慢看</span
+            ><svg viewBox="0 0 20 24" fill="none" aria-hidden="true">
+              <path
+                d="M10 2v18m-6-6 6 6 6-6"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+          ></a>
+          <p class="hero-signoff">
+            <span class="little-star" aria-hidden="true">✳</span
+            ><span data-i18n="signoff">不赶进度，跟着好奇心走。</span>
+          </p>
+        </div>
+        <div
+          class="film-collage"
+          aria-label="精选影片"
+          data-i18n-aria="featuredFilms"
+        >
+          <div class="collage-ground" aria-hidden="true"></div>
+          <svg
+            class="wandering-line"
+            viewBox="0 0 640 550"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M56 375c-67-42-21-181 84-210 96-26 196 35 300-12 59-26 77-84 23-91-51-6-52 71 17 132 82 72 136 215-3 264-66 23-154-12-165-36"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-dasharray="4 7"
+            />
+            <path
+              d="m309 434 2-15 14 5"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <button
+            class="film-print print-flags"
+            type="button"
+            data-play="explainer/flags-for-kids"
+            data-i18n-aria="playFlags"
+            aria-label="播放：旗帜是插给谁看的？"
+          >
+            <img
+              src="assets/still-flags.jpg"
+              alt=""
+              width="640"
+              height="360"
+              fetchpriority="high"
+            /><span class="print-caption"
+              ><span data-i18n="flagsShort">一面旗帜，一个问题。</span
+              ><svg viewBox="0 0 12 12" aria-hidden="true">
+                <path d="M3 1.5 11 6 3 10.5z" fill="currentColor" /></svg
+            ></span>
+          </button>
+          <button
+            class="film-print print-mrna"
+            type="button"
+            data-play="explainer/mrna-cancer-vaccine"
+            data-i18n-aria="playMrna"
+            aria-label="播放：为一个人设计的疫苗"
+          >
+            <span class="print-image"
+              ><img
+                src="assets/still-mrna.jpg"
+                alt=""
+                width="960"
+                height="540"
+                fetchpriority="high" /><span class="hero-play"
+                ><svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path
+                    d="m6 3 11 7-11 7z"
+                    fill="currentColor"
+                  /></svg></span></span
+            ><span class="print-caption"
+              ><span data-i18n="mrnaShort">为一个人，设计一支疫苗。</span
+              ><span class="print-duration" data-feature-duration
+                >5:54</span
+              ></span
+            >
+          </button>
+          <button
+            class="film-print print-crispr"
+            type="button"
+            data-play="explainer/crispr-screen"
+            data-i18n-aria="playCrispr"
+            aria-label="播放：一瓶细胞，两万次实验"
+          >
+            <img
+              src="assets/still-crispr.jpg"
+              alt=""
+              width="640"
+              height="360"
+            /><span class="print-caption"
+              ><span data-i18n="crisprShort">小小细胞，大大世界。</span
+              ><svg viewBox="0 0 12 12" aria-hidden="true">
+                <path d="M3 1.5 11 6 3 10.5z" fill="currentColor" /></svg
+            ></span>
+          </button>
+          <div class="collage-note">
+            <svg viewBox="0 0 70 33" fill="none" aria-hidden="true">
+              <path
+                d="M66 5C49 28 19 29 5 13m0 0 1 13M5 13l13-2"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+            ><span data-i18n="collageNote">点开一帧， 故事就开始了。</span>
           </div>
-        </div>`;
-      card.querySelector('.thumb').onclick = () => play(it);
-      card.querySelectorAll('[data-k]').forEach((b) => {
-        const k = b.dataset.k;
-        b.onclick = () => (k === 'article' ? showArticle : showText)(`${it.title} · ${b.textContent}`, it[k]);
-      });
-      grid.appendChild(card);
-    }
-    main.appendChild(sec);
-  }
-});
-</script>
-</body>
+          <span class="collage-spark" aria-hidden="true">✳</span>
+        </div>
+      </section>
+      <section
+        class="collection page-width"
+        id="films"
+        aria-labelledby="films-title"
+      >
+        <div class="section-intro">
+          <div>
+            <h2 id="films-title" data-i18n="filmsTitle">随手放映</h2>
+            <p data-i18n="filmsIntro">从一个小问题出发，看看会走到哪里。</p>
+          </div>
+          <form class="search" role="search">
+            <label class="sr-only" for="search-input" data-i18n="searchLabel"
+              >搜索影片</label
+            ><svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle
+                cx="8.5"
+                cy="8.5"
+                r="5.5"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <path
+                d="m13 13 4 4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              /></svg
+            ><input
+              type="search"
+              id="search-input"
+              placeholder="找一个好奇的话题…"
+              data-i18n-placeholder="searchPlaceholder"
+              autocomplete="off"
+            />
+          </form>
+        </div>
+        <div class="collection-controls">
+          <div
+            class="filters"
+            id="filters"
+            role="group"
+            aria-label="影片分类"
+            data-i18n-aria="filterLabel"
+          ></div>
+          <p class="result-count" id="result-count" aria-live="polite"></p>
+        </div>
+        <div id="film-grid" class="film-grid" aria-busy="true">
+          <p class="loading" data-i18n="loadingFilms">正在把影片放上架…</p>
+        </div>
+        <div class="collection-bottom">
+          <p data-i18n="shelfNote">有些片子讲科学，有些只是一次小小的尝试。</p>
+          <button class="more-button" id="show-more" type="button" hidden>
+            <span data-i18n="showMore">再看一些</span
+            ><span aria-hidden="true">＋</span>
+          </button>
+        </div>
+      </section>
+      <section
+        class="notebook page-width"
+        id="notebook"
+        aria-labelledby="notebook-title"
+      >
+        <div class="notebook-intro">
+          <svg
+            class="notebook-drawing"
+            viewBox="0 0 100 100"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="m22 20 51-5 7 65-52 5z"
+              fill="#e3dced"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="m15 15 50 1 1 69-50-1z"
+              fill="var(--paper)"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M25 18v63m9-47 22 1m-22 9 18 1m-18 9 21 1m-36-32h10m-10 14h10m-10 14h10m-10 14h10"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <path
+              d="m68 60 15-36 6 2-15 36-6 6z"
+              fill="#edcf80"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+          </svg>
+          <h2 id="notebook-title" data-i18n="notebookTitle">片子之外</h2>
+          <p data-i18n="notebookIntro">
+            画面为什么这样画，结尾为什么这样写。也记下那些重来一次才想明白的事。
+          </p>
+        </div>
+        <div class="notebook-entries">
+          <button
+            class="journal-entry"
+            data-notes="explainer/mrna-cancer-vaccine"
+            type="button"
+          >
+            <span class="entry-topic" data-i18n="noteOneTopic"
+              >关于画面与结尾</span
+            >
+            <h3 data-i18n="noteOneTitle">总结之后，故事还需要一个结尾。</h3>
+            <p data-i18n="noteOneText">
+              把抽象的细胞画成有表面的形体，再把视线从试验数字，带回一个具体的人。
+            </p>
+            <span class="text-link" data-i18n="readNote"
+              >翻开制作手记</span
+            ></button
+          ><button
+            class="journal-entry"
+            data-notes="explainer/flags-for-kids"
+            type="button"
+          >
+            <span class="entry-topic" data-i18n="noteTwoTopic"
+              >关于把话说明白</span
+            >
+            <h3 data-i18n="noteTwoTitle">讲给孩子听，比想象中难。</h3>
+            <p data-i18n="noteTwoText">
+              不说“三十英尺”，画五个站在一起的大人。语言变简单了，故事反而更具体。
+            </p>
+            <span class="text-link" data-i18n="readNote">翻开制作手记</span>
+          </button>
+        </div>
+      </section>
+      <section class="about" id="about" aria-labelledby="about-title">
+        <div class="about-inner page-width">
+          <div class="about-title">
+            <span aria-hidden="true">✳</span>
+            <h2 id="about-title" data-i18n="aboutTitle">只是因为， 好奇。</h2>
+            <p lang="en" data-i18n="aboutTranslation">
+              Made for the joy of figuring things out.
+            </p>
+          </div>
+          <div class="about-copy">
+            <p data-i18n="aboutText">
+              你好，我是 boheling。这是我的个人小站，收着用 AI
+              和代码做的影片。兴趣有点散：生命科学、历史、数学，还有让想法变得可见的工具。
+            </p>
+            <p data-i18n="aboutTextTwo">
+              每部片子的分镜和制作手记都留在这里。你可以随意看看，也可以带走一个想法，接着做自己的版本。
+            </p>
+            <div class="about-links">
+              <a
+                href="https://github.com/boheling/storyshot"
+                target="_blank"
+                rel="noopener"
+                data-i18n="source"
+                >Storyshot 开源工具</a
+              ><button type="button" data-play="pitch" data-i18n="watchPitch">
+                一分钟，看看怎么做的
+              </button>
+            </div>
+            <p class="language-note" data-i18n="languageNote">
+              网站提供中英双语；影片和原始制作记录保留各自的语言。
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer page-width">
+      <a href="./" class="footer-brand">Storyshot</a>
+      <p data-i18n="footerNote">一个人，一些好奇心，一间小放映室。</p>
+      <a
+        href="https://github.com/boheling/storyshot-gallery"
+        target="_blank"
+        rel="noopener"
+        >GitHub</a
+      >
+    </footer>
+    <dialog class="film-dialog" id="film-dialog" aria-labelledby="film-title">
+      <div class="dialog-heading">
+        <div>
+          <p class="dialog-meta" id="film-meta"></p>
+          <h2 id="film-title"></h2>
+        </div>
+        <button
+          class="close-dialog"
+          id="close-dialog"
+          type="button"
+          aria-label="关闭放映"
+          data-i18n-aria="close"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="m6 6 12 12M18 6 6 18"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <nav
+        class="film-tabs"
+        id="film-tabs"
+        aria-label="影片与制作资料"
+        data-i18n-aria="filmTabs"
+      ></nav>
+      <div id="dialog-content" class="dialog-content"></div>
+      <p class="dialog-description" id="film-description"></p>
+    </dialog>
+    <noscript
+      ><p class="noscript">
+        请启用 JavaScript 浏览放映室，或直接访问
+        <a href="https://github.com/boheling/storyshot-gallery"
+          >GitHub 影片目录 / film archive</a
+        >。
+      </p></noscript
+    >
+  </body>
 </html>
