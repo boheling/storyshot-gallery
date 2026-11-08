@@ -1,0 +1,140 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   flags-of-discovery — the film's look, in one place.
+
+   A navigator's chart. The subject is objects with marks cut or stitched into
+   them (cloth, stone, wood, paper, a leaf), so the ground is the thing those
+   marks were made on: tinted rag paper, never white and never black. Dark
+   brown-black ink. One seal-red accent, which is the only colour allowed to
+   POINT at something. Four empire hues, well separated, each used for that
+   empire everywhere it appears.
+
+   On a light ground a glow is a smudge, so nothing in this film glows: a thing
+   that matters gets a flat tinted panel, a ring, a rule under it, or the seal
+   red. Shadows stay under rgba(ink,.12) or the paper looks dirty.
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --paper:   #e9ddc4;   /* the chart itself */
+  --paper-2: #f2e9d6;   /* a fresher sheet laid on it */
+  --paper-3: #ddceb0;   /* a shadowed fold, a older sheet */
+  --ink:     #241c15;   /* iron-gall black, slightly brown */
+  --ink-2:   #6b5a45;   /* secondary text, annotations */
+  --ink-3:   #9a8a72;   /* faintest text that still passes contrast on paper */
+  --rule:    #c9b896;   /* hairlines, the chart grid, borders */
+  --accent:  #9e3321;   /* seal red. POINTS at things. Never decorative. */
+
+  /* one hue per empire, used for that empire in every scene */
+  --spain:   #1d6b4a;   /* the green cross on the banner */
+  --port:    #6b6355;   /* stone, because stone is what they planted */
+  --france:  #2a4a8c;   /* azure, under the fleurs-de-lis */
+  --england: #8a5a12;   /* dark gold: brass, and a cured leaf */
+
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+  --sans:  var(--font);
+}
+/* every scene root: the paper, and nothing escaping it */
+.chart {
+  position: absolute; inset: 0; overflow: hidden;
+  background: var(--paper);
+  font-family: var(--serif);
+  color: var(--ink);
+}
+
+/* ── the ground texture ────────────────────────────────────────────────────
+   A chart grid and a few rhumb lines, both so faint they read as the paper's
+   own weave rather than as content. Drawn by Kit.paper(), styled here. */
+.chart .grid, .chart .rhumbs, .chart .vignette {
+  position: absolute; inset: 0; pointer-events: none;
+}
+.chart .grid    { opacity: .5; }
+.chart .rhumbs  { opacity: .42; }
+.chart .vignette {
+  background:
+    radial-gradient(118% 88% at 50% 44%, rgba(36,28,21,0) 56%, rgba(36,28,21,.10) 100%);
+}
+/* a flecked rag-paper tooth: three sparse dot layers, no image file */
+.chart .tooth {
+  position: absolute; inset: 0; pointer-events: none; opacity: .55;
+  background-image:
+    radial-gradient(rgba(36,28,21,.16) .6px, transparent .7px),
+    radial-gradient(rgba(36,28,21,.10) .5px, transparent .6px),
+    radial-gradient(rgba(158,51,33,.07) .7px, transparent .8px);
+  background-size: 37px 41px, 23px 19px, 61px 67px;
+  background-position: 0 0, 11px 7px, 29px 23px;
+}
+
+/* ── type ─────────────────────────────────────────────────────────────────── */
+.chart .kicker {
+  position: absolute; font-family: var(--sans);
+  font-size: 30px; font-weight: 600; letter-spacing: .20em;
+  text-transform: uppercase; color: var(--ink-2);
+}
+.chart .title {
+  position: absolute; font-size: 82px; line-height: 1.06;
+  font-weight: 600; letter-spacing: -.012em; color: var(--ink);
+}
+.chart .title em { font-style: normal; color: var(--accent); }
+.chart .lead {
+  position: absolute; font-size: 44px; line-height: 1.30; color: var(--ink);
+}
+.chart .lead em { font-style: normal; color: var(--accent); }
+.chart .note {
+  position: absolute; font-size: 32px; line-height: 1.34; color: var(--ink-2);
+}
+/* a small-caps annotation that names a part of the drawing */
+.chart .label {
+  position: absolute; font-family: var(--sans);
+  font-size: 28px; font-weight: 600; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--ink-2); white-space: nowrap;
+}
+.chart .label.hot { color: var(--accent); }
+/* a date, set like a chart's engraved year */
+.chart .year {
+  position: absolute; font-size: 56px; letter-spacing: .04em;
+  color: var(--ink-3); font-variant-numeric: lining-nums;
+}
+/* a line of source credit. Smaller than the 28px floor on purpose. */
+.chart .credit {
+  position: absolute; font-family: var(--sans); font-size: 21px;
+  letter-spacing: .04em; color: var(--ink-3); white-space: nowrap;
+}
+/* 示意 / illustrative: a drawing that is a reconstruction, not a photograph */
+.chart .schem {
+  position: absolute; font-family: var(--sans); font-size: 21px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3);
+}
+
+/* a rule under a phrase that just landed */
+.chart .underline {
+  position: absolute; height: 5px; background: var(--accent);
+  transform-origin: left center; border-radius: 3px;
+}
+
+/* ── recurring objects ────────────────────────────────────────────────────── */
+/* a sheet of paper laid on the chart: needs structure inside or it reads as a
+   blank rectangle, so it always carries ruled lines and a header rule */
+.chart .sheet {
+  position: absolute; background: var(--paper-2);
+  border: 2px solid var(--rule);
+  box-shadow: 0 10px 26px rgba(36,28,21,.11);
+}
+.chart .sheet .ruled { position: absolute; left: 0; right: 0; height: 1px; background: var(--rule); opacity: .75; }
+
+/* the leader line that ties a label to the thing it names */
+.chart .leader { position: absolute; left: 0; top: 0; overflow: visible; }
+.chart .leader path { fill: none; stroke: var(--ink-2); stroke-width: 2.4; }
+.chart .leader circle { fill: var(--ink-2); }
+.chart .leader.hot path   { stroke: var(--accent); }
+.chart .leader.hot circle { fill: var(--accent); }
+
+/* a wax seal: a flat disc with a ring, never a gradient blob */
+.chart .seal { position: absolute; }
+
+/* chunky ink strokes for the drawn figures */
+.chart .fig { position: absolute; overflow: visible; }
+.chart .fig .ln  { fill: none; stroke: var(--ink); stroke-width: 4;   stroke-linecap: round; stroke-linejoin: round; }
+.chart .fig .ln2 { fill: none; stroke: var(--ink); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.chart .fig .hair{ fill: none; stroke: var(--ink-2); stroke-width: 1.6; }
+.chart .fig .fill-paper { fill: var(--paper-2); }
+.chart .fig .fill-stone { fill: #cfc6b2; }
+.chart .fig .fill-wood  { fill: #d8c09a; }

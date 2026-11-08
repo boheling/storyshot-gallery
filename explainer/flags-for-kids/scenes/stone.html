@@ -1,0 +1,409 @@
+<template>
+  <style>
+    /* Scene 5, kids' cut — cloth on the left, stone on the right.
+
+       One comparison, read in one glance: a flag that rips, rots and burns,
+       and a stone post that does not. The post is the hero: about 70% of the
+       frame's height and more than twice the man beside it. The word
+       "padrão" is never used here — the narration never says it.
+
+       Positions go into the Kit builders, which write inline left/top; an
+       inline style beats a rule in this block, so nothing is placed here. */
+    #stone { position: absolute; inset: 0; overflow: hidden; }
+  </style>
+
+  <div id="stone" class="chart" data-composition-id="stone" data-width="1920" data-height="1080">
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const R = Kit.root('stone');     // the mount host shares this id
+      Kit.paper(R, { rose: [1660, 196] });
+
+      const ACC = '#9e3321', INK2 = '#6b5a45';   // GSAP cannot tween var()
+      const GY = 940;                            // the ground: feet and plinths sit here
+
+      /* ── the shore they landed on ──────────────────────────────────────── */
+      const shore = Kit.shore(R, 0, GY - 150, 1920, 23);
+      shore.fig.style.opacity = 0;
+
+      /* ── the cloth ──────────────────────────────────────────────────────
+         It opens near the middle of the frame (so the first thing on screen
+         is the subject, not empty paper) and is pushed to the left margin
+         when the stone arrives. Everything that happens to it lives inside
+         ban.cloth, so it all leaves with the cloth. */
+      const POLE_H = 530, CW = 340, CH = 224;
+      const ban = Kit.banner(R, 240, GY - 40 - POLE_H, {
+        w: CW, h: CH, poleH: POLE_H, cloth: 'var(--paper-2)',
+      });
+      ban.svg.style.overflow = 'visible';
+      /* Kit.banner's poleW option is dead: `.chart .fig .ln` sets stroke-width
+         and a CSS rule beats a presentation attribute. Set it as a style. */
+      ban.pole.children[0].style.strokeWidth = '12';
+      ban.body.style.strokeWidth = '5';
+      ban.body.setAttribute('id', 'stone-cloth');
+      ban.fig.style.opacity = 0;
+
+      /* Portugal's decision against it: one struck line, in the only colour
+         allowed to point at something */
+      const strike = Kit.el('path', {
+        d: 'M -20 -16 L 358 244', fill: 'none', stroke: ACC, 'stroke-width': 13,
+        'stroke-linecap': 'round', pathLength: 1,
+        style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, ban.cloth);
+
+      /* everything that eats the cloth is clipped to the cloth itself, so a
+         hole never leaves a mark on the paper outside it — and so the holes
+         are consumed along with the cloth when it burns back to the pole */
+      const defs = Kit.el('defs', {}, ban.svg);
+      const cp = Kit.el('clipPath', { id: 'stone-clothclip', clipPathUnits: 'userSpaceOnUse' }, defs);
+      Kit.el('use', { href: '#stone-cloth' }, cp);
+      const decay = Kit.el('g', { 'clip-path': 'url(#stone-clothclip)' }, ban.cloth);
+
+      /* (4) rips — a gash opens at the flying edge and runs most of the way
+         back to the pole. Big enough to read in half a second. */
+      const tear = Kit.el('g', {}, decay);
+      const TEAR = 'M 388 60 L 268 90 L 316 103 L 128 120 L 288 139 L 238 157 L 388 190';
+      const tearFill = Kit.el('path', { d: TEAR + ' Z', fill: 'var(--paper)', stroke: 'none' }, tear);
+      tearFill.style.opacity = 0;
+      const tearEdge = Kit.el('path', {
+        class: 'ln', d: TEAR, pathLength: 1,
+        style: 'stroke-width:6;stroke-dasharray:1;stroke-dashoffset:1',
+      }, tear);
+
+      /* (5) rots — the colour goes out of it and it goes through in a dozen
+         places. A bare SVG shape does not scale about its own centre, so
+         these grow by tweening attr r, never by scaling. */
+      const HOLES = [[52, 38, 17], [136, 32, 13], [226, 30, 12], [302, 28, 14],
+                     [40, 98, 13], [44, 152, 16], [92, 176, 11],
+                     [62, 204, 15], [154, 202, 16], [252, 208, 13], [328, 210, 12],
+                     [340, 28, 16], [344, 206, 18]];
+      const holes = HOLES.map(([hx, hy]) => Kit.el('circle', {
+        cx: hx, cy: hy, r: 0, fill: 'var(--paper)',
+        stroke: INK2, 'stroke-width': 2.6,
+      }, decay));
+
+      /* (6) burns — a ragged burn front travels back along the cloth, with
+         flame curls standing up off the top edge just behind it. Each flame
+         sits inside a positioning group so GSAP can tween the inner group's
+         y without eating the translate that places it. */
+      const fire = Kit.el('g', {}, ban.cloth);
+      const FLAME = 'M 0 0 C -19 -17 -13 -42 -2 -62 C -2 -45 7 -42 9 -53 C 18 -38 17 -15 0 0 Z';
+      function flame(parent, fx, fy, k) {
+        const pos = Kit.el('g', { transform: `translate(${fx},${fy}) scale(${k})` }, parent);
+        const g = Kit.el('g', {}, pos);
+        Kit.el('path', { class: 'ln2', d: FLAME, style: `fill:var(--paper-2);stroke-width:${(4.4 / k).toFixed(2)}` }, g);
+        Kit.el('path', { class: 'hair', d: 'M -1 -18 C -10 -30 6 -38 -1 -52', style: `stroke-width:${(2.8 / k).toFixed(2)}` }, g);
+        g.style.opacity = 0;
+        return g;
+      }
+      const edgeFlames = [[312, 10, 1.0], [236, 8, 0.86], [156, 10, 1.0], [78, 8, 0.8]]
+        .map(([fx, fy, k]) => flame(fire, fx, fy, k));
+
+      /* the charred edge the fire is eating back along: one jagged path that
+         is translated to wherever the cloth's flying edge now is */
+      const front = Kit.el('g', {}, ban.cloth);
+      Kit.el('path', {
+        class: 'ln', style: 'stroke-width:7',
+        d: 'M 0 -4 l 15 24 l -17 26 l 19 28 l -15 26 l 17 28 l -19 26 l 15 28 l -13 26 l 16 24',
+      }, front);
+      flame(front, 4, 46, 0.78);
+      flame(front, -2, 176, 0.9);
+      front.style.opacity = 0;
+      const setFront = () => front.setAttribute('transform', `translate(${(CW * ban.st.fly).toFixed(1)},0)`);
+      setFront();
+
+      const smoke = [[30, 76], [84, 44], [138, 86]].map(([sx, sy]) => {
+        const pos = Kit.el('g', { transform: `translate(${sx},${sy})` }, fire);
+        const g = Kit.el('g', {}, pos);
+        const p = Kit.el('path', {
+          class: 'hair', d: 'M 0 0 c -15 -15 15 -27 0 -44 c -13 -15 13 -25 0 -42',
+          pathLength: 1, style: 'stroke-width:3;stroke-dasharray:1;stroke-dashoffset:1',
+        }, g);
+        g.style.opacity = 0;
+        return { g, p };
+      });
+
+      /* ── the stone posts ────────────────────────────────────────────────
+         Kit.pillar's own viewBox is narrower than its plinth and shorter than
+         its base, so the drawing clips left and bottom. Re-fit each svg 1:1
+         around the real bounds and work from the plinth's bottom centre —
+         the point a post pivots on when it is raised. */
+      const PH = 600, PW = 178, BASE = PH * 1.085;      // 651 to the plinth's foot
+      const OX = 1340;                                  // where the hero stands
+
+      function makePost(px, py, hero) {
+        const p = Kit.pillar(R, 0, 0, { h: PH, w: PW });
+        const minX = -PW * 0.66 - 18, maxX = PW * 0.66 + 18;
+        const minY = -PH * 0.10 - PW * 0.30 - 16, maxY = BASE + 16;
+        const vw = maxX - minX, vh = maxY - minY;
+        p.svg.setAttribute('viewBox', `${minX} ${minY} ${vw} ${vh}`);
+        p.svg.setAttribute('width', vw);
+        p.svg.setAttribute('height', vh);
+        p.ox = -minX; p.oy = -minY;
+        p.pivot = `${p.ox}px ${p.oy + BASE}px`;
+        p.fig.style.left = (px - p.ox) + 'px';
+        p.fig.style.top = (py - BASE - p.oy) + 'px';
+        p.fig.style.transformOrigin = p.pivot;
+
+        p.cross = p.g.children[2];
+        const sw = hero ? 7 : 6;
+        [p.g.children[0], p.g.children[1], p.cross].forEach((n) => { n.style.strokeWidth = sw; });
+        /* the plinth is stone too, and has to be opaque or the shoreline
+           behind it shows straight through the block */
+        p.g.children[1].style.fill = '#bbb09c';
+        /* the kit's cross sits on a neck that is not drawn, so it floats clear
+           of the shaft: give it the neck, and make the two one group */
+        const b = PW * 0.105, ct = -PH * 0.10 + PW * 0.30;
+        p.top = Kit.el('g', {});
+        p.g.insertBefore(p.top, p.cross);
+        Kit.el('path', { d: `M ${-b} ${ct} h ${2 * b} V 2 h ${-2 * b} Z`, fill: 'var(--paper-2)' }, p.top);
+        Kit.el('path', { class: 'ln', style: `stroke-width:${sw}`, d: `M ${-b} ${ct} V 2 M ${b} ${ct} V 2` }, p.top);
+        p.top.appendChild(p.cross);
+
+        /* this cut is about cloth against stone, not heraldry: one cross on
+           top, one carved shield, and three cuts under it that are plainly
+           cut marks and not meant to be read */
+        p.shield.setAttribute('transform', `translate(0,${PH * 0.235}) scale(0.56)`);
+        p.shield.children[1].style.display = 'none';
+        p.shield.children[0].style.strokeWidth = '7.9';
+        [...p.insc.children].forEach((n) => { n.style.strokeWidth = '5'; n.style.stroke = 'var(--ink)'; });
+
+        /* a little weathering, so the shaft reads as stone and not as a slab */
+        const tex = Kit.el('g', {}, p.g);
+        [[-66, 236, -44, 330], [62, 430, 46, 540], [-54, 472, -66, 566]].forEach(([x1, y1, x2, y2]) => {
+          Kit.el('path', {
+            class: 'hair', opacity: 0.5,
+            d: `M ${x1} ${y1} Q ${(x1 + x2) / 2 + 9} ${(y1 + y2) / 2} ${x2} ${y2}`,
+          }, tex);
+        });
+
+        p.fig.style.opacity = 0;
+        return p;
+      }
+
+      /* lying down as cargo: one pivot line, the hero on top, built bottom
+         first so each higher post is drawn in front of the one under it.
+         Rotated -90° about its own foot, a post reaches 764px to the LEFT. */
+      const LAY_X = 1500, LAY_HERO = 394;
+      const LX = LAY_X - OX, LY = LAY_HERO - GY;
+
+      const cargo = [818, 606].map((y) => makePost(LAY_X, y, false));
+      const post = makePost(OX, GY, true);
+
+      /* lashed down, because three of these are a ship's worth of ballast */
+      const lash = Kit.div('fig', { left: '0px', top: '0px' }, R);
+      const ls = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 }, lash);
+      [980, 1270].forEach((rx) => {
+        Kit.el('path', {
+          class: 'ln2', d: `M ${rx} 258 Q ${rx + 9} 600 ${rx} 946`,
+          stroke: INK2, style: 'stroke-width:5',
+        }, ls);
+        Kit.el('path', {
+          class: 'ln2', d: `M ${rx - 16} 596 L ${rx + 20} 616 M ${rx - 16} 620 L ${rx + 20} 600`,
+          stroke: INK2, style: 'stroke-width:4.2',
+        }, ls);
+      });
+      lash.style.opacity = 0;
+
+      /* ── the man who set it up, for scale ───────────────────────────────
+         The kit's figure is 118 drawn units tall and its feet land at
+         y + 122*scale, not y + h. */
+      const MH = 380, MS = MH / 118;
+      const man = Kit.person(R, 1660 - 40 * MS, GY - 122 * MS, { h: MH, face: -1, arm: 0 });
+      /* the kit's strokes are in drawn units, so at this size the figure would
+         out-ink the stone: hold it to a lighter line */
+      man.g.querySelectorAll('.ln').forEach((n) => { n.style.strokeWidth = (7 / MS).toFixed(2); });
+      man.g.querySelectorAll('.ln2').forEach((n) => { n.style.strokeWidth = (4.6 / MS).toFixed(2); });
+      man.fig.style.opacity = 0;
+
+      /* ── the thump when it lands ────────────────────────────────────────── */
+      const dust = Kit.div('fig', { left: (OX - 280) + 'px', top: (GY - 90) + 'px' }, R);
+      const ds = Kit.el('svg', {
+        viewBox: '-280 -90 560 130', width: 560, height: 130, style: 'overflow:visible',
+      }, dust);
+      ['M -136 -6 l -46 -17', 'M -180 2 l -50 -5', 'M -158 -34 l -34 -27',
+       'M 136 -6 l 46 -17', 'M 180 2 l 50 -5', 'M 158 -34 l 34 -27',
+      ].forEach((d) => Kit.el('path', { class: 'ln2', d, stroke: INK2, style: 'stroke-width:4.6' }, ds));
+      dust.style.opacity = 0;
+
+      /* ── type: a kicker, two labels, one closing line ───────────────────── */
+      const BIG = (x, y, html, hot) => {
+        const n = Kit.label(R, x, y, html, hot);
+        n.style.fontSize = '34px';
+        n.style.opacity = 0;
+        return n;
+      };
+
+      const kick = Kit.kicker(R, 120, 104, 'Portugal');
+      kick.style.opacity = 0;
+      const bar = Kit.div('', {
+        position: 'absolute', left: '120px', top: '150px', width: '162px', height: '7px',
+        background: 'var(--port)', transformOrigin: 'left center',
+      }, R);
+      bar.style.opacity = 0;
+
+      const clothLab = BIG(386, 706, 'cloth');
+
+      const postLab = BIG(920, 578, 'stone post', true);
+      const postLd = Kit.leader(R, 1198, 600, 1246, 600, true);
+      postLd.wrap.style.opacity = 0;
+      postLd.dot.style.opacity = 0;
+
+      const lead = Kit.lead(R, 160, 672,
+        'One of them still stands today,<br>in <em>Namibia</em>, in Africa.', 820);
+      lead.style.fontSize = '50px';
+      lead.style.opacity = 0;
+      const leadLd = Kit.leader(R, 852, 700, 1244, 800, true);
+      leadLd.wrap.style.opacity = 0;
+      leadLd.dot.style.opacity = 0;
+
+      Kit.schem(R, 1664, 1040, 'reconstruction');
+      Kit.credit(R, 120, 1040,
+        'Portuguese stone posts, west African coast, 1482–1486 · the one at Cape Cross, in present-day Namibia, is still standing');
+
+      /* ── timeline ───────────────────────────────────────────────────────── */
+      const tl = gsap.timeline({ paused: true });
+
+      /* the place and the heading come up before the voice does */
+      tl.fromTo(shore.fig, { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0);
+      tl.fromTo(kick, { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, 0.12);
+      tl.fromTo(bar, { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'expo.out' }, 0.3);
+
+      /* 0 — Portugal did not trust cloth. The flag opens near the middle, so
+         the first frame carries the subject, then the stone pushes it left. */
+      const ASIDE = 400;
+      tl.fromTo(ban.fig, { opacity: 0, y: -26, x: ASIDE },
+        { opacity: 1, y: 0, x: ASIDE, duration: 0.5, ease: 'expo.out' }, S.at(0));
+      tl.fromTo(ban.st, { fly: 0.05 },
+        { fly: 1, duration: 0.7, ease: 'expo.out', onUpdate: ban.redraw }, S.at(0, 0.12));
+      tl.fromTo(clothLab, { opacity: 0, y: 12, x: ASIDE },
+        { opacity: 1, y: 0, x: ASIDE, duration: 0.45, ease: 'expo.out' }, S.at(0, 0.5));
+      tl.fromTo(strike, { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.3, ease: 'none', autoRound: false }, S.at(0, 0.95));
+      /* the cloth keeps moving until it starts to fail: one number, so a seek
+         lands on exactly the same shape every render */
+      tl.fromTo(ban.st, { phase: 0 }, {
+        phase: Math.PI * 2 * 2.4, duration: S.at(4) - S.at(0, 0.8),
+        ease: 'none', onUpdate: ban.redraw,
+      }, S.at(0, 0.8));
+
+      /* 1 — heavy stone posts, carried as cargo: the cloth is pushed to the
+         margin, three posts slide in lying down and lashed, and a man stands
+         at their feet so their size reads */
+      tl.fromTo(ban.fig, { x: ASIDE }, { x: 0, duration: 0.7, ease: 'power2.inOut' }, S.at(1));
+      tl.fromTo(clothLab, { x: ASIDE }, { x: 0, duration: 0.7, ease: 'power2.inOut' }, S.at(1));
+      cargo.forEach((q, i) => {
+        tl.fromTo(q.fig, { opacity: 0, x: 340, rotation: -90 },
+          { opacity: 1, x: 0, rotation: -90, duration: 0.8, ease: 'power2.out', transformOrigin: q.pivot },
+          S.at(1, 0.18 + i * 0.2));
+      });
+      tl.fromTo(post.fig, { opacity: 0, x: LX + 340, y: LY, rotation: -90 },
+        { opacity: 1, x: LX, y: LY, rotation: -90, duration: 0.8, ease: 'power2.out', transformOrigin: post.pivot },
+        S.at(1, 0.58));
+      tl.fromTo(lash, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' }, S.at(1, 1.26));
+      tl.fromTo(man.fig, { opacity: 0, x: 34 },
+        { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, S.at(1, 1.0));
+
+      /* 2 — when they landed: the lashings come off, the rest of the cargo
+         stays with the ship, and the man takes hold of the top one */
+      tl.fromTo(lash, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: 'power2.in' }, S.at(2));
+      cargo.forEach((q, i) => {
+        tl.fromTo(q.fig, { opacity: 1, y: 0 },
+          { opacity: 0, y: 30, duration: 0.45, ease: 'power2.in' }, S.at(2, 0.06 + i * 0.07));
+      });
+      tl.fromTo(man, { arm: 0 }, {
+        arm: 0.5, duration: 0.45, ease: 'power2.out',
+        onUpdate() { man.setArm(this.targets()[0].arm); },
+      }, S.at(2, 0.22));
+      tl.fromTo(post.fig, { x: LX, y: LY, rotation: -90 },
+        { x: LX - 44, y: LY + 104, rotation: -90, duration: 0.7, ease: 'power1.inOut', transformOrigin: post.pivot },
+        S.at(2, 0.3));
+
+      /* 3 — they planted a post in the ground. The hero move: it swings up on
+         its own foot and thumps down, more than twice the height of the man. */
+      tl.fromTo(post.fig, { x: LX - 44, y: LY + 104, rotation: -90 },
+        { x: 0, y: 0, rotation: 0, duration: 1.0, ease: 'power2.inOut', transformOrigin: post.pivot },
+        S.at(3, 0.15));
+      tl.fromTo(dust, { opacity: 0 }, { opacity: 1, duration: 0.1 }, S.at(3, 1.08));
+      tl.fromTo(dust, { opacity: 1 }, { opacity: 0, duration: 0.45, ease: 'power2.in' }, S.at(3, 1.24));
+      tl.fromTo(man, { arm: 0.5 }, {
+        arm: 0, duration: 0.45, ease: 'power2.inOut',
+        onUpdate() { man.setArm(this.targets()[0].arm); },
+      }, S.at(3, 1.2));
+      tl.fromTo(postLd.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(3, 1.3));
+      tl.fromTo(postLd.path, { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.34, ease: 'none', autoRound: false }, S.at(3, 1.3));
+      tl.fromTo(postLd.dot, { opacity: 0 }, { opacity: 1, duration: 0.18 }, S.at(3, 1.6));
+      tl.fromTo(postLab, { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, S.at(3, 1.46));
+
+      /* 4 — a flag rips: the struck line clears and a gash opens */
+      tl.fromTo(strike, { opacity: 1 }, { opacity: 0, duration: 0.2, ease: 'power2.in' }, S.at(4));
+      tl.fromTo(tear, { x: 54, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.32, ease: 'expo.out' }, S.at(4, 0.08));
+      tl.fromTo(tearFill, { opacity: 0 }, { opacity: 1, duration: 0.16 }, S.at(4, 0.08));
+      tl.fromTo(tearEdge, { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.32, ease: 'none', autoRound: false }, S.at(4, 0.08));
+      tl.fromTo(ban.st, { fly: 1 },
+        { fly: 0.97, duration: 0.3, ease: 'power2.out', onUpdate: ban.redraw }, S.at(4, 0.08));
+
+      /* 5 — and rots: the colour goes out of it and it goes through */
+      tl.fromTo(ban.body, { fill: '#f2e9d6' }, { fill: '#a89a7e', duration: 0.42, ease: 'none' }, S.at(5));
+      tl.fromTo(ban.body, { stroke: '#241c15' }, { stroke: INK2, duration: 0.42, ease: 'none' }, S.at(5));
+      holes.forEach((h, i) => {
+        tl.fromTo(h, { attr: { r: 0 } },
+          { attr: { r: HOLES[i][2] }, duration: 0.28, ease: 'power2.out' }, S.at(5, 0.03 + i * 0.032));
+      });
+
+      /* 6 — and burns: the fire eats back along the cloth to the pole, and
+         the smoke drifts on into the next line */
+      tl.fromTo(clothLab, { opacity: 1 }, { opacity: 0, duration: 0.25 }, S.at(6, 0.1));
+      tl.fromTo(ban.body, { fill: '#a89a7e' }, { fill: '#3a322a', duration: 0.32, ease: 'none' }, S.at(6, 0.04));
+      tl.fromTo(ban.body, { stroke: INK2 }, { stroke: '#241c15', duration: 0.32, ease: 'none' }, S.at(6, 0.04));
+      tl.fromTo(front, { opacity: 0 }, { opacity: 1, duration: 0.12 }, S.at(6, 0.02));
+      tl.fromTo(ban.st, { fly: 0.97 }, {
+        fly: 0.04, duration: 0.8, ease: 'power1.in',
+        onUpdate() { ban.redraw(); setFront(); },
+      }, S.at(6, 0.02));
+      edgeFlames.forEach((g, i) => {
+        const t = [0.06, 0.3, 0.48, 0.62][i];
+        tl.fromTo(g, { opacity: 0, y: 10 },
+          { opacity: 1, y: -12, duration: 0.17, ease: 'power2.out' }, S.at(6, t));
+        tl.fromTo(g, { opacity: 1 }, { opacity: 0, duration: 0.22, ease: 'power2.in' }, S.at(6, t + 0.2));
+      });
+      tl.fromTo(decay, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: 'power2.in' }, S.at(6, 0.62));
+      tl.fromTo(front, { opacity: 1 }, { opacity: 0, duration: 0.22, ease: 'power2.in' }, S.at(6, 0.78));
+      tl.fromTo(ban.body, { opacity: 1 }, { opacity: 0, duration: 0.22 }, S.at(6, 0.8));
+      smoke.forEach(({ g, p }, i) => {
+        tl.fromTo(g, { opacity: 0, y: 0 },
+          { opacity: 1, y: -34, duration: 0.4, ease: 'power1.out' }, S.at(6, 0.52 + i * 0.12));
+        tl.fromTo(p, { strokeDashoffset: 1 },
+          { strokeDashoffset: 0, duration: 0.4, ease: 'none', autoRound: false }, S.at(6, 0.52 + i * 0.12));
+        tl.fromTo(g, { y: -34 }, { y: -98, duration: 0.9, ease: 'none' }, S.at(6, 0.92 + i * 0.12));
+        tl.fromTo(g, { opacity: 1 }, { opacity: 0, duration: 0.7, ease: 'power1.in' }, S.at(6, 1.12 + i * 0.12));
+      });
+
+      /* 7 — a stone just stays. The bare pole goes over too, so nothing is
+         left of the flag, and the stone is not touched at all: the picture
+         holds still, because that is the point. */
+      tl.fromTo(ban.fig, { opacity: 1, rotation: 0 },
+        { opacity: 0, rotation: -74, duration: 0.6, ease: 'power2.in', transformOrigin: '40px 570px' },
+        S.at(7, 0.06));
+      tl.fromTo(postLd.path, { stroke: ACC }, { stroke: INK2, duration: 0.45, ease: 'none' }, S.at(7, 0.1));
+      tl.fromTo(postLd.dot, { fill: ACC }, { fill: INK2, duration: 0.45, ease: 'none' }, S.at(7, 0.1));
+      tl.fromTo(postLab, { color: ACC }, { color: INK2, duration: 0.45, ease: 'none' }, S.at(7, 0.1));
+
+      /* 8 — some of them are still standing today: where one of them is */
+      tl.fromTo(lead, { opacity: 0, y: 26 },
+        { opacity: 1, y: 0, duration: 0.65, ease: 'expo.out' }, S.at(8, 0.12));
+      tl.fromTo(leadLd.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(8, 0.62));
+      tl.fromTo(leadLd.path, { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.46, ease: 'none', autoRound: false }, S.at(8, 0.62));
+      tl.fromTo(leadLd.dot, { opacity: 0 }, { opacity: 1, duration: 0.2 }, S.at(8, 1.02));
+
+      window.__timelines['stone'] = tl;
+    })();
+  </script>
+</template>

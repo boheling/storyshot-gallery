@@ -1,0 +1,289 @@
+<template>
+  <style>
+    /* Scene 4, kids' cut — the line down the Atlantic.
+       One line, drawn once, in 1494. The grown-up scene shows the treaty as a
+       measured instrument (two meridians, Cape Verde, 370 leagues, dimension
+       rules); a ten-year-old needs the opposite: two crowns leaning in over an
+       ocean, one red line down the middle of it, two pale halves, and then the
+       people who were standing on the land the whole time.
+
+       No neatline and no ruled frame: a hard rectangle around the halves turns
+       them into two pasted slabs. Each half is a wash with a wobbly, softened
+       edge laid straight onto the chart paper, so what the two kings split
+       reads as sea. The only hard edge in the picture is the line itself.
+
+       Coordinates go into the Kit builders, never into this block: the builders
+       write inline left/top and an inline style beats a rule here. */
+    #line { position: absolute; inset: 0; overflow: hidden; }
+  </style>
+
+  <div id="line" class="chart" data-composition-id="line" data-width="1920" data-height="1080">
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const R = Kit.root('line');          // the mount host shares this id
+      Kit.paper(R, { rose: [1090, 800] });
+
+      /* ── the picture's geometry, in one place ─────────────────────────── */
+      const LX = 970;                      // the line, mid-ocean
+      const SEA_T = 190, SEA_B = 930;      // how far the washed sea reaches
+      const SEA_L = 54,  SEA_R = 1866;
+
+      /* ── helpers ──────────────────────────────────────────────────────── */
+      const toD = (pts) => 'M ' + pts.map(p => p[0] + ' ' + p[1]).join(' L ');
+
+      /* a hatch line parallel to a coast, offset along the local normal */
+      function offset(pts, d, side) {
+        return pts.map((p, i) => {
+          const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+          let dx = b[0] - a[0], dy = b[1] - a[1];
+          const L = Math.hypot(dx, dy) || 1;
+          dx /= L; dy /= L;
+          return [+(p[0] + dy * side * d).toFixed(1), +(p[1] - dx * side * d).toFixed(1)];
+        });
+      }
+
+      /* one half of the sea: straight along the line, hand-wobbled everywhere
+         else, corners cut so nothing in it reads as a box */
+      function washPath(xIn, xOut, seed) {
+        const r = Kit.rnd(seed);
+        const j = (a) => (r() - 0.5) * 2 * a;
+        const d = Math.sign(xOut - xIn), C = 74;
+        const p = [[xIn, SEA_T]];
+        const run = (ax, ay, bx, by, k) => {
+          for (let i = 1; i <= k; i++) {
+            const t = i / k;
+            p.push([ax + (bx - ax) * t + j(9), ay + (by - ay) * t + j(9)]);
+          }
+        };
+        run(xIn, SEA_T, xOut - d * C, SEA_T, 7);              // the top edge
+        run(xOut - d * C, SEA_T, xOut, SEA_T + C, 2);         // the corner
+        run(xOut, SEA_T + C, xOut, SEA_B - C, 8);             // the outer edge
+        run(xOut, SEA_B - C, xOut - d * C, SEA_B, 2);         // the corner
+        run(xOut - d * C, SEA_B, xIn, SEA_B, 7);              // the bottom edge
+        p[p.length - 1] = [xIn, SEA_B];                       // meet the line square
+        return 'M ' + p.map(q => q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' L ') + ' Z';
+      }
+
+      /* ── layer 1: the two halves the treaty handed out ───────────────────
+         Under the land, so the continents stay blank paper. Each wash is
+         wiped sideways OUT of the line, because the line is where it came
+         from; the wipe's own edge ends up past the wash, so the held frame
+         has no straight edge but the line. */
+      const washFig = Kit.div('fig', { left: '0px', top: '0px' }, R);
+      const wsv = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 }, washFig);
+      const wdefs = Kit.el('defs', {}, wsv);
+      const clipW = Kit.el('clipPath', { id: 'line-revw' }, wdefs);
+      const revW = Kit.el('rect', { x: LX, y: 0, width: 0, height: 1080 }, clipW);
+      const clipE = Kit.el('clipPath', { id: 'line-reve' }, wdefs);
+      const revE = Kit.el('rect', { x: LX, y: 0, width: 0, height: 1080 }, clipE);
+
+      const gW = Kit.el('g', { 'clip-path': 'url(#line-revw)' }, wsv);
+      Kit.el('path', {
+        d: washPath(LX + 5, SEA_L, 11),
+        style: 'fill:var(--spain);fill-opacity:.145;filter:blur(7px)',
+      }, gW);
+      const gE = Kit.el('g', { 'clip-path': 'url(#line-reve)' }, wsv);
+      Kit.el('path', {
+        d: washPath(LX - 5, SEA_R, 29),
+        style: 'fill:var(--port);fill-opacity:.18;filter:blur(7px)',
+      }, gE);
+
+      /* ── layer 2: the map ─────────────────────────────────────────────── */
+      const mapWrap = Kit.div('fig', { left: '0px', top: '0px' }, R);
+      const msv = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 }, mapWrap);
+      const land = Kit.el('g', {}, msv);
+
+      const LAND = 'fill:var(--paper-2)';   // blank paper: nobody had been inland
+      function mass(outline, seaFace, side) {
+        for (let k = 2; k >= 1; k--) {
+          Kit.el('path', {
+            class: 'hair', d: toD(offset(seaFace, k * 14, side)),
+            opacity: (0.72 - k * 0.21).toFixed(2),
+          }, land);
+        }
+        Kit.el('path', { class: 'ln', d: toD(outline) + ' Z', style: LAND }, land);
+      }
+
+      /* Europe, running off the top of the chart: the corner of the world
+         both of these kings were actually sitting in */
+      const EUR = [
+        [1930, -56], [1800, -34], [1716, -8], [1670, 26], [1636, 66], [1614, 110],
+        [1606, 154], [1616, 198], [1644, 230], [1686, 248], [1740, 256],
+        [1810, 254], [1930, 250],
+      ];
+      mass(EUR, EUR.slice(3, 11), -1);
+
+      /* Africa, whole: a flat north coast, the shoulder of the west, the
+         right-angle notch of the Gulf of Guinea, then the taper to the cape */
+      const AFR = [
+        [1662, 386], [1608, 376], [1552, 370], [1496, 366], [1440, 364],
+        [1384, 368], [1332, 376],
+        [1288, 398], [1252, 426], [1222, 460], [1202, 498], [1190, 538], [1190, 576],
+        [1212, 608], [1248, 628], [1290, 640], [1334, 648], [1376, 654],
+        [1400, 690], [1424, 730], [1448, 772], [1472, 812], [1496, 848],
+        [1520, 874], [1546, 884],
+        [1578, 866], [1606, 838], [1632, 802], [1656, 760], [1676, 712],
+        [1694, 658], [1706, 600], [1712, 538], [1712, 474], [1700, 420],
+      ];
+      mass(AFR, AFR, -1);
+
+      /* South America: coast only, nothing inland, because nothing inland had
+         been seen by either king who was dividing it up */
+      const SAM = [
+        [180, 406], [240, 392], [304, 384], [368, 388], [432, 382], [494, 388],
+        [552, 398], [606, 412], [652, 430], [694, 452], [730, 480], [756, 510],
+        [768, 544],
+        [764, 580], [752, 616], [734, 652], [710, 688], [682, 722], [652, 754],
+        [622, 786], [594, 814], [564, 840], [532, 862], [500, 878], [470, 888],
+        [446, 862], [428, 826], [412, 784], [396, 738], [378, 690], [356, 640],
+        [332, 590], [304, 542], [274, 498], [244, 458], [210, 428],
+      ];
+      mass(SAM, SAM.slice(0, 25), 1);
+
+      /* the islands in the north-west: the only land out there anyone had
+         actually stood on, and where scene 1 happened */
+      [[232, 300, 35, 13], [308, 282, 25, 10], [362, 316, 30, 12], [424, 296, 19, 9]]
+        .forEach(([cx, cy, rx, ry]) =>
+          Kit.el('ellipse', { class: 'ln2', cx, cy, rx, ry, style: LAND }, land));
+
+      /* ── layer 3: the line ────────────────────────────────────────────── */
+      const lineWrap = Kit.div('fig', { left: '0px', top: '0px' }, R);
+      const lsv = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 }, lineWrap);
+      const meridian = Kit.el('path', {
+        d: `M ${LX} 204 V 944`, fill: 'none',
+        stroke: 'var(--accent)', 'stroke-width': 10, 'stroke-linecap': 'round',
+        pathLength: 1, style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, lsv);
+
+      /* ── the two kings, as two crowns leaning in over the ocean ──────────
+         Drawn here rather than in the kit: this is the only scene with crowns,
+         and the kit is shared with the finished grown-up film. */
+      function crown(cx, topY, tint) {
+        const W = 180, H = 132;
+        const fig = Kit.div('fig', { left: (cx - 108) + 'px', top: topY + 'px' }, R);
+        const s = Kit.el('svg', {
+          viewBox: `-18 -18 ${W + 36} ${H + 36}`, width: W + 36, height: H + 36,
+        }, fig);
+        const g = Kit.el('g', {}, s);
+        /* the pointed body, then the band, then the stones */
+        Kit.el('path', {
+          class: 'ln', style: 'fill:var(--paper-2)',
+          d: 'M 7 97 L 0 30 L 46 69 L 90 12 L 134 69 L 180 30 L 173 97 Z',
+        }, g);
+        Kit.el('path', {
+          class: 'ln', style: `fill:${tint};fill-opacity:.24`,
+          d: 'M 5 95 h 170 v 37 h -170 Z',
+        }, g);
+        [[0, 30, 12], [90, 12, 13], [180, 30, 12]].forEach(([x, y, r]) =>
+          Kit.el('circle', { class: 'ln', cx: x, cy: y, r, style: 'fill:var(--paper-2)' }, g));
+        [46, 90, 134].forEach(x =>
+          Kit.el('circle', { cx: x, cy: 114, r: 6.5, style: 'fill:var(--ink)' }, g));
+        return { fig, svg: s, g };
+      }
+      const crownS = crown(790, 32, 'var(--spain)');
+      const crownP = crown(1150, 32, 'var(--port)');
+      crownS.fig.style.opacity = 0;
+      crownP.fig.style.opacity = 0;
+
+      /* ── what neither of them had seen: blank land, with a question on it ── */
+      const QPOS = [[400, 540], [560, 668], [1420, 520], [1570, 690]];
+      const qs = QPOS.map(([cx, cy]) => {
+        const n = Kit.text(R, 'year', '?', {
+          left: (cx - 34) + 'px', top: (cy - 66) + 'px',
+          fontSize: '132px', lineHeight: '1', color: 'var(--ink-2)',
+        });
+        n.style.opacity = 0;
+        return n;
+      });
+
+      /* ── the people who were standing on it the whole time ──────────────
+         Same builder, same ink and the same size as the explorers elsewhere
+         in the film. Three on the western half, two on the eastern one. */
+      const PPL = [
+        [400, 600, 118, 1], [560, 724, 112, -1], [480, 846, 104, 1],
+        [1420, 580, 112, -1], [1570, 760, 118, 1],
+      ];
+      const people = PPL.map(([cx, feet, h, face]) => {
+        const p = Kit.person(R, cx - 40 * (h / 118), feet - h, { h, face });
+        p.fig.style.opacity = 0;
+        return p;
+      });
+
+      /* ── type ──────────────────────────────────────────────────────────── */
+      const yr = Kit.year(R, 120, 52, '1494');
+      yr.style.opacity = 0; yr.style.fontSize = '96px';
+      yr.style.lineHeight = '1'; yr.style.color = 'var(--ink)';
+      const uYr = Kit.underline(R, 120, 166, 232);
+      uYr.style.transform = 'scaleX(0)';
+
+      const spain = Kit.label(R, 696, 262, 'Spain');
+      spain.style.opacity = 0; spain.style.fontSize = '56px';
+      spain.style.color = 'var(--spain)';
+      const port = Kit.label(R, 1034, 262, 'Portugal');
+      port.style.opacity = 0; port.style.fontSize = '56px';
+      port.style.color = 'var(--port)';
+
+      const last = Kit.lead(R, 580, 960, 'Nobody asked them.', 760);
+      last.style.opacity = 0; last.style.fontSize = '54px';
+      last.style.textAlign = 'center';
+
+      const schem = Kit.schem(R, 1544, 1038, 'map is simplified');
+      schem.style.opacity = 0;
+      const credit = Kit.credit(R, 120, 1038,
+        'Spain and Portugal · Treaty of Tordesillas · 1494');
+      credit.style.opacity = 0;
+
+      /* ── timeline ──────────────────────────────────────────────────────── */
+      const tl = gsap.timeline({ paused: true });
+
+      /* the chart is the first frame: it comes up before the voice */
+      tl.fromTo(mapWrap, { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0);
+      tl.fromTo(schem, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.35);
+
+      /* 0 — a deal between two people, not a law of nature */
+      tl.fromTo(crownS.fig, { opacity: 0, y: -30, rotate: 0 },
+        { opacity: 1, y: 0, rotate: 9, duration: 0.65, ease: 'expo.out', transformOrigin: '50% 100%' },
+        S.at(0));
+      tl.fromTo(crownP.fig, { opacity: 0, y: -30, rotate: 0 },
+        { opacity: 1, y: 0, rotate: -9, duration: 0.65, ease: 'expo.out', transformOrigin: '50% 100%' },
+        S.at(0, 0.24));
+
+      /* 1 — the year */
+      tl.fromTo(yr, { opacity: 0, x: -22 }, { opacity: 1, x: 0, duration: 0.55, ease: 'expo.out' }, S.at(1));
+      tl.fromTo(uYr, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: 'expo.out' }, S.at(1, 0.3));
+
+      /* 2 — the hero move: one line, drawn down the ocean, top to bottom */
+      tl.fromTo(meridian, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 1.8, ease: 'none', autoRound: false,
+      }, S.at(2, 0.35));
+      tl.fromTo(credit, { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(2, 2.5));
+
+      /* 3 — everything on this side */
+      tl.fromTo(revW, { attr: { x: LX, width: 0 } },
+        { attr: { x: 10, width: LX - 10 }, duration: 1.0, ease: 'power2.out' }, S.at(3));
+      tl.fromTo(spain, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, S.at(3, 0.8));
+
+      /* 4 — everything on that side */
+      tl.fromTo(revE, { attr: { width: 0 } },
+        { attr: { width: 1910 - LX }, duration: 1.0, ease: 'power2.out' }, S.at(4));
+      tl.fromTo(port, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, S.at(4, 0.8));
+
+      /* 5 — they had never seen most of it */
+      tl.fromTo(qs, { opacity: 0, scale: 0.78 },
+        { opacity: 1, scale: 1, duration: 0.5, stagger: 0.16, ease: 'expo.out', transformOrigin: '50% 50%' },
+        S.at(5));
+
+      /* 6 — and the blanks were not blank: the question marks give way to the
+         people who lived there, on both sides of the line */
+      tl.fromTo(qs, { opacity: 1 }, { opacity: 0, duration: 0.45 }, S.at(6));
+      tl.fromTo(people.map(p => p.fig), { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.55, stagger: 0.12, ease: 'expo.out' }, S.at(6, 0.1));
+      tl.fromTo(last, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(6, 0.95));
+
+      window.__timelines['line'] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,394 @@
+<template>
+  <style>
+    /* Scene 2, the 5th-grade cut — the two letters on the banner. This is the
+       scene the film exists to deliver, so the banner is the whole picture:
+       white cloth, a green cross painted on, and then one crowned letter in
+       each of the two lower quarters, named plainly underneath.
+
+       The right third of the frame is the only place any other text goes, and
+       it carries one thing at a time: first the two part names, then the
+       spelling (Ysabel over Isabella), then why there were two letters at all.
+
+       Positions go into the Kit builders, which write inline left/top, so this
+       block only carries the paint the builders have no opinion about, plus the
+       kids' type sizes. */
+    #letters { position: absolute; inset: 0; overflow: hidden; }
+
+    /* the kids' cut is read from the back of a classroom: nothing at the 28px
+       floor, titles and leads a size up from the grown-up film */
+    #letters .title { font-size: 92px; }
+    #letters .lead  { font-size: 52px; }
+    #letters .note  { font-size: 34px; }
+    #letters .label { font-size: 33px; }
+
+    /* the two crowned letters: the film's serif, very large, in ink. The accent
+       is never on them — in this scene the seal red only points out the Y/I. */
+    #letters .glyph { font-family: var(--serif); fill: var(--ink); }
+    /* what stands in a quarter before its letter arrives */
+    #letters .qmark { font-family: var(--serif); fill: var(--ink-2); }
+  </style>
+
+  <div id="letters" class="chart" data-composition-id="letters" data-width="1920" data-height="1080">
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const R = Kit.root('letters');     // never getElementById: the mount host shares this id
+      Kit.paper(R, { rose: [1640, 900] });
+
+      /* ── geometry ───────────────────────────────────────────────────────
+         The cloth is the hero: 1060 × 660 (55% of the frame's width, 61% of
+         its height), left of centre, with the pole running on out of the
+         bottom of the frame. Everything drawn on the banner is in the
+         banner's own svg units; px()/py() turn those into page coordinates. */
+      const CW = 1060, CH = 660;        // the cloth
+      const CL = 210,  CT = 112;        // where its top-left corner sits
+      const POLE_H = 990;
+      const px = (v) => CL + v;
+      const py = (v) => CT + v - 4;     // local y 4 is the cloth's top edge
+
+      /* the quartering made by the arms of the cross */
+      const AX = 35;                            // half the cross's width
+      const MIDX = CW / 2, MIDY = CH / 2 + 4;   // 530, 334
+      /* one inset box per LOWER quarter — the only two that matter here */
+      const Q = { ll: [46, 396, 468, 636], lr: [592, 396, 1014, 636] };
+      const box = ([x0, y0, x1, y1]) => `M ${x0} ${y0} H ${x1} V ${y1} H ${x0} Z`;
+      const LEFT_CX = (Q.ll[0] + Q.ll[2]) / 2;    // 257
+      const RIGHT_CX = (Q.lr[0] + Q.lr[2]) / 2;   // 803
+      const CROWN_BY = 478;                       // the crown's band sits here
+      const BASE = 630;                           // the letters' baseline
+      const GLYPH = 190;                          // and how big they are
+
+      const COL = 1340, COLW = 520;               // the one column of words
+
+      /* ── a crown: a drawn outline, three points, three jewels ───────────
+         `k` scales it; `sw` is the stroke, which has to be set as an inline
+         STYLE because `.chart .fig .ln` sets stroke-width and a CSS rule beats
+         a presentation attribute. */
+      function crown(parent, cx, by, k, sw) {
+        const g = Kit.el('g', {}, parent);
+        const W = 62 * k, J = 40 * k, I = 20 * k;
+        const outline = Kit.el('path', {
+          class: 'ln', pathLength: 1,
+          d: `M ${cx - W} ${by} H ${cx + W} V ${by - 20 * k}
+              L ${cx + J} ${by - 62 * k} L ${cx + I} ${by - 31 * k} L ${cx} ${by - 69 * k}
+              L ${cx - I} ${by - 31 * k} L ${cx - J} ${by - 62 * k} L ${cx - W} ${by - 20 * k} Z`,
+          style: `stroke-dasharray:1;stroke-dashoffset:1;stroke-width:${sw}`,
+        }, g);
+        const bits = [];
+        [[cx - J, by - 62 * k], [cx, by - 69 * k], [cx + J, by - 62 * k]].forEach(([bx, byy]) =>
+          bits.push(Kit.el('circle', { class: 'ln2', cx: bx, cy: byy, r: 7.6 * k, opacity: 0 }, g)));
+        [-29 * k, 0, 29 * k].forEach((o) =>
+          bits.push(Kit.el('circle', { cx: cx + o, cy: by - 10 * k, r: 4.4 * k, fill: 'var(--ink)', opacity: 0 }, g)));
+        return { g, outline, bits };
+      }
+
+      /* ── a letter that draws itself in: the serif, wiped downward ───────── */
+      function glyph(parent, cx, baseline, ch, key) {
+        const defs = Kit.el('defs', {}, parent);
+        const cp = Kit.el('clipPath', { id: 'letters-wipe-' + key }, defs);
+        const wipe = Kit.el('rect', { x: cx - 150, y: baseline - 150, width: 300, height: 0 }, cp);
+        const t = Kit.el('text', {
+          class: 'glyph', x: cx, y: baseline, 'text-anchor': 'middle', 'font-size': GLYPH,
+          'clip-path': `url(#letters-wipe-${key})`,
+        }, parent);
+        t.textContent = ch;
+        return { text: t, wipe, full: 168 };
+      }
+
+      /* ── the banner ─────────────────────────────────────────────────────── */
+      const ban = Kit.banner(R, CL - 40, CT - 44, {
+        w: CW, h: CH, poleH: POLE_H, cloth: 'var(--paper-2)',
+      });
+      /* Kit.banner's svg box is w+160 wide and poleH+80 tall, which here would
+         run 80px into the column and 76px past the bottom of the frame. Re-fit
+         it in the scene (never in the kit): 1140 wide clears the cloth's
+         flutter bulge, and 1012 tall puts the svg's own bottom edge exactly on
+         the frame's, so the pole runs off the screen instead of stopping. */
+      ban.svg.setAttribute('viewBox', `-40 -40 1140 1012`);
+      ban.svg.setAttribute('width', 1140);
+      ban.svg.setAttribute('height', 1012);
+      /* the cloth is painted with a fill ATTRIBUTE and `.chart .fig .ln` sets
+         `fill: none`, which wins — so without this the cloth is transparent and
+         the chart grid runs straight through it */
+      ban.body.style.fill = 'var(--paper-2)';
+      ban.body.style.strokeWidth = '5';
+      /* `poleW` is dead for the same reason, so the pole gets its weight here */
+      ban.pole.querySelector('path').style.strokeWidth = '22';
+      ban.pole.querySelector('circle').setAttribute('r', 15);
+
+      /* Everything painted on the cloth is clipped to the cloth's own outline,
+         which moves with the flutter — so the cross can run right off the
+         edges and still never spill past them. */
+      const defs = Kit.el('defs', {}, ban.svg);
+      const clip = Kit.el('clipPath', { id: 'letters-cloth-clip' }, defs);
+      const clipShape = Kit.el('path', { d: ban.body.getAttribute('d') }, clip);
+      const redraw = () => { ban.redraw(); clipShape.setAttribute('d', ban.body.getAttribute('d')); };
+
+      /* marks go in their own group, appended after the cloth, so they sit on it */
+      const marks = Kit.el('g', { 'clip-path': 'url(#letters-cloth-clip)' }, ban.svg);
+
+      /* the green cross, run off all four edges and cut back by the cloth */
+      const crossV = Kit.el('path', {
+        d: `M ${MIDX} -8 V ${CH + 24}`, stroke: 'var(--spain)', 'stroke-width': AX * 2,
+        fill: 'none', 'stroke-linecap': 'butt', pathLength: 1,
+        style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, marks);
+      const crossH = Kit.el('path', {
+        d: `M -4 ${MIDY} H ${CW + 38}`, stroke: 'var(--spain)', 'stroke-width': AX * 2,
+        fill: 'none', 'stroke-linecap': 'butt', pathLength: 1,
+        style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, marks);
+
+      /* the two lower quarters: a light guide, so the viewer sees WHERE a
+         letter goes before any letter is there */
+      const gLL = Kit.el('path', {
+        class: 'hair', d: box(Q.ll), pathLength: 1,
+        style: 'stroke-dasharray:1;stroke-dashoffset:1;stroke-width:3',
+      }, marks);
+      const gLR = Kit.el('path', {
+        class: 'hair', d: box(Q.lr), pathLength: 1,
+        style: 'stroke-dasharray:1;stroke-dashoffset:1;stroke-width:3',
+      }, marks);
+
+      /* a question mark stands in each quarter until its letter arrives */
+      const qmark = (cx) => {
+        const t = Kit.el('text', {
+          class: 'qmark', x: cx, y: BASE - 12, 'text-anchor': 'middle',
+          'font-size': 150, opacity: 0,
+        }, marks);
+        t.textContent = '?';
+        return t;
+      };
+      const qL = qmark(LEFT_CX), qR = qmark(RIGHT_CX);
+
+      /* a crown over each letter position, then the letters themselves */
+      const crL = crown(marks, LEFT_CX, CROWN_BY, 1.15, 6);
+      const crR = crown(marks, RIGHT_CX, CROWN_BY, 1.15, 6);
+      const gF = glyph(marks, LEFT_CX, BASE, 'F', 'f');
+      const gY = glyph(marks, RIGHT_CX, BASE, 'Y', 'y');
+
+      /* ── who the letters stand for, directly under each one ─────────────── */
+      const named = (cx, who, role) => {
+        const lab = Kit.lead(R, cx - 210, 798, who, 420);
+        lab.style.textAlign = 'center';
+        const sub = Kit.note(R, cx - 210, 874, role, 420);
+        sub.style.textAlign = 'center';
+        lab.style.opacity = 0; sub.style.opacity = 0;
+        return { lab, sub };
+      };
+      const fer = named(px(LEFT_CX), 'Fernando', 'the king');
+      const ysa = named(px(RIGHT_CX), 'Ysabel', 'the queen');
+
+      /* ── the column: what the banner is made of ─────────────────────────── */
+      const pointer = (x1, y1, x2, y2) => {
+        const ld = Kit.leader(R, x1, y1, x2, y2, false);
+        ld.dot.setAttribute('r', 0);
+        ld.wrap.style.opacity = 0;
+        return ld;
+      };
+
+      const labWhite = Kit.label(R, COL + 12, 248, 'white cloth');
+      const ldWhite = pointer(COL, 266, 1150, 256);
+      const labCross = Kit.label(R, COL + 12, 418, 'green cross');
+      labCross.style.color = 'var(--spain)';
+      const ldCross = pointer(COL, 436, 1200, 442);
+      /* this one dot lands ON the green arm, and ink-2 and --spain have almost
+         the same lightness, so it would vanish there: give it the cloth's own
+         colour with an ink ring. (A style, not an attribute: `.chart .leader
+         circle` sets the fill and a CSS rule beats a presentation attribute.) */
+      ldCross.dot.style.fill = 'var(--paper-2)';
+      ldCross.dot.style.stroke = 'var(--ink)';
+      ldCross.dot.style.strokeWidth = '2.6';
+      labWhite.style.opacity = 0; labCross.style.opacity = 0;
+
+      /* ── the spelling, which is the thing people get wrong ───────────────
+         The two words sit one above the other with their first letters on the
+         same left edge, so the swap is the only difference you can see. */
+      const spY = Kit.title(R, COL, 300, '<em>Y</em>sabel', COLW);
+      const spI = Kit.title(R, COL, 442, '<em>I</em>sabella', COLW);
+      const spNote = Kit.note(R, COL, 570, 'the same name,<br>spelled the old way', 500);
+      [spY, spI, spNote].forEach((n) => { n.style.opacity = 0; });
+
+      /* the accent only ever points, and here it points at the swapped letter */
+      const ldYI = Kit.leader(R, 1365, 388, 1365, 442, true);
+      ldYI.dot.setAttribute('r', 0);
+      const yiTip = Kit.el('path', {
+        d: `M 1355 431 L 1365 442 L 1375 431`, pathLength: 1,
+        style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, ldYI.wrap.firstChild);
+      ldYI.wrap.style.opacity = 0;
+
+      /* the tie from the Y on the cloth up to the word it is the start of */
+      const ldSpell = pointer(COL - 8, 368, 1082, 662);
+
+      /* ── why there were two letters at all ──────────────────────────────
+         The pair sits at the same height as the crowns on the cloth, so the
+         two crowns here and the two crowns over the letters read as the
+         same two people. */
+      const twoFig = Kit.div('fig', { left: '1346px', top: '480px' }, R);
+      const twoSvg = Kit.el('svg', { viewBox: '0 0 520 132', width: 520, height: 132 }, twoFig);
+      const crK = crown(twoSvg, 130, 106, 1.15, 5.4);
+      const crQ = crown(twoSvg, 390, 106, 1.15, 5.4);
+
+      const roleLab = (cx, html) => {
+        const n = Kit.label(R, cx - 115, 616, html);
+        n.style.width = '230px'; n.style.textAlign = 'center';
+        n.style.whiteSpace = 'normal'; n.style.opacity = 0;
+        return n;
+      };
+      const labKing = roleLab(1476, 'the king');
+      const labQueen = roleLab(1736, 'the queen');
+      const twoNote = Kit.note(R, COL, 690,
+        'Married to each other — so the flag carried one letter for each.', 510);
+      twoNote.style.opacity = 0;
+
+      /* ── the drawing is a reconstruction, and it says so ────────────────── */
+      Kit.schem(R, 262, 968, 'reconstruction');
+      Kit.credit(R, 262, 1004,
+        'Columbus’s log, 12 Oct 1492 · the banner’s design is reconstructed from later pictures');
+
+      /* ── timeline ───────────────────────────────────────────────────────── */
+      const tl = gsap.timeline({ paused: true });
+
+      /* the cloth never stops moving: one number, so seeking stays exact */
+      tl.fromTo(ban.st, { phase: 0 }, {
+        phase: Math.PI * 2 * 2.4, duration: S.duration, ease: 'none', onUpdate: redraw,
+      }, 0);
+
+      /* 0 — "look closely": the frame comes in a little on the flag that
+         scene 1 left standing in the sand */
+      tl.fromTo(ban.fig, { scale: 0.94 }, {
+        scale: 1, duration: 1.9, ease: 'power2.out', transformOrigin: '50% 37%',
+      }, S.at(0));
+
+      /* 1 — it was white */
+      tl.fromTo(ldWhite.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(1, 0.05));
+      tl.fromTo(ldWhite.path, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.4, ease: 'none', autoRound: false,
+      }, S.at(1, 0.05));
+      tl.fromTo(ldWhite.dot, { attr: { r: 0 } }, { attr: { r: 6 }, duration: 0.2 }, S.at(1, 0.42));
+      tl.fromTo(labWhite, { opacity: 0, x: 16 }, {
+        opacity: 1, x: 0, duration: 0.45, ease: 'expo.out',
+      }, S.at(1, 0.1));
+
+      /* 2 — with a green cross: it paints onto the cloth */
+      tl.fromTo(crossV, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', autoRound: false,
+      }, S.at(2, 0.02));
+      tl.fromTo(crossH, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.55, ease: 'power2.out', autoRound: false,
+      }, S.at(2, 0.32));
+      tl.fromTo(ldCross.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(2, 0.72));
+      tl.fromTo(ldCross.path, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.36, ease: 'none', autoRound: false,
+      }, S.at(2, 0.72));
+      tl.fromTo(ldCross.dot, { attr: { r: 0 } }, { attr: { r: 6 }, duration: 0.2 }, S.at(2, 1.04));
+      tl.fromTo(labCross, { opacity: 0, x: 16 }, {
+        opacity: 1, x: 0, duration: 0.45, ease: 'expo.out',
+      }, S.at(2, 0.76));
+
+      /* 3 — under the cross were two letters: where they go, before they are
+         there, and a question mark in each place */
+      tl.fromTo([gLL, gLR], { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.5, stagger: 0.14, ease: 'none', autoRound: false,
+      }, S.at(3, 0.05));
+      tl.fromTo(qL, { opacity: 0, attr: { y: BASE + 8 } }, {
+        opacity: 1, attr: { y: BASE - 12 }, duration: 0.45, ease: 'expo.out',
+      }, S.at(3, 0.72));
+      tl.fromTo(qR, { opacity: 0, attr: { y: BASE + 8 } }, {
+        opacity: 1, attr: { y: BASE - 12 }, duration: 0.45, ease: 'expo.out',
+      }, S.at(3, 1.22));
+
+      /* 4 — the F, crowned, and who F was */
+      tl.fromTo(qL, { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'none' }, S.at(4, 0.02));
+      tl.fromTo(gF.wipe, { attr: { height: 0 } }, {
+        attr: { height: gF.full }, duration: 0.5, ease: 'power2.out',
+      }, S.at(4, 0.04));
+      tl.fromTo(gLL, { opacity: 1 }, { opacity: 0.34, duration: 0.4 }, S.at(4, 0.2));
+      tl.fromTo(crL.outline, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.42, ease: 'power1.out', autoRound: false,
+      }, S.at(4, 0.45));
+      tl.fromTo(crL.bits, { opacity: 0 }, {
+        opacity: 1, duration: 0.22, stagger: 0.03, ease: 'none',
+      }, S.at(4, 0.78));
+      tl.fromTo([fer.lab], { opacity: 0, y: 12 }, {
+        opacity: 1, y: 0, duration: 0.45, ease: 'expo.out',
+      }, S.at(4, 0.75));
+
+      /* 5 — the king */
+      tl.fromTo(fer.sub, { opacity: 0, y: 10 }, {
+        opacity: 1, y: 0, duration: 0.42, ease: 'expo.out',
+      }, S.at(5, 0.05));
+
+      /* 6 — the Y, crowned, and who Y was */
+      tl.fromTo(qR, { opacity: 1 }, { opacity: 0, duration: 0.22, ease: 'none' }, S.at(6, 0.02));
+      tl.fromTo(gY.wipe, { attr: { height: 0 } }, {
+        attr: { height: gY.full }, duration: 0.45, ease: 'power2.out',
+      }, S.at(6, 0.04));
+      tl.fromTo(gLR, { opacity: 1 }, { opacity: 0.34, duration: 0.4 }, S.at(6, 0.18));
+      tl.fromTo(crR.outline, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.38, ease: 'power1.out', autoRound: false,
+      }, S.at(6, 0.35));
+      tl.fromTo(crR.bits, { opacity: 0 }, {
+        opacity: 1, duration: 0.2, stagger: 0.025, ease: 'none',
+      }, S.at(6, 0.62));
+      tl.fromTo([ysa.lab], { opacity: 0, y: 12 }, {
+        opacity: 1, y: 0, duration: 0.42, ease: 'expo.out',
+      }, S.at(6, 0.55));
+
+      /* 7 — the queen */
+      tl.fromTo(ysa.sub, { opacity: 0, y: 10 }, {
+        opacity: 1, y: 0, duration: 0.4, ease: 'expo.out',
+      }, S.at(7, 0.08));
+
+      /* 8 — "back then": the frame clears down to the banner alone, and a line
+         goes out from the Y on the cloth to where its word is about to be */
+      tl.fromTo([labWhite, labCross, ldWhite.wrap, ldCross.wrap,
+                 fer.lab, fer.sub, ysa.lab, ysa.sub], { opacity: 1 }, {
+        opacity: 0, duration: 0.4, ease: 'none',
+      }, S.at(8, 0.05));
+      tl.fromTo([gLL, gLR], { opacity: 0.34 }, { opacity: 0, duration: 0.4 }, S.at(8, 0.05));
+      tl.fromTo(ldSpell.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(8, 0.4));
+      tl.fromTo(ldSpell.path, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.6, ease: 'none', autoRound: false,
+      }, S.at(8, 0.4));
+      tl.fromTo(ldSpell.dot, { attr: { r: 0 } }, { attr: { r: 6 }, duration: 0.2 }, S.at(8, 0.92));
+
+      /* 9 — the same name, spelled the old way. Y over I, left edges aligned. */
+      tl.fromTo(spY, { opacity: 0, x: 18 }, {
+        opacity: 1, x: 0, duration: 0.5, ease: 'expo.out',
+      }, S.at(9, 0.35));
+      tl.fromTo(spI, { opacity: 0, x: 18 }, {
+        opacity: 1, x: 0, duration: 0.5, ease: 'expo.out',
+      }, S.at(9, 0.85));
+      tl.fromTo(ldYI.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(9, 1.1));
+      tl.fromTo([ldYI.path, yiTip], { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.26, stagger: 0.12, ease: 'none', autoRound: false,
+      }, S.at(9, 1.1));
+      tl.fromTo(spNote, { opacity: 0, y: 12 }, {
+        opacity: 1, y: 0, duration: 0.45, ease: 'expo.out',
+      }, S.at(9, 1.35));
+
+      /* 10 — two letters, because there were two rulers at once */
+      tl.fromTo([spY, spI, spNote, ldYI.wrap, ldSpell.wrap], { opacity: 1 }, {
+        opacity: 0, duration: 0.4, ease: 'none',
+      }, S.at(10, 0.05));
+      tl.fromTo([crK.outline, crQ.outline], { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.45, stagger: 0.16, ease: 'power1.out', autoRound: false,
+      }, S.at(10, 0.45));
+      tl.fromTo([...crK.bits, ...crQ.bits], { opacity: 0 }, {
+        opacity: 1, duration: 0.22, stagger: 0.02, ease: 'none',
+      }, S.at(10, 0.9));
+      tl.fromTo([labKing, labQueen], { opacity: 0, y: 10 }, {
+        opacity: 1, y: 0, duration: 0.42, stagger: 0.12, ease: 'expo.out',
+      }, S.at(10, 1.05));
+      tl.fromTo(twoNote, { opacity: 0, y: 12 }, {
+        opacity: 1, y: 0, duration: 0.5, ease: 'expo.out',
+      }, S.at(10, 1.5));
+
+      window.__timelines['letters'] = tl;
+    })();
+  </script>
+</template>

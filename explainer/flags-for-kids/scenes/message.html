@@ -1,0 +1,273 @@
+<template>
+  <style>
+    /* Scene 3 — who the flag was actually talking to.
+
+       The whole scene is one piece of geometry, and the geometry is the idea:
+       a line drawn from the flag to the people standing right there gets
+       crossed out, and the real lines leave the flag and fly up and OVER
+       their heads to three crowned ports in Europe. The band between the
+       routes and the people's heads is kept deliberately empty, so that
+       clearance reads at a glance even on a classroom projector.
+
+       Positions go into the Kit builders, which write inline left/top; a rule
+       in this block would lose to them. */
+    #message { position: absolute; inset: 0; overflow: hidden; }
+  </style>
+
+  <div id="message" class="chart" data-composition-id="message" data-width="1920" data-height="1080">
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const R = Kit.root('message');            // the mount host shares this id
+      Kit.paper(R, { rose: [1660, 800] });
+
+      const SHORE_Y = 925;                      // the beach, low in the frame
+      const BASE    = 360;                      // the quay line of every port
+      const TIP     = [210, 545];               // the finial: where the message leaves
+
+      /* ── the beach, as scene 2 hands it over ────────────────────────── */
+      Kit.shore(R, 0, SHORE_Y - 150, 1920, 11);
+
+      /* the same banner scene 1 planted: pole at x = 210, cloth 210 → 650.
+         Kit.banner hangs the cloth straight off the finial; here it is slung
+         55px down the pole instead, so the finial — the point all three
+         routes leave from — sits in clear air above the cloth and no route
+         ever runs along its top edge. */
+      const POLE_H = 366;
+      const ban = Kit.banner(R, 170, SHORE_Y - 40 - POLE_H, {
+        w: 440, h: 205, poleH: POLE_H, cloth: 'var(--paper-2)',
+      });
+      ban.cloth.setAttribute('transform', 'translate(0,55)');
+      /* `poleW` is dead (a CSS rule beats the attribute), so set it as a style */
+      ban.pole.querySelector('path').style.strokeWidth = '15';
+      /* the green cross, so this is the same object scene 2 just left on */
+      Kit.el('path', {
+        d: 'M 200 14 V 192 M 55 103 H 345', stroke: 'var(--spain)',
+        'stroke-width': 26, fill: 'none',
+      }, ban.cloth);
+      /* and the two letters scene 2 spent its whole run on. They are the
+         thing the people standing on this beach cannot read. */
+      [['F', 115], ['Y', 273]].forEach(([ch, lx]) => {
+        const t = Kit.el('text', {
+          x: lx, y: 180, 'text-anchor': 'middle', fill: 'var(--ink)',
+          'font-size': 64, 'font-family': 'var(--serif)',
+        }, ban.cloth);
+        t.setAttribute('data-layout-ignore', '');
+        t.textContent = ch;
+      });
+
+      /* the people who live here, facing the flag. Body centres, not origins.
+         The shortest stands nearest the flag, which is where the lowest of
+         the three routes passes: it keeps that clearance at 170px or more. */
+      const PEOPLE = [[1050, 258], [1255, 300], [1460, 272], [1665, 290]];
+      PEOPLE.forEach(([cx, h]) => Kit.person(R, cx - 40 * (h / 118), SHORE_Y - h, { h, face: -1 }));
+      const GROUP = [985, 1736];                // the group's outer edges
+
+      /* ── the line that gets cancelled ───────────────────────────────────
+         It aims at the group at head height and stops well short of it: no
+         line in this scene touches a figure. */
+      const ld = Kit.leader(R, 700, 650, 920, 706);
+      ld.wrap.style.opacity = 0;
+      ld.path.style.strokeWidth = '5';
+      ld.dot.setAttribute('r', 9);
+
+      const marks = Kit.div('fig', { left: 0, top: 0 }, R);
+      const ms = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 }, marks);
+      const XC = [810, 678], XR = 46;
+      const xStroke = [
+        `M ${XC[0] - XR} ${XC[1] - XR} L ${XC[0] + XR} ${XC[1] + XR}`,
+        `M ${XC[0] + XR} ${XC[1] - XR} L ${XC[0] - XR} ${XC[1] + XR}`,
+      ].map(d => Kit.el('path', {
+        d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 13,
+        'stroke-linecap': 'round', pathLength: 1,
+        style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, ms));
+
+      /* the brace that gathers the group, drawn under them in the water */
+      const brace = Kit.el('path', {
+        d: `M ${GROUP[0]} 968 V 978 H ${GROUP[1]} V 968`, fill: 'none',
+        stroke: 'var(--ink-2)', 'stroke-width': 3.5, pathLength: 1,
+        style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, ms);
+
+      /* ── the three real recipients, each a port under a crown ───────── */
+      function port(cx, name) {
+        const fig = Kit.div('fig', { left: (cx - 124) + 'px', top: (BASE - 242) + 'px', opacity: 0 }, R);
+        const s = Kit.el('svg', { viewBox: '-124 -242 248 268', width: 248, height: 268 }, fig);
+        const g = Kit.el('g', { transform: 'scale(1.25)' }, s);
+        /* the quay, and the water hatched under it */
+        Kit.el('path', { class: 'ln2', style: 'stroke-width:3.4', d: 'M -93 0 H 93' }, g);
+        Kit.el('path', {
+          class: 'hair', style: 'stroke-width:3',
+          d: 'M -69 2 L -80 13 M -27 2 L -38 13 M 27 2 L 16 13 M 69 2 L 58 13',
+        }, g);
+        /* a walled tower with battlements */
+        Kit.el('path', {
+          class: 'ln2 fill-stone', style: 'stroke-width:3.4',
+          d: 'M -31 0 L -31 -108 L -16 -108 L -16 -93 L -7 -93 L -7 -108 L 7 -108 L 7 -93 L 16 -93 L 16 -108 L 31 -108 L 31 0 Z',
+        }, g);
+        Kit.el('path', { class: 'hair', style: 'stroke-width:2.6', d: 'M -31 -42 H 31' }, g);
+        Kit.el('path', {
+          class: 'ln2', style: 'fill: var(--ink-2); stroke-width:3',
+          d: 'M -11 0 V -20 q 11 -13 22 0 V 0 Z',
+        }, g);
+        [-15, 9].forEach(px => Kit.el('rect', {
+          x: px, y: -78, width: 6, height: 21, rx: 3, fill: 'var(--ink)',
+        }, g));
+        /* the crown above it: three points, three pearls */
+        Kit.el('path', {
+          class: 'ln2 fill-paper', style: 'stroke-width:3.4',
+          d: 'M -39 -122 L -39 -140 L -25 -170 L -13 -140 L 0 -170 L 13 -140 L 25 -170 L 39 -140 L 39 -122 Z',
+        }, g);
+        [-25, 0, 25].forEach(px => Kit.el('circle', { cx: px, cy: -178, r: 6.3, fill: 'var(--ink)' }, g));
+        Kit.el('circle', { cx: 0, cy: -131, r: 5, fill: 'var(--ink)' }, g);
+        [-19, 19].forEach(px => Kit.el('circle', { cx: px, cy: -131, r: 3.3, fill: 'var(--ink)' }, g));
+
+        /* the name sits above the crown, so the whole space under the quay
+           is left clear for the routes to arrive through */
+        const lbl = Kit.label(R, cx - 150, 58, name);
+        lbl.style.width = '300px';
+        lbl.style.textAlign = 'center';
+        lbl.style.fontSize = '34px';
+        lbl.style.color = 'var(--ink)';
+        lbl.style.opacity = 0;
+        return { fig, lbl };
+      }
+      const cities = [[980, 'Lisbon'], [1330, 'Paris'], [1680, 'London']]
+        .map(([cx, n]) => port(cx, n.toUpperCase()));
+
+      /* ── the message: three dotted sea routes, drawn by a stroke mask ──
+         A dotted line cannot also use its dash pattern to draw itself, so
+         each route is a dotted path revealed through a mask whose stroke
+         carries pathLength=1 and the dashoffset tween.
+
+         Each control point is picked so the three keep their own lane: at
+         x = 980 they sit at y 360 / 450 / 536, so the two longer routes pass
+         a clear 75–160px UNDER the quay of every port they go by, and every
+         route clears every head on the beach by 170px or more. */
+      const ROUTES = [
+        { c: [620, 440],   to: [980, BASE]  },   // Lisbon
+        { c: [1000, 480],  to: [1330, BASE] },   // Paris
+        { c: [1350, 585],  to: [1680, BASE] },   // London
+      ];
+      const routeWrap = Kit.div('fig', { left: 0, top: 0 }, R);
+      const rsv = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 }, routeWrap);
+      const defs = Kit.el('defs', {}, rsv);
+      const routes = ROUTES.map((r, i) => {
+        const d = `M ${TIP[0]} ${TIP[1]} Q ${r.c[0]} ${r.c[1]} ${r.to[0]} ${r.to[1]}`;
+        const mid = `message-route-${i}`;
+        const mk = Kit.el('mask', {
+          id: mid, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 1920, height: 1080,
+        }, defs);
+        const rev = Kit.el('path', {
+          d, fill: 'none', stroke: '#fff', pathLength: 1,
+          style: 'stroke-width:32;stroke-dasharray:1;stroke-dashoffset:1',
+        }, mk);
+        const dots = Kit.el('path', {
+          d, fill: 'none', stroke: 'var(--ink)', 'stroke-linecap': 'round',
+          style: 'stroke-width:9;stroke-dasharray:0.1 26',
+          mask: `url(#${mid})`,
+        }, rsv);
+        return { rev, dots };
+      });
+
+      /* ── type ───────────────────────────────────────────────────────── */
+      const kick = Kit.kicker(R, 90, 110, 'The strange part');
+      kick.style.fontSize = '34px';
+      kick.style.opacity = 0;
+
+      const lead = Kit.lead(R, 90, 172, 'The flag was not<br>for them.', 680);
+      lead.style.fontSize = '52px';
+      lead.style.opacity = 0;
+
+      /* why they could not read it. For a ten-year-old this is a main idea,
+         not a footnote, so it is set as a lead and sits under the group it
+         is about. */
+      const why = Kit.lead(R, 810, 988,
+        '<span id="message-why-a">Different letters.</span> ' +
+        '<span id="message-why-b">A different language.</span>', 1100);
+      why.style.fontSize = '48px';
+      why.style.textAlign = 'center';
+      why.style.opacity = 0;
+      const whyA = why.querySelector('#message-why-a');
+      const whyB = why.querySelector('#message-why-b');
+      whyB.style.opacity = 0;
+
+      /* the message itself, in the slot the lead vacates: directly above the
+         point all three routes leave from */
+      const msg = Kit.title(R, 90, 180, '<em>&ldquo;I got here first.&rdquo;</em>', 760);
+      msg.style.fontSize = '90px';
+      msg.style.lineHeight = '1.04';
+      msg.style.opacity = 0;
+
+      Kit.schem(R, 90, 1000, 'reconstruction');
+
+      /* ── timeline ───────────────────────────────────────────────────── */
+      const tl = gsap.timeline({ paused: true });
+
+      /* scene 2 hands the flag over already planted, so this is a cut, not a
+         fade: the only thing moving at frame 0 is the cloth */
+      tl.fromTo(ban.st, { phase: 0 }, {
+        phase: Math.PI * 2 * 2.1, duration: S.duration, ease: 'none', onUpdate: ban.redraw,
+      }, 0);
+
+      /* 0 — "Here is the strange part." */
+      tl.fromTo(kick, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, S.at(0));
+
+      /* 1 — a line runs from the flag to the people, and is struck out */
+      tl.fromTo(lead, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, S.at(1));
+      tl.fromTo(ld.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(1, 0.2));
+      tl.fromTo(ld.path, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.6, ease: 'none', autoRound: false,
+      }, S.at(1, 0.2));
+      tl.fromTo(ld.dot, { opacity: 0 }, { opacity: 1, duration: 0.25 }, S.at(1, 0.8));
+      tl.fromTo(xStroke, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.24, stagger: 0.17, ease: 'none', autoRound: false,
+      }, S.at(1, 1.45));
+      tl.fromTo([ld.path, ld.dot], { opacity: 1 }, { opacity: 0.55, duration: 0.5 }, S.at(1, 2.1));
+
+      /* 2 — "They could not read it." The group is gathered, and answered. */
+      tl.fromTo(brace, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.7, ease: 'none', autoRound: false,
+      }, S.at(2));
+      tl.fromTo(why, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(2, 0.3));
+      tl.fromTo(whyA, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(2, 0.3));
+
+      /* 3 — "It was not in their language." */
+      tl.fromTo(whyB, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(3));
+
+      /* 4, 5 — Lisbon, Paris, then London on "far away in Europe" */
+      [S.at(4, 0.15), S.at(4, 0.95), S.at(5, 0.05)].forEach((t0, i) => {
+        tl.fromTo(cities[i].fig, { opacity: 0, y: -28 }, {
+          opacity: 1, y: 0, duration: 0.55, ease: 'expo.out',
+        }, t0);
+        tl.fromTo(cities[i].lbl, { opacity: 0 }, { opacity: 1, duration: 0.4 }, t0 + 0.24);
+      });
+
+      /* 6 — the routes leave the flag and fly over their heads */
+      routes.forEach((r, i) => {
+        const t0 = S.at(6, i * 0.42), done = t0 + 1.25;
+        tl.fromTo(r.rev, { strokeDashoffset: 1 }, {
+          strokeDashoffset: 0, duration: 1.25, ease: 'power1.inOut', autoRound: false,
+        }, t0);
+        /* the dots keep running to the port, so the last beat is never frozen */
+        tl.fromTo(r.dots, { strokeDashoffset: 0 }, {
+          strokeDashoffset: -26 * (S.duration - done), duration: S.duration - done,
+          ease: 'none', autoRound: false,
+        }, done);
+      });
+      /* the cancelled line steps back, but never disappears: it is the idea */
+      tl.fromTo([ld.path, ld.dot], { opacity: 0.55 }, { opacity: 0.45, duration: 0.6 }, S.at(6));
+      tl.fromTo(xStroke, { opacity: 1 }, { opacity: 0.82, duration: 0.6 }, S.at(6));
+      /* and the words make way for the message they were describing */
+      tl.fromTo([kick, lead], { opacity: 1 }, { opacity: 0, duration: 0.45, ease: 'power1.in' }, S.at(6, 1.2));
+
+      /* 7 — "I got here first." */
+      tl.fromTo(msg, { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.75, ease: 'expo.out' }, S.at(7));
+
+      window.__timelines['message'] = tl;
+    })();
+  </script>
+</template>

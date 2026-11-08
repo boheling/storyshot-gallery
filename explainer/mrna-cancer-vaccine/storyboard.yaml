@@ -31,7 +31,7 @@ voice:
 subtitles: true          # sidecar .srt only — not burned into the picture
 music: { style: calm, bpm: 68 }
 theme: { accent: "#0f766e", ink: "#16181d" }   # accent = 字幕里"正在念到"的那个词的颜色，也是片中免疫一侧的青色
-scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js }
+scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js, three: true }   # three: 制造那一场是 3D 图版（Kit3）
 
 steps:
   - scene: { file: scenes/hook.html, title: 切干净了，为什么还会回来, lead: 0.7 }

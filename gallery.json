@@ -264,6 +264,20 @@
     "article": null
    },
    {
+    "id": "explainer/flags-for-kids",
+    "title": "Who was the flag for? Explorers and flags, for 5th graders",
+    "site": "History",
+    "lang": "en",
+    "url": null,
+    "request": "Make an explainer video for US 5th graders about flags in the age of exploration, built around one question: who was the flag actually for? Start with Columbus pushing a flag into a beach where people already lived, explain what the letters F and Y on it stood for, then show how Spain, Portugal, France and England each marked land they said was theirs — and end on the fact that every one of those places already had a name of its own. Everyday words and real comparisons instead of units, and don't soften what happened.",
+    "seconds": 156.566667,
+    "video": "explainer/flags-for-kids/video.mp4",
+    "poster": "explainer/flags-for-kids/poster.jpg",
+    "storyboard": "explainer/flags-for-kids/storyboard.yaml",
+    "notes": "explainer/flags-for-kids/notes.md",
+    "article": null
+   },
+   {
     "id": "explainer/midterms-kids",
     "title": "What a midterm election is, for 3rd–5th graders",
     "site": "Civics",

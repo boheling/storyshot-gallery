@@ -1,0 +1,74 @@
+# Planting a Flag — the 5th-grade cut.
+# Same subject and same look as flags-of-discovery, rebuilt for 10–11 year olds:
+# eight scenes instead of twelve, short sentences, everyday words, concrete
+# comparisons instead of units, and an ending that hands them something rather
+# than leaving them with a court case.
+name: flags-for-kids
+purpose: explainer
+out: video.mp4            # gallery convention — keeps compose writing in place
+voice: { provider: kokoro }
+subtitles: true
+ground: light
+theme: { accent: "#9e3321", ink: "#241c15", paper: "#e9ddc4" }   # paper: the title card is built on the film's own ground
+music: { style: calm }
+scenes: { css: scenes/kit/kit.css, js: scenes/kit/kit.js }
+
+intro:
+  title: Who Was the Flag For?
+  subtitle: Explorers, flags, and the places that already had names
+
+steps:
+  - scene: { file: scenes/beach.html, title: A flag in the sand, lead: 0.8 }
+    say: >-
+      In fourteen ninety-two, a man stepped off a boat onto a beach. He pushed a flag into the
+      sand. Then he said the island belonged to Spain. But people already lived on that island.
+      They were standing right there, watching him. Nobody asked them anything. So why did
+      anyone believe him?
+
+  - scene: { file: scenes/letters.html, title: F and Y }
+    say: >-
+      Look closely at the flag he carried. It was white, with a green cross. Under the cross were
+      two letters. F and Y. The F was for Fernando, the king. The Y was for Ysabel, the queen.
+      Back then, people spelled Isabella with a Y. Two letters, because Spain had a king and a
+      queen at the same time.
+
+  - scene: { file: scenes/message.html, title: Who it was really for }
+    say: >-
+      Here is the strange part. The flag was not meant for the people on the beach. They could
+      not read it. It was not in their language. The flag was a message for other kings, far away
+      in Europe. And the message was simple. I got here first.
+
+  - scene: { file: scenes/line.html, title: A line on the map }
+    say: >-
+      So the kings made deals with each other. In fourteen ninety-four, Spain and Portugal drew a
+      line down a map of the ocean. Everything on this side would belong to Spain. Everything on
+      that side would belong to Portugal. They had never seen most of it. And they never asked
+      the people who lived there.
+
+  - scene: { file: scenes/stone.html, title: Portugal used stone }
+    say: >-
+      Portugal did not trust cloth. Their sailors carried heavy stone posts on their ships. When
+      they landed, they planted a post in the ground. A flag rips, and rots, and burns. A stone
+      just stays. Some of those stone posts are still standing today.
+
+  - scene: { file: scenes/cross.html, title: Only a marker }
+    say: >-
+      France used big wooden crosses. In fifteen thirty-four, a sailor named Cartier put up a
+      cross taller than five grown-ups standing on each other. A chief named Donnacona told him
+      to take it down. Cartier said it was only a marker, nothing more. That was not true, and
+      Cartier knew it.
+
+  - scene: { file: scenes/england.html, title: England was late }
+    say: >-
+      England showed up almost a hundred years late. In sixteen oh seven, they carved the king's
+      name into a wooden cross. Jacobus Rex. That is Latin for James the King. It is the same
+      idea as F and Y. But a name on a cross does not feed anybody. What really kept England
+      there was a plant. Tobacco.
+
+  - scene: { file: scenes/names.html, title: The names were already there, tail: 1.6 }
+    say: >-
+      Here is the last thing, and it is the part worth remembering. Every one of those places
+      already had a name. The island was called Guanahani. The town by the river was Stadacona.
+      The land in Virginia was Tsenacommacah. People had been saying those names for hundreds of
+      years. Planting a flag was supposed to make the old names stop counting. But we still know
+      them. And now you do too.

@@ -218,3 +218,27 @@ prints, not to the sentences you counted.
 The recap in each film keeps its dissolve but no longer holds a long tail for an ending it no longer
 has: `tail` 3.5 s → 2.2 s, and the dissolve now lands with its last words, so it reads as a page turn
 into the closing scene.
+
+## Revised 2026-11-08 — two scenes redrawn in three dimensions
+
+`scenes: { …, three: true }` in the storyboard loads three.js and Storyshot's `Kit3` helpers into
+every scene. Two of the twelve now use them, and only for their second half:
+
+- **`mrna.html`** (1:09, 一条 mRNA，三十四段指纹) — the muscle cell used to be an outline with
+  things drawn inside it. A cell is a **body with a surface**, and the whole point of the scene is
+  that the fingerprints end up *standing on that surface* where a T cell can read them. Flat, that
+  has to be asserted with an arrow; in three dimensions it is just true, and the lipid particle
+  landing inside is a particle inside a volume rather than a circle over a circle.
+- **`make.html`** (2:02, 从你的肿瘤到你的那一支) — the same treatment for the manufacturing plate.
+
+Everything else in the film is still flat SVG, which is the rule: drawn 3D is for things with real
+form, and about a third of a film at most. The two scenes keep the film's own look — `--imm` and
+`--tum` as a 3 px border over a 12% fill — translated into lit material rather than restyled into
+something glossier.
+
+The constraint that matters: frames are rendered by **seeking** a paused timeline, so no 3D state
+may depend on a previous frame. Each plate carries its own clock driven from the timeline, and
+`Kit3.rng` is seeded, so the same second renders the same pixels every run.
+
+Length is unchanged (353.5 s) and the poster frame (the RFS curve at 3:23) is in neither scene, so
+it is unchanged too.

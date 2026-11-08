@@ -1,15 +1,39 @@
 <template>
   <style>
-    /* scene-only bits; everything shared comes from scenes/kit/kit.css */
+    /* Scene 7 — the dose gets made, and it has to catch a window.
+       The MAKING is a 3D figure plate: a strand, a lipid particle that closes over it, a vial it is
+       filled into. All three are real objects and the point is containment — one thing ending up
+       inside another — which is the one thing a flat drawing cannot state. Kit3 draws rather than
+       lights (flat tone by facing, ink edges from a normal/depth pass, fov 18), so the plate reads as
+       a figure in an atlas, not as a render.
+       The TIME half stays in HTML: a span of weeks, a deadline and a percentage have no form, and as
+       type they stay sharp, contrast-checkable and in the film's own face.
+       Every 2D number here is frame px at 1920x1080; the plate's own numbers are world units. */
     #make .msvg { position: absolute; }
-    #make .strand path { stroke-linejoin: round; }
-    #make-ship { position: absolute; left: 1080px; top: 690px; width: 220px; height: 40px; }
+    /* the 34 coded stretches on the strand are the same 34 the column beside it is counting */
+    #make .strand .tick { stroke: var(--tum); stroke-width: 4; opacity: .8; }
+
+    /* No plate. A white card laid on the page would turn the figure into a product shot and kill the
+       paper the rest of the film is drawn on, so the canvas covers the frame and clears to the paper
+       colour: the drawn solids simply stand on the same ground as the type. */
+    #make-cv { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 0; }
+    /* the tiles handed over by the scene before sit above the plate; the 2D parts of the figure
+       (the route out, the hospital, the release mark) sit on it; type sits above everything */
+    #make-picked { position: absolute; inset: 0; z-index: 3; }
+    #make-ship, #make-hosp, #make-ok, #make-vial2d { z-index: 4; }
+    #make .label, #make .credit, #make .schem, #make-time { z-index: 5; }
+
+    #make-ship { position: absolute; left: 1020px; top: 560px; width: 280px; height: 40px; }
     #make-box { position: absolute; left: 6px; top: 6px; width: 28px; height: 28px; border-radius: 4px;
       border: 3px solid var(--rna); background: var(--rna-soft); }
-    #make-ok { position: absolute; left: 930px; top: 570px; width: 80px; height: 80px; border-radius: 50%;
+    #make-ok { position: absolute; left: 1560px; top: 236px; width: 80px; height: 80px; border-radius: 50%;
       border: 3px solid var(--imm); background: var(--imm-soft); }
     #make-ok .mk { position: absolute; left: 23px; top: 23px; width: 34px; height: 34px; }
-    #make .vial .crimp { position: absolute; left: 0; right: 0; top: 36px; height: 3px; background: var(--ink); opacity: .5; }
+
+    /* the dose as a glyph, once the figure has given way to the calendar */
+    #make-vial2d { position: absolute; left: 1358.75px; top: 184px; width: 160px; height: 396px; }
+    #make .vial .crimp { position: absolute; left: 0; right: 0; top: 44px; height: 4px; background: var(--ink); opacity: .5; }
+
     /* the time figure: a ruler, a window and two pins are meant to sit on each other */
     #make-time { position: absolute; left: 170px; top: 540px; width: 1640px; height: 292px; }
     /* the part of the window that making the dose eats: a deeper ochre, position schematic */
@@ -21,41 +45,42 @@
     <div id="make-cred2" class="credit" style="top:70px" data-layout-ignore>NCT05933577：手术 → 首剂 ≤ 13 周</div>
     <div id="make-cred3" class="credit" style="top:102px" data-layout-ignore>INTerpath-001, ESMO 2026</div>
 
+    <!-- 1-5: the figure plate. Everything inside the canvas is drawn by Kit3 from the timeline. -->
+    <canvas id="make-cv" width="1920" height="1080"></canvas>
+    <div id="make-schem" class="schem" style="left:1700px;top:876px" data-layout-ignore>示意</div>
+
     <!-- 0-1: the 34 picked in the scene before, then lined up as the recipe -->
     <div id="make-picked"></div>
     <div id="make-picklab" class="label s" style="left:580px;top:742px">上一步挑好的 34 段</div>
-    <div id="make-picklab2" class="label s" style="left:150px;top:780px">写进这条链的 34 段</div>
+    <div id="make-picklab2" class="label s" style="left:150px;top:790px">写进这条链的 34 段</div>
 
-    <!-- 1: the mRNA written from scratch -->
-    <div id="make-strandlab" class="label s" style="left:620px;top:410px">人工合成的 mRNA</div>
+    <!-- the caption slot at the plate's top-left: one name at a time for the thing being built -->
+    <div id="make-strandlab" class="label s" style="left:770px;top:306px">人工合成的 mRNA</div>
+    <div id="make-lnplab" class="label s" style="left:756px;top:252px">包进脂质颗粒</div>
 
-    <!-- 2: wrapped in a lipid particle -->
-    <div id="make-lnp" class="lnp" style="left:1030px;top:110px;width:380px;height:380px"></div>
-    <div id="make-lnplab" class="label s" style="left:1460px;top:282px">脂质颗粒</div>
-
-    <!-- 3-4: filled, then released -->
-    <div id="make-vial" class="vial" style="left:700px;top:540px;width:170px;height:330px" data-layout-allow-overflow>
-      <div id="make-fill" class="fill" style="height:0;border-radius:0 0 13px 13px;background:rgba(180,83,9,.52)"></div>
-      <div class="cap"></div>
-      <div class="crimp"></div>
-    </div>
+    <!-- 4: released -->
     <div id="make-ok"></div>
-    <div id="make-oklab" class="label s hl" style="left:916px;top:668px">批次放行</div>
+    <div id="make-oklab" class="label s hl" style="left:1520px;top:336px">批次放行</div>
 
     <!-- 5: shipped back to the patient's hospital -->
     <div id="make-ship" data-layout-allow-overlap>
-      <svg class="msvg" style="left:0;top:0" width="220" height="40" viewBox="0 0 220 40">
-        <path id="make-shipline" d="M 6 20 H 186" pathLength="1" fill="none" stroke="#b45309" stroke-width="3"
+      <svg class="msvg" style="left:0;top:0" width="280" height="40" viewBox="0 0 280 40">
+        <path id="make-shipline" d="M 6 20 H 246" pathLength="1" fill="none" stroke="#b45309" stroke-width="3"
           stroke-linecap="round" style="stroke-dasharray:1 1.2"></path>
-        <path id="make-shiphead" d="M 180 11 l 14 9 l -14 9" fill="none" stroke="#b45309" stroke-width="3"
+        <path id="make-shiphead" d="M 240 11 l 14 9 l -14 9" fill="none" stroke="#b45309" stroke-width="3"
           stroke-linecap="round" stroke-linejoin="round"></path>
       </svg>
       <div id="make-box"></div>
     </div>
-    <div id="make-hosp" class="msvg" style="left:1360px;top:520px;width:330px;height:304px"></div>
-    <div id="make-hosplab" class="label s" style="left:1375px;top:840px">病人所在的医院</div>
+    <div id="make-hosp" class="msvg" style="left:1340px;top:448px;width:300px;height:276px"></div>
+    <div id="make-hosplab" class="label s" style="left:1345px;top:744px">病人所在的医院</div>
 
     <!-- 6-10: the clock. 0-16 weeks, the 13-week window, and where making it sits inside -->
+    <div id="make-vial2d" class="vial" data-layout-allow-overflow>
+      <div class="fill" style="height:215px;border-radius:0 0 13px 13px;background:rgba(180,83,9,.22)"></div>
+      <div class="cap"></div>
+      <div class="crimp"></div>
+    </div>
     <div id="make-time" data-layout-allow-overlap>
       <div id="make-span" class="span" style="left:50px;top:72px;width:0;height:80px"></div>
       <div id="make-band" style="left:237.5px;top:86px;width:656.25px;height:52px"></div>
@@ -108,51 +133,26 @@
         tiles.push({ el: Kit.pep(picked, { x: 945 + (i % 6) * 90, y: 394 + Math.floor(i / 6) * 52 }), i });
       }
 
-      // ---------- the strand ----------
-      // Kit.strand's control points are +/-amp but the curve itself only swings 0.289 * amp, and the
-      // box it makes is amp*2+60 tall, so most of it is empty. Big amp, then crop the box to the curve.
-      const SW = 1200, SWAVES = 3, SAMP = 200, SEG = SW / SWAVES, SX = 620, SY = 300;
-      const st = Kit.strand($('make'), { x: SX, y: SY, w: SW, amp: SAMP, waves: SWAVES, ticks: 0 });
-      st.path.style.strokeDasharray = '1 1.2';   // a round cap on a zero-length dash leaves a dot
-      const codon = (() => {
-        const ns = 'http://www.w3.org/2000/svg', svg = st.el.querySelector('svg'), out = [];
-        const P = (k, u) => {
-          const sgn = k % 2 ? 1 : -1;
-          return { x: k * SEG + SEG * (0.75 * (1 - u) * (1 - u) * u + 2.25 * (1 - u) * u * u + u * u * u),
-                   y: st.h / 2 + sgn * SAMP * 3 * u * (1 - u) * (1 - 2 * u) };
-        };
-        for (let k = 0; k < SWAVES; k++) for (const u of [0.15, 0.38, 0.62, 0.85]) {
-          const a = P(k, u), b = P(k, Math.min(0.999, u + 0.004)), c = P(k, Math.max(0.001, u - 0.004));
-          const ang = Math.atan2(b.y - c.y, b.x - c.x) + Math.PI / 2;
-          const dx = Math.cos(ang) * 18, dy = Math.sin(ang) * 18;
-          const l = document.createElementNS(ns, 'line');
-          l.setAttribute('x1', (a.x - dx).toFixed(1)); l.setAttribute('y1', (a.y - dy).toFixed(1));
-          l.setAttribute('x2', (a.x + dx).toFixed(1)); l.setAttribute('y2', (a.y + dy).toFixed(1));
-          l.setAttribute('class', 'tick'); svg.appendChild(l); out.push({ el: l, at: a.x / SW });
-        }
-        // crop the box to what the curve actually uses
-        const PAD = SAMP * 0.2887 + 26, svgEl = st.el.querySelector('svg');
-        svgEl.setAttribute('viewBox', `0 ${(st.h / 2 - PAD).toFixed(1)} ${SW} ${(PAD * 2).toFixed(1)}`);
-        svgEl.setAttribute('height', (PAD * 2).toFixed(1));
-        st.el.style.height = (PAD * 2).toFixed(1) + 'px';
-        st.el.style.top = (SY - PAD).toFixed(1) + 'px';
-        return out;
-      })();
-
       // ---------- a hospital, in plain ink line ----------
-      $('make-hosp').innerHTML = `<svg viewBox="0 0 250 230" width="330" height="304">
-        <rect x="6" y="96" width="78" height="128" rx="4" fill="#ffffff" stroke="#16181d" stroke-width="4"/>
-        <rect x="166" y="96" width="78" height="128" rx="4" fill="#ffffff" stroke="#16181d" stroke-width="4"/>
-        <rect x="78" y="30" width="94" height="194" rx="4" fill="#ffffff" stroke="#16181d" stroke-width="4"/>
-        <g stroke="#16181d" stroke-width="3" fill="none">
-          <rect x="20" y="118" width="22" height="22"/><rect x="50" y="118" width="22" height="22"/>
-          <rect x="20" y="152" width="22" height="22"/><rect x="50" y="152" width="22" height="22"/>
-          <rect x="180" y="118" width="22" height="22"/><rect x="210" y="118" width="22" height="22"/>
-          <rect x="180" y="152" width="22" height="22"/><rect x="210" y="152" width="22" height="22"/>
+      // Context, not subject: hairlines and a grid of small windows, so it sits behind the drawn dose
+      // instead of shouting over it. A heavy 4 px outline next to a 1 px ink edge reads as clip art.
+      const win = (x0, y0, cols, rows) => {
+        let o = '';
+        for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++)
+          o += `<rect x="${x0 + c * 19}" y="${y0 + r * 21}" width="12" height="14" rx="1"/>`;
+        return o;
+      };
+      $('make-hosp').innerHTML = `<svg viewBox="0 0 250 230" width="300" height="276">
+        <g fill="#fdfcf9" stroke="#16181d" stroke-width="2.4" stroke-linejoin="round">
+          <rect x="8" y="104" width="74" height="120" rx="3"/>
+          <rect x="168" y="104" width="74" height="120" rx="3"/>
+          <rect x="82" y="40" width="86" height="184" rx="3"/>
         </g>
-        <path d="M 125 50 v 36 M 107 68 h 36" stroke="#16181d" stroke-width="8" stroke-linecap="round"/>
-        <path d="M 90 108 h 70" stroke="#16181d" stroke-width="3"/>
-        <path d="M 104 160 h 42 v 64 h -42 z" fill="#f6f4ef" stroke="#16181d" stroke-width="4"/>
+        <g fill="none" stroke="#8d8676" stroke-width="1.4">
+          ${win(18, 118, 3, 4)}${win(178, 118, 3, 4)}${win(94, 108, 3, 2)}
+        </g>
+        <path d="M 125 58 v 28 M 111 72 h 28" stroke="#16181d" stroke-width="5" stroke-linecap="round"/>
+        <path d="M 110 178 h 30 v 46 h -30 z" fill="#f1eee6" stroke="#16181d" stroke-width="2.4"/>
       </svg>`;
       $('make-ok').innerHTML = `<div class="mk">${Kit.MARK_OK}</div>`;
 
@@ -166,6 +166,179 @@
         }
       }
 
+      /* ======================= the figure plate: the dose as an object =======================
+         Everything in here is a pure function of one clock, computed in frame3d(t) below, because
+         frames are rendered by seeking: the 3D state may never depend on which tween ran last. */
+      const eng = Kit3.engine($('make-cv'), {
+        bg: '#fbf9f4', ink: '#16181d', fov: 18, far: 160,
+        creaseCut: 0.16, silhouetteCut: 0.008,
+      });
+      /* The film's own rule, carried into three dimensions: a signal colour is a LINE or a wash, never
+         a slab. Flat, --imm and --tum only ever appear as a 3 px border over a 12% fill; a solid of the
+         same colour the size of a vial is poster paint and does not belong on this paper. So anything
+         that fills a large part of the frame — the lipid shell, the dose — is a pale wash of its own
+         colour, and full strength is kept for the things that are small: the strand, its 34 marks, the
+         line at the top of the liquid. */
+      const R = {
+        rna:   ['#cf7d24', '#b45309', '#8a3f06'],   // the strand: a line's worth of area, so full strength
+        tum:   ['#c43a54', '#a3203a', '#7d172c'],   // the 34 marks on it: small, so full strength
+        lipid: ['#f7eadb', '#efe0ca', '#d9c4a5'],   // a shell the size of the frame: a wash
+        glass: ['#ffffff', '#f8f6f1', '#e7e4db'],
+        dose:  ['#f3ddbf', '#eacfa6', '#d2ae7c'],   // the same ochre the flat vial uses: --rna at .12
+        metal: ['#848b95', '#646b76', '#464c55'],
+      };
+      const V3 = THREE.Vector3, M4 = new THREE.Matrix4(), QT = new THREE.Quaternion();
+      const SC = new V3(1, 1, 1), TMP = new V3(), XAX = new V3(1, 0, 0);
+
+      /* The laid-out strand stays FLAT. A 24-unit tube with 34 collars on it is a ribbed hose, and
+         three dimensions add nothing to a sequence: a line with marks along it is what the thing is.
+         The 3D starts one beat later, where the fact is containment — this line ending up inside a
+         particle — which is the one thing a drawing on a page cannot state. */
+      const SW = 1080, SWAVES = 3, SAMP = 200, SSEG = SW / SWAVES, SX = 700, SY = 540;
+      const st = Kit.strand($('make'), { x: SX, y: SY, w: SW, amp: SAMP, waves: SWAVES, ticks: 0 });
+      st.path.style.strokeDasharray = '1 1.2';   // a round cap on a zero-length dash leaves a dot
+      const codon = (() => {
+        const ns = 'http://www.w3.org/2000/svg', svg = st.el.querySelector('svg'), out = [];
+        const P = (k, u) => {
+          const sgn = k % 2 ? 1 : -1;
+          return { x: k * SSEG + SSEG * (0.75 * (1 - u) * (1 - u) * u + 2.25 * (1 - u) * u * u + u * u * u),
+                   y: st.h / 2 + sgn * SAMP * 3 * u * (1 - u) * (1 - 2 * u) };
+        };
+        for (let i = 0; i < 34; i++) {
+          const g = ((i + 0.5) / 34) * SWAVES, k = Math.min(SWAVES - 1, Math.floor(g)), u = g - k;
+          const a = P(k, u), b = P(k, Math.min(0.999, u + 0.004)), c = P(k, Math.max(0.001, u - 0.004));
+          const ang = Math.atan2(b.y - c.y, b.x - c.x) + Math.PI / 2;
+          const dx = Math.cos(ang) * 13, dy = Math.sin(ang) * 13;
+          const l = document.createElementNS(ns, 'line');
+          l.setAttribute('x1', (a.x - dx).toFixed(1)); l.setAttribute('y1', (a.y - dy).toFixed(1));
+          l.setAttribute('x2', (a.x + dx).toFixed(1)); l.setAttribute('y2', (a.y + dy).toFixed(1));
+          l.setAttribute('class', 'tick');
+          l.style.stroke = 'var(--tum)'; l.style.strokeWidth = '4';   // these 34 are the 34 on the left
+          svg.appendChild(l); out.push({ el: l, at: a.x / SW });
+        }
+        // Kit.strand's box is amp*2+60 tall but the curve only swings 0.289*amp: crop it to the curve
+        const PAD = SAMP * 0.2887 + 26;
+        svg.setAttribute('viewBox', `0 ${(st.h / 2 - PAD).toFixed(1)} ${SW} ${(PAD * 2).toFixed(1)}`);
+        svg.setAttribute('height', (PAD * 2).toFixed(1));
+        st.el.style.height = (PAD * 2).toFixed(1) + 'px';
+        st.el.style.top = (SY - PAD).toFixed(1) + 'px';
+        return out;
+      })();
+
+      // ---- the lipid particle: the same strand packed into a ball, with a shell of lipid heads ----
+      const lnpG = eng.part(eng.scene, { name: 'lnp' });
+      const coilCurve = (() => {
+        const r = Kit3.rng(29), pts = [];
+        for (let i = 0; i < 30; i++) {
+          const a = i * 1.37, b = i * 0.79, rr = 1.5 + r() * 1.6;
+          pts.push(new V3(Math.cos(a) * rr, Math.sin(b) * rr * 0.95, Math.sin(a) * rr));
+        }
+        return new THREE.CatmullRomCurve3(pts, true);
+      })();
+      const coil = eng.solid(lnpG, new THREE.TubeGeometry(coilCurve, 420, 0.24, 10, true), { ramp: R.rna, tone: 'hi' });
+      const HEADS = 160, SHELL = 4.6;
+      const heads = eng.instances(lnpG, new THREE.SphereGeometry(0.50, 14, 10), HEADS, { ramp: R.lipid, tone: 'faint' });
+      // an even shell (Fibonacci), each head with its own delay so the particle closes rather than pops
+      const hdir = [], hlag = [], hr = Kit3.rng(5);
+      for (let i = 0; i < HEADS; i++) {
+        const y = 1 - 2 * (i + 0.5) / HEADS, rr = Math.sqrt(Math.max(0, 1 - y * y)), phi = i * 2.399963;
+        hdir.push(new V3(Math.cos(phi) * rr, y, Math.sin(phi) * rr));
+        hlag.push(hr() * 0.45);
+      }
+
+      // ---- the vial, standing on its own floor at y = 0 inside its group ----
+      const VR = 1.78, VBODY = 6.4, VTOP = 8.25;
+      const vialG = eng.part(eng.scene, { at: [6, -4.2, 0], name: 'vial' });
+      const glass = eng.solid(vialG, new THREE.CylinderGeometry(VR, VR, VBODY, 56, 1, false), { ramp: R.glass, tone: 'hi', opacity: 0.18 });
+      glass.position.y = VBODY / 2;
+      const shoulder = eng.solid(vialG, new THREE.CylinderGeometry(VR * 0.62, VR, 0.9, 56, 1, true), { ramp: R.glass, tone: 'hi', opacity: 0.18 });
+      shoulder.position.y = VBODY + 0.45;
+      const neck = eng.solid(vialG, new THREE.CylinderGeometry(VR * 0.62, VR * 0.62, 0.6, 40, 1, true), { ramp: R.glass, tone: 'hi', opacity: 0.18 });
+      neck.position.y = VBODY + 1.2;
+      // the dose: a unit-height cylinder scaled on y, so the level is one number. A cylinder under a
+      // y-only scale keeps its normals (the sides are horizontal, the caps renormalise), so the tone
+      // does not drift as it fills.
+      const dose = eng.solid(vialG, new THREE.CylinderGeometry(VR - 0.14, VR - 0.14, 1, 48, 1, false), { ramp: R.dose, tone: 'lo' });
+      // the flat vial draws a 3 px ochre rule on top of its 12% fill; this is that rule
+      const levelGeo = new THREE.TorusGeometry(VR - 0.15, 0.055, 8, 56);
+      levelGeo.rotateX(Math.PI / 2);
+      const level = eng.solid(vialG, levelGeo, { ramp: R.rna, tone: 'lit' });
+      const crimp = eng.solid(vialG, new THREE.CylinderGeometry(VR * 0.72, VR * 0.72, 0.62, 40), { ramp: R.metal, tone: 'mid' });
+
+      // ---- easings, written out: the plate is driven by t, not by GSAP's own interpolators ----
+      const cl = (u) => (u < 0 ? 0 : u > 1 ? 1 : u);
+      const seg = (t, a, b) => cl((t - a) / (b - a));
+      const eo = (u) => (u >= 1 ? 1 : 1 - Math.pow(2, -10 * u));                    // expo.out
+      const oo = (u) => 1 - (1 - u) * (1 - u);                                      // power2.out
+      const io = (u) => (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2);    // power2.inOut
+      const mix = (a, b, u) => a + (b - a) * u;
+
+      /* ---- how the figure is staged. `sh` slides the camera along its own right axis, which is how
+         the vial is parked in the plate's left third while the route out takes the right. ---- */
+      /* `sh` slides the camera along its own right axis, so a negative one holds the subject out to
+         the RIGHT and leaves the left third of the page to the 34 tiles and their caption. The figure
+         is never centred: a drawn plate puts its object against the type, not in the middle of nothing. */
+      const CAM = [
+        { t: 5.10, tg: [0.0,  0.0, 0], az: -0.44, el: 0.26, dist: 80, sh: -6.4 },  // the shell starts to close
+        { t: 6.70, tg: [0.0,  0.0, 0], az: -0.56, el: 0.30, dist: 74, sh: -6.0 },  // and closes
+        { t: 7.60, tg: [3.0, -0.1, 0], az: -0.48, el: 0.24, dist: 64, sh: -4.0 },  // out, with the vial beside it
+        { t: 9.30, tg: [6.0, -0.1, 0], az: -0.40, el: 0.20, dist: 64, sh:  1.2 },  // parked, the route out to its right
+      ];
+      function camAt(t) {
+        let i = 0;
+        while (i < CAM.length - 2 && t >= CAM[i + 1].t) i++;
+        const a = CAM[i], b = CAM[i + 1], u = io(seg(t, a.t, b.t));
+        return { target: [mix(a.tg[0], b.tg[0], u), mix(a.tg[1], b.tg[1], u), mix(a.tg[2], b.tg[2], u)],
+          az: mix(a.az, b.az, u), el: mix(a.el, b.el, u), dist: mix(a.dist, b.dist, u), shift: mix(a.sh, b.sh, u) };
+      }
+
+      let lastShell = -1;
+      function frame3d(t) {
+        // the canvas is the page, so the figure cannot be faded by fading the canvas: it leaves by
+        // its own solids going, on the beat where the clock takes over
+        const bye = 1 - seg(t, S.at(6), S.at(6) + 0.45);
+        // 2: it is wrapped. The drawn strand shrinks away over the particle's own spot while the
+        // lipid heads converge on it, so the schematic hands over to the object under the thing that
+        // is closing around it.
+        const shell = eo(seg(t, 5.55, 6.75));
+        heads.count = shell > 0 ? HEADS : 0;   // or 160 heads at scale 0 leave a dusting of specks
+        if (shell !== lastShell) {
+          for (let i = 0; i < HEADS; i++) {
+            const u = oo(cl((shell - hlag[i]) / 0.55));
+            M4.compose(TMP.copy(hdir[i]).multiplyScalar(SHELL * (1 + 0.5 * (1 - u))), QT.identity(), SC.setScalar(0.001 + u * 0.999));
+            heads.setMatrixAt(i, M4);
+          }
+          heads.instanceMatrix.needsUpdate = true;
+          heads.count = HEADS;
+          lastShell = shell;
+        }
+
+        // 3: filled. The particle is drawn at the size that lets you read it, so before it can go
+        // into a vial it has to shrink to the size it really is — otherwise the frame shows a ball
+        // being posted into a bottle narrower than itself.
+        const vis = seg(t, 7.00, 7.45);
+        for (const g of [glass, shoulder, neck]) eng.fade(g, 0.18 * vis * bye);
+        const small = io(seg(t, 6.95, 7.45)), trip = io(seg(t, 7.45, 7.95)), drop = io(seg(t, 7.80, 8.15));
+        lnpG.position.set(6 * trip, 5.6 * trip - 2.6 * drop, 0);
+        lnpG.scale.setScalar((1 - 0.70 * small) * (1 - drop));
+        const lnpOut = 1 - drop;
+        eng.fade(coil, bye * Math.min(seg(t, 5.50, 6.20), lnpOut));
+        eng.fade(heads, shell > 0 ? bye * lnpOut : 0);
+        const lvl = 4.5 * oo(seg(t, 7.60, 8.30));
+        dose.scale.y = Math.max(0.0001, lvl);
+        dose.position.y = lvl / 2;
+        level.position.y = lvl;
+        eng.fade(dose, lvl > 0.02 ? bye : 0);
+        eng.fade(level, lvl > 0.02 ? bye : 0);
+
+        // 4: released — the crimp comes down on the neck
+        const seal = eo(seg(t, 8.00, 8.45));
+        crimp.position.y = VTOP - 0.31 + 2.4 * (1 - seal);
+        eng.fade(crimp, bye * seg(t, 7.97, 8.12));
+
+        eng.look(camAt(t));
+      }
+
       // ============================ 0: the picked set, brought up close ============================
       // 6 x 6 at 1.35, filling the middle of the frame
       tiles.forEach(({ el, i }) => {
@@ -176,7 +349,7 @@
       show(S.at(0, 0.05), '#make-picklab', { y: 12 }, 0.45);
 
       // ============================ 1: the mRNA written from scratch ============================
-      // the 34 reflow into a 4 x 9 column at the left: the recipe the strand is written from
+      // the 34 reflow into a 4 x 9 column at the left — the recipe — and the plate opens beside them
       hide(S.at(1, 0.7), '#make-picklab', 0.3);
       tiles.forEach(({ el, i }) => {
         const c = i % 6, r = Math.floor(i / 6), c1 = i % 4, r1 = Math.floor(i / 4);
@@ -184,38 +357,37 @@
           { x: -752.45 + 112 * c1 - 90 * c, y: -186.75 + 66 * r1 - 52 * r, scale: 1.15, duration: 0.7, ease: 'power2.inOut' }, S.at(1, i * 0.009));
       });
       show(S.at(1, 1.5), '#make-picklab2', { y: 12 }, 0.5);
-      tl.fromTo(st.path, { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 1.4, ease: 'none', autoRound: false }, S.at(1, 0.3));
-      // each codon tick lands just after the line has drawn past it
-      codon.forEach((t) => tl.fromTo(t.el, { opacity: 0 }, { opacity: 0.55, duration: 0.25 }, S.at(1, 0.34 + 1.4 * t.at)));
+      tl.fromTo(st.path, { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 1.5, ease: 'none', autoRound: false }, S.at(1, 0.25));
+      codon.forEach((c) => tl.fromTo(c.el, { opacity: 0 }, { opacity: 0.85, duration: 0.25 }, S.at(1, 0.3 + 1.5 * c.at)));
+      show(S.at(1, 0.9), '#make-schem', {}, 0.4);
       show(S.at(1, 1.5), '#make-strandlab', { y: 12 }, 0.5);
 
       // ============================ 2: folded into a lipid particle ============================
       hide(S.at(2), '#make-strandlab', 0.3);
-      show(S.at(2, 0.35), '#make-lnp', { scale: 0.55 }, 0.6);
-      tl.fromTo(st.el, { scale: 1 }, { scale: 0.25, duration: 0.8, ease: 'power2.inOut', transformOrigin: '50% 50%' }, S.at(2, 0.1));
-      show(S.at(2, 0.8), '#make-lnplab', { y: 10 }, 0.45);
-      const lnpLead = ldr($('make'), { x1: 1450, y1: 300, x2: 1416, y2: 300 }, S.at(2, 0.85), 0.3);
+      tl.fromTo(st.el, { scale: 1 }, { scale: 0.22, duration: 0.95, ease: 'power2.inOut', transformOrigin: '50% 50%' }, S.at(2, 0.05));
+      tl.fromTo(st.el, { opacity: 1 }, { opacity: 0, duration: 0.5, ease: 'power2.in' }, S.at(2, 0.15));
+      show(S.at(2, 0.45), '#make-lnplab', { y: 10 }, 0.45);
 
       // ============================ 3-4: filled, then released. one quick beat ============================
-      show(S.at(3), '#make-vial', { scale: 0.9, y: 14 }, 0.4);
-      tl.fromTo('#make-fill', { height: 0 }, { height: 232, duration: 0.5, ease: 'power2.out' }, S.at(3, 0.18));
+      hide(S.at(3), '#make-lnplab', 0.3);
       show(S.at(4), '#make-ok', { scale: 0.5 }, 0.3);
       show(S.at(4, 0.12), '#make-oklab', { y: 8 }, 0.35);
 
       // ============================ 5: back to the patient's hospital ============================
+      hide(S.at(5, 1.4), ['#make-ok', '#make-oklab'], 0.35);
+      hide(S.at(5, 0.1), [picked, '#make-picklab2'], 0.45);
       show(S.at(5, 0.25), '#make-hosp', { scale: 0.92, x: 20 }, 0.55);
       show(S.at(5, 0.6), '#make-hosplab', { y: 10 }, 0.45);
-      tl.fromTo('#make-shipline', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', autoRound: false }, S.at(5, 0.3));
-      show(S.at(5, 0.75), '#make-shiphead', {}, 0.25);
-      tl.fromTo('#make-box', { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: E }, S.at(5, 0.9));
-      tl.fromTo('#make-box', { x: 0 }, { x: 166, duration: 0.9, ease: 'power1.inOut' }, S.at(5, 1.15));
-      tl.fromTo('#make-box', { opacity: 1 }, { opacity: 0, duration: 0.2 }, S.at(5, 2.0));
+      tl.fromTo('#make-shipline', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.out', autoRound: false }, S.at(5, 0.35));
+      show(S.at(5, 0.9), '#make-shiphead', {}, 0.25);
+      tl.fromTo('#make-box', { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: E }, S.at(5, 1.05));
+      tl.fromTo('#make-box', { x: 0 }, { x: 226, duration: 1.0, ease: 'power1.inOut' }, S.at(5, 1.3));
+      tl.fromTo('#make-box', { opacity: 1 }, { opacity: 0, duration: 0.2 }, S.at(5, 2.25));
 
       // ============================ 6: the whole thing takes weeks ============================
-      // the line clears, the finished dose parks right above week 13, and the clock takes the frame
-      hide(S.at(6), [picked, '#make-picklab2', st.el, '#make-lnp', '#make-lnplab', ...lnpLead,
-        '#make-ok', '#make-oklab', '#make-ship', '#make-hosp', '#make-hosplab'], 0.4);
-      tl.fromTo('#make-vial', { x: 0, y: 0, scale: 1 }, { x: 653.75, y: -340, scale: 1.2, transformOrigin: '50% 100%', duration: 0.7, ease: 'power2.inOut' }, S.at(6, 0.05));
+      // the figure closes, the dose becomes a glyph above week 13, and the clock takes the frame
+      hide(S.at(6), ['#make-schem', '#make-ship', '#make-hosp', '#make-hosplab'], 0.4);
+      show(S.at(6, 0.3), '#make-vial2d', { scale: 0.88, y: 18 }, 0.6);
       tl.fromTo('#make-ruler', { width: 0 }, { width: 1500, duration: 0.55, ease: 'power2.out' }, S.at(6, 0.1));
       tl.fromTo(ticks, { opacity: 0 }, { opacity: 0.5, duration: 0.22, stagger: 0.013 }, S.at(6, 0.26));
       tl.fromTo(nums, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.28, ease: E, stagger: 0.03 }, S.at(6, 0.34));
@@ -246,7 +418,7 @@
       // ============================ 11: and this again for every single patient ============================
       const ghosts = [920, 1045, 1170].map((x) => {
         const v = mk('div', 'vial', `left:${x}px;top:250px;width:120px;height:232px;opacity:0`, $('make'),
-          '<div class="fill" style="height:160px;border-radius:0 0 13px 13px;background:rgba(180,83,9,.52)"></div><div class="cap"></div>');
+          '<div class="fill" style="height:125px;border-radius:0 0 13px 13px;background:rgba(180,83,9,.18)"></div><div class="cap"></div>');
         v.setAttribute('data-layout-allow-overflow', '');
         return v;
       });
@@ -257,6 +429,15 @@
       show(S.at(12, 0.2), '#make-cred3', {}, 0.5);
       show(S.at(13), '#make-pct', { scale: 0.82, y: 10 }, 0.6);
       show(S.at(13, 0.5), '#make-pctlab', { y: 10 }, 0.5);
+
+      /* One tween owns the plate's clock. Everything 3D is recomputed from that one number and the
+         frame is drawn at the end of it, so a seek to any second gives the same pixels whatever order
+         the other tweens happened to run in. */
+      const P = { t: 0 };
+      tl.fromTo(P, { t: 0 }, { t: S.duration, duration: S.duration, ease: 'none',
+        onUpdate() { frame3d(P.t); eng.render(); } }, 0);
+      frame3d(0);
+      eng.render();
 
       window.__timelines['make'] = tl;
     })();

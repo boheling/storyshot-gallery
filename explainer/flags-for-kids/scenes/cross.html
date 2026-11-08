@@ -1,0 +1,268 @@
+<template>
+  <style>
+    /* Scene 6, kids' cut — a thirty-foot cross, two men, and a lie.
+       One shoreline, two people drawn with the same ink, and the comparison
+       the narration hands us: five grown-ups standing on each other, drawn
+       literally beside the cross, because that is the only reason the
+       sentence is phrased that way.
+
+       The cross is built to fill the frame top to bottom: the beat is how
+       tall it was, so the drawing has to be tall. Kit.cross's timbers are
+       17px half-width, which reads as a stick at this height, so the two
+       paths are re-cut to 25 here (the kit is shared with the grown-up film
+       and must not change).
+
+       Donnacona and his people stand on the shore at frame 0, before the
+       cross goes up — the same convention as scene 1.
+
+       Positions are passed to the Kit builders, not set here: the builders
+       write inline left/top, and an inline style beats a rule in this block. */
+    #cross { position: absolute; inset: 0; overflow: hidden; }
+  </style>
+
+  <div id="cross" class="chart" data-composition-id="cross" data-width="1920" data-height="1080">
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const R = Kit.root('cross');          // the mount host shares this id
+      Kit.paper(R, { rose: [1560, 300] });
+
+      /* ── the stage, in numbers ─────────────────────────────────────────── */
+      const GROUND = 900;                   // every figure's feet, and the cross's foot
+      const CX = 760;                       // the cross's centre line
+      const CH = 780, CARM = 225;           // drawn height, half-arm
+      const CROSS_X = CX - CARM - 50;       // Kit.cross's viewBox origin offset
+      const CROSS_Y = GROUND - 120 - CH;
+      const TW = 25;                        // re-cut timber half-width
+      const BY = CH * 0.26;                 // the crossbar's drawn y
+      const TOPY = CROSS_Y + 120 - 70;      // the top of the timber, in page y
+
+      /* the whole point of the scene: the cross is exactly five people tall */
+      const PH = (GROUND - TOPY) / 5;       // one grown-up, to the cross's scale
+
+      const CART_X = 430, DONNA_X = 1380, STEP = 28;
+      const STACK_X = 1150, BRX = 1222;
+      /* Kit.person's x,y for a figure of height h whose feet are on baseY */
+      const feet = (x, h, baseY) => [x - 40 * (h / 118), (baseY == null ? GROUND : baseY) - h];
+
+      /* ── the shore at Gaspé ────────────────────────────────────────────── */
+      const shore = Kit.shore(R, 0, GROUND - 150, 1920, 23);
+      shore.fig.style.opacity = 0;
+
+      /* ── the people who were already standing there ────────────────────── */
+      const chief = Kit.person(R, ...feet(DONNA_X, PH), { h: PH, face: -1, arm: 0 });
+      chief.fig.style.opacity = 0;
+      const band = [[1512, 160], [1622, PH], [1730, 156]].map(([x, h]) =>
+        Kit.person(R, ...feet(x, h), { h, face: -1 }));
+      band.forEach((p) => { p.fig.style.opacity = 0; });
+
+      /* ── the sailor, hauling on the timber ─────────────────────────────── */
+      const cartier = Kit.person(R, ...feet(CART_X, PH), { h: PH, face: 1, arm: 0.9 });
+      cartier.fig.style.opacity = 0;
+
+      /* ── the cross. No board: this cut's viewers cannot read what was
+            nailed to it, and a blank sheet of paper reads as a hole. ─────── */
+      const cr = Kit.cross(R, CROSS_X, CROSS_Y, { h: CH, arm: CARM, board: false });
+      cr.fig.style.opacity = 0;
+      /* re-cut both timbers thicker. Done before anything else is appended to
+         cr.g, so these two really are the trunk and the bar. */
+      const timber = cr.g.querySelectorAll('path');
+      timber[0].setAttribute('d', `M ${-TW} ${CH} h ${TW * 2} V -70 h ${-TW * 2} Z`);
+      timber[1].setAttribute('d', `M ${-CARM} ${BY - TW} h ${CARM * 2} v ${TW * 2} h ${-CARM * 2} Z`);
+
+      /* ── the fleur-de-lis: centre petal, two horns that hang below the
+            band, and a splayed foot. Drawn once, used three times. ────────── */
+      function fleur(parent, cx, cy, s, fill) {
+        const outer = Kit.el('g', { transform: `translate(${cx},${cy}) scale(${s})` }, parent);
+        const g = Kit.el('g', { fill }, outer);
+        Kit.el('path', { d: 'M 0 -72 C 6 -52 17 -40 17 -24 C 17 -10 14 0 13 8 L -13 8 C -14 0 -17 -10 -17 -24 C -17 -40 -6 -52 0 -72 Z' }, g);
+        const horn = 'M 10 6 C 14 -18 30 -36 48 -36 C 62 -36 66 -18 57 0 C 52 9 50 18 49 30 C 44 16 38 6 31 -2 C 25 -8 18 -2 10 6 Z';
+        Kit.el('path', { d: horn }, g);
+        Kit.el('path', { d: horn, transform: 'scale(-1,1)' }, g);
+        Kit.el('path', { d: 'M -34 8 h 68 v 15 h -68 Z' }, g);
+        Kit.el('path', { d: 'M -10 24 L 10 24 C 11 34 16 43 25 50 L 17 56 C 10 51 4 44 0 37 C -4 44 -10 51 -17 56 L -25 50 C -16 43 -11 34 -10 24 Z' }, g);
+        return g;
+      }
+
+      /* ── the shield on the crossbar: three fleurs-de-lis, which is France
+            said without a word of French on screen ───────────────────────── */
+      const shieldWrap = Kit.el('g', { transform: `translate(0,${BY - TW}) scale(0.86)` }, cr.g);
+      const shield = Kit.el('g', { opacity: 0 }, shieldWrap);
+      Kit.el('path', {
+        class: 'ln2 fill-paper',
+        d: 'M -95 0 H 95 V 116 C 95 180 44 212 0 230 C -44 212 -95 180 -95 116 Z',
+      }, shield);
+      const lis = [[-48, 82], [48, 82], [0, 164]].map(([fx, fy]) => {
+        const g = fleur(shield, fx, fy, 0.52, 'var(--france)');
+        g.setAttribute('opacity', 0);
+        return g;
+      });
+
+      /* ── five grown-ups standing on each other ─────────────────────────── */
+      const stack = [0, 1, 2, 3, 4].map((i) => {
+        const p = Kit.person(R, ...feet(STACK_X, PH, GROUND - i * PH), {
+          h: PH, face: -1, arm: i === 4 ? 0.24 : 0,
+        });
+        p.fig.style.opacity = 0;
+        return p;
+      });
+
+      /* ── the bracket that says the two are the same height ─────────────── */
+      const bracket = Kit.div('fig', { left: '0px', top: '0px', width: '1920px', height: '1080px' }, R);
+      const bsvg = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 }, bracket);
+      const tie = Kit.el('path', {
+        class: 'hair', 'stroke-width': 2.2, d: `M ${CX + TW + 8} ${TOPY} H ${BRX}`,
+        pathLength: 1, style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, bsvg);
+      Kit.el('path', {
+        class: 'hair', 'stroke-width': 2.8,
+        d: `M ${BRX - 16} ${TOPY} H ${BRX + 16} M ${BRX - 16} ${GROUND} H ${BRX + 16}`,
+      }, bsvg);
+      const brLine = Kit.el('path', {
+        class: 'hair', 'stroke-width': 2.8, d: `M ${BRX} ${TOPY} V ${GROUND}`,
+        pathLength: 1, style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, bsvg);
+      bracket.style.opacity = 0;
+
+      const tall = Kit.label(R, 1258, 416, 'five grown-ups');
+      Object.assign(tall.style, { opacity: 0, fontSize: '34px' });
+
+      /* ── type ──────────────────────────────────────────────────────────── */
+      const yr = Kit.year(R, 118, 36, '1534');
+      Object.assign(yr.style, { opacity: 0, fontSize: '92px', color: 'var(--ink-2)' });
+
+      /* ── who the two men are. Same type, same weight, same care. ───────── */
+      const nameC = Kit.label(R, 190, 950, 'Jacques Cartier<br>a sailor from France');
+      Object.assign(nameC.style, { opacity: 0, fontSize: '32px', textAlign: 'center' });
+
+      const nameD = Kit.label(R, 1094, 950, 'Donnacona<br>a chief who lived there');
+      Object.assign(nameD.style, { opacity: 0, fontSize: '32px', textAlign: 'center' });
+
+      /* ── what Donnacona said. Short, and on the record. ────────────────── */
+      const says = Kit.scroll(R, 1130, 455, 440, 155, {
+        lines: 0, tail: [DONNA_X - STEP, 746], seed: 17,
+      });
+      says.wrap.style.opacity = 0;
+      const saysT = Kit.lead(R, 1158, 500, 'Take it down.', 384);
+      Object.assign(saysT.style, {
+        opacity: 0, fontSize: '48px', textAlign: 'center', whiteSpace: 'nowrap',
+      });
+
+      /* ── what Cartier said back, and what it actually was ──────────────── */
+      const reply = Kit.scroll(R, 120, 455, 470, 238, { lines: 0, tail: [CART_X, 745], seed: 3 });
+      reply.wrap.style.opacity = 0;
+      const quote = Kit.lead(R, 148, 495, 'It’s only a marker.', 414);
+      Object.assign(quote.style, {
+        opacity: 0, fontSize: '44px', textAlign: 'center', whiteSpace: 'nowrap',
+      });
+      const more = Kit.lead(R, 148, 572, 'Nothing more.', 414);
+      Object.assign(more.style, {
+        opacity: 0, fontSize: '32px', textAlign: 'center', color: 'var(--ink-2)',
+        whiteSpace: 'nowrap',
+      });
+      /* the only accent in the scene: the line through the lie, and the words
+         that take its place */
+      const strike = Kit.underline(R, 156, 521, 400);
+      strike.style.transform = 'scaleX(0)';
+      const truth = Kit.lead(R, 148, 557, 'It was a claim<br>on their land.', 414);
+      Object.assign(truth.style, {
+        opacity: 0, fontSize: '42px', textAlign: 'center', color: 'var(--accent)',
+        whiteSpace: 'nowrap', lineHeight: '1.26',
+      });
+
+      Kit.schem(R, 1664, 1040, 'reconstruction');
+      Kit.credit(R, 120, 1040, 'Cartier’s account of his first voyage, 24 July 1534');
+
+      /* ── timeline ──────────────────────────────────────────────────────── */
+      const tl = gsap.timeline({ paused: true });
+
+      /* the shore and the people who live on it are there before the ceremony */
+      tl.fromTo(shore.fig, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0);
+      tl.fromTo([chief.fig, ...band.map((p) => p.fig)], { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.42, stagger: 0.06, ease: 'power2.out' }, 0.04);
+      tl.fromTo(cartier.fig, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.2);
+
+      /* 0 — the cross is hauled upright, and the shield goes on the bar */
+      tl.fromTo(cr.fig, { opacity: 0 }, { opacity: 1, duration: 0.28 }, S.at(0));
+      tl.fromTo(cr.fig, { rotate: -17 }, {
+        rotate: 0, duration: 1.05, ease: 'power3.out',
+        transformOrigin: `${CX - CROSS_X}px ${GROUND - CROSS_Y}px`,
+      }, S.at(0));
+      tl.fromTo(shield, { opacity: 0, scale: 0.76 }, {
+        opacity: 1, scale: 1, duration: 0.45, ease: 'expo.out', transformOrigin: '50% 0%',
+      }, S.at(0, 1.1));
+      tl.fromTo(lis, { opacity: 0, scale: 0.4 }, {
+        opacity: 1, scale: 1, duration: 0.42, stagger: 0.12, ease: 'expo.out', transformOrigin: '50% 50%',
+      }, S.at(0, 1.35));
+
+      /* 1 — the year, and Cartier lets go of the timber */
+      tl.fromTo(yr, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, S.at(1));
+      tl.fromTo(cartier, { arm: 0.9 }, {
+        arm: 0.22, duration: 0.75, ease: 'power2.inOut',
+        onUpdate() { cartier.setArm(this.targets()[0].arm); },
+      }, S.at(1, 0.1));
+
+      /* 2 — who he was, then the comparison the narration asks us to picture */
+      tl.fromTo(nameC, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(2, 0.8));
+      /* the stack builds one grown-up at a time, bottom to top */
+      stack.forEach((p, i) => {
+        tl.fromTo(p.fig, { opacity: 0, y: 18 }, {
+          opacity: 1, y: 0, duration: 0.42, ease: 'power3.out',
+        }, S.at(2, 1.95 + i * 0.34));
+      });
+      tl.fromTo(bracket, { opacity: 0 }, { opacity: 1, duration: 0.22 }, S.at(2, 3.72));
+      tl.fromTo(tie, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out', autoRound: false }, S.at(2, 3.72));
+      tl.fromTo(brLine, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.inOut', autoRound: false }, S.at(2, 3.86));
+      tl.fromTo(tall, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, S.at(2, 4.3));
+
+      /* 3 — the measuring clears away, and Donnacona steps forward */
+      tl.fromTo([bracket, tall], { opacity: 1 }, { opacity: 0, duration: 0.4, ease: 'power2.in' }, S.at(3));
+      tl.fromTo(stack.map((p) => p.fig), { opacity: 1 }, {
+        opacity: 0, duration: 0.4, stagger: 0.05, ease: 'power2.in',
+      }, S.at(3));
+      tl.fromTo(yr, { opacity: 1 }, { opacity: 0, duration: 0.45, ease: 'power2.in' }, S.at(3, 0.2));
+      tl.fromTo(chief.fig, { x: 0 }, { x: -STEP, duration: 0.8, ease: 'power2.out' }, S.at(3, 0.1));
+      tl.fromTo(chief, { arm: 0 }, {
+        arm: 0.72, duration: 0.55, ease: 'power2.out',
+        onUpdate() { chief.setArm(this.targets()[0].arm); },
+      }, S.at(3, 0.3));
+      tl.fromTo(nameD, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(3, 0.8));
+      tl.fromTo(says.wrap, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, S.at(3, 1.82));
+      tl.fromTo(saysT, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.42, ease: 'expo.out' }, S.at(3, 1.96));
+
+      /* 4 — Cartier answers, in words a ten-year-old reads */
+      tl.fromTo(cartier, { arm: 0.22 }, {
+        arm: 0.62, duration: 0.5, ease: 'power2.out',
+        onUpdate() { cartier.setArm(this.targets()[0].arm); },
+      }, S.at(4));
+      tl.fromTo(reply.wrap, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, S.at(4, 0.28));
+      tl.fromTo(quote, { opacity: 0, y: 9 }, { opacity: 1, y: 0, duration: 0.46, ease: 'expo.out' }, S.at(4, 0.44));
+
+      /* 5 — and nothing more */
+      tl.fromTo(more, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, S.at(5, 0.1));
+
+      /* 6 — it was not true. The accent does the one job it is kept for.
+             "Nothing more." hands its place straight to the truth: the two
+             cross over exactly, so the panel is never half empty. */
+      tl.fromTo(strike, { scaleX: 0 }, { scaleX: 1, duration: 0.52, ease: 'power2.inOut' }, S.at(6));
+      tl.fromTo(more, { opacity: 1 }, { opacity: 0, duration: 0.38, ease: 'power2.in' }, S.at(6, 0.62));
+      /* the struck words lift to make room for what it actually was */
+      tl.fromTo([quote, strike], { y: 0 }, { y: -26, duration: 0.45, ease: 'power2.inOut' }, S.at(6, 0.7));
+      tl.fromTo(truth, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.65, ease: 'expo.out' }, S.at(6, 1.0));
+
+      /* 7 — and he knew it: the chief's demand clears, leaving the correction
+             alone on the paper, and Cartier's hand comes down, and keeps
+             coming down to the last frame */
+      tl.fromTo([says.wrap, saysT], { opacity: 1 },
+        { opacity: 0, duration: 0.45, ease: 'power2.in' }, S.at(7, 0.12));
+      tl.fromTo(cartier, { arm: 0.62 }, {
+        arm: 0.04, duration: Math.max(0.4, S.duration - S.at(7, 0.15)), ease: 'none',
+        onUpdate() { cartier.setArm(this.targets()[0].arm); },
+      }, S.at(7, 0.15));
+
+      window.__timelines['cross'] = tl;
+    })();
+  </script>
+</template>

@@ -18,12 +18,9 @@
     #mrna-muscle { z-index: 4; }
     #mrna-nuc { z-index: 5; }
     #mrna-track { z-index: 5; }
-    #mrna-lnp, #mrna-dna, .mrna-bit { z-index: 6; }
     #mrna-tgroup { z-index: 7; }
-    #mrna .mhc { z-index: 8; }
     #mrna .pep { z-index: 9; }
-    #mrna-frame, #mrna-wanted { z-index: 10; }
-    #mrna .label, #mrna .lead, #mrna .anchor { z-index: 11; }
+    #mrna .label { z-index: 11; }
     #mrna-tiles .pep { z-index: 3; }
 
     /* ---- carried over from scene 3 ---- */
@@ -40,30 +37,26 @@
     #mrna-rna .strand path { stroke-width: 12; }
     #mrna-lnp .strand path { stroke-width: 9; }
 
-    /* ---- the muscle cell, its nucleus, and the lipid particle that lands inside it ---- */
-    #mrna-nuc { position: absolute; left: 475px; top: 575px; width: 250px; height: 250px;
-      border-radius: 50%; background: rgba(138,133,120,.3); border: 2px solid var(--ctrl); opacity: 0; }
-    #mrna-track { position: absolute; left: 600px; top: 150px; width: 950px; height: 250px; opacity: 0; }
-    #mrna-lnp { position: absolute; left: 490px; top: 200px; width: 300px; height: 300px; opacity: 0; }
-    #mrna-dna { position: absolute; left: 490px; top: 647px; opacity: 0; }
+    /* ---- the second half is a 3D figure plate: a muscle cell is a BODY with a SURFACE, and
+       "putting the fingerprints on the outside where a T cell can read them" is a fact about that
+       surface. Flat, the cradles can only sit on the rim — three of them, at the edge of a circle —
+       which says far less than the thing being described. ---- */
+    #mrna-cv { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 0; }
+    #mrna-dna { position: absolute; left: 535px; top: 424px; opacity: 0; z-index: 4; }
     .mrna-helix { stroke-dasharray: 1 1.2; }
-    .mrna-bit { position: absolute; width: 70px; height: 9px; border-radius: 5px;
-      background: var(--rna); opacity: 0; }
 
-    /* the cradles are big on purpose: this fit is the point of the scene */
-    #mrna .mhc { border-width: 6px; border-top: none; border-radius: 0 0 32px 32px; }
-
-    /* ---- the wanted poster: a bracket open towards the T cell ---- */
-    #mrna-frame { position: absolute; left: 975px; top: 255px; width: 145px; height: 510px;
+    /* ---- the wanted poster: a bracket drawn around the one fingerprint being read ---- */
+    #mrna-frame { position: absolute; left: 790px; top: 440px; width: 180px; height: 200px; z-index: 4;
       border: 3px solid var(--ink); border-right: none; border-radius: 18px 0 0 18px;
       transform-origin: left center; opacity: 0; }
-    #mrna-wanted { left: 900px; top: 120px; opacity: 0; }
+    #mrna-wanted { left: 258px; top: 292px; opacity: 0; z-index: 4; }
 
     /* ---- the T cell, its receptor and its label travel together ---- */
     #mrna-tgroup { position: absolute; left: 1090px; top: 290px; width: 650px; height: 440px; }
 
     #mrna-n34 { left: 118px; top: 160px; opacity: 0; }
-    .mrna-lab { opacity: 0; }
+    .mrna-lab { opacity: 0; z-index: 5; }
+    #mrna .lead, #mrna .anchor { z-index: 5; }
   </style>
 
   <div id="mrna" class="world" data-composition-id="mrna" data-width="1920" data-height="1080">
@@ -88,15 +81,8 @@
     </div>
     <div id="mrna-n34" class="big num hl t">34</div>
 
-    <!-- inside the muscle cell -->
-    <div id="mrna-nuc"></div>
-    <div id="mrna-track">
-      <svg viewBox="0 0 950 250" width="950" height="250" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 900 80 Q 550 10, 40 200" fill="none" stroke="#b45309" stroke-width="4"
-          stroke-linecap="butt" stroke-dasharray="12 16" opacity=".55"/>
-      </svg>
-    </div>
-    <div id="mrna-lnp" class="lnp"></div>
+    <!-- the figure plate: the cell as a body, from S.at(4) on -->
+    <canvas id="mrna-cv" width="1920" height="1080"></canvas>
     <div id="mrna-dna">
       <svg viewBox="0 0 170 86" width="220" height="106" xmlns="http://www.w3.org/2000/svg">
         <g fill="none" stroke="#16181d" stroke-width="5" stroke-linecap="round">
@@ -184,7 +170,8 @@
       }
       function leader(parent, x1, y1, x2, y2) {
         const l = Kit.lead(parent, { x1, y1, x2, y2 });
-        gsap.set([l.line, l.anchor], { opacity: 0 });
+        l.len = Math.hypot(x2 - x1, y2 - y1);   // the length to draw TO: reading it back off the
+        gsap.set([l.line, l.anchor], { opacity: 0 });   // element's style is fragile once GSAP owns it
         return l;
       }
       const anchorRna = onStrand(0.70);
@@ -197,44 +184,121 @@
       const labFrom = lab(root, { x: 120, y: 276, t: '来自你自己的肿瘤', cls: 's' });
       const bead5 = onStrand(5.5 / N);
       const ld34 = leader(root, 368, 250, bead5.x, bead5.y);
-      const labDose = lab(root, { x: 120, y: 150, cls: 's',
+      // from here on the labels sit ON the plate, each where the wide staging puts its subject.
+      // Every leader is drawn while the camera is parked, so none of them is ever left pointing at
+      // a place the camera has since moved away from.
+      const labDose = lab(root, { x: 160, y: 162, cls: 's',
         t: '用法：' + Kit.DRUG.dose + ' 肌注，每 ' + Kit.DRUG.every + ' 周一次，最多 ' + Kit.DRUG.doses + ' 针' });
-      const labCell = lab(root, { x: 90, y: 300, t: '肌肉细胞' });
-      const ldCell = leader(root, 236, 318, 402, 330);
-      const labLnp = lab(root, { x: 90, y: 430, t: '脂质颗粒' });
-      const ldLnp = leader(root, 236, 448, 495, 362);
-      const labMhc = lab(root, { x: 920, y: 800, t: 'MHC' });
-      const ldMhc = leader(root, 962, 796, 1030, 750);
-      const labDna = lab(root, { x: 90, y: 790, t: 'mRNA 不进入 DNA' });
-      const ldDna = leader(root, 400, 802, 500, 772);
-      const ldWanted = leader(root, 1035, 220, 1035, 250);
-      const labT = lab(g, { x: gx(1610), y: gy(490), t: 'T 细胞' });
-      const ldT = leader(g, gx(1600), gy(511), gx(1556), gy(508));
+      const labCell = lab(root, { x: 160, y: 250, t: '肌肉细胞' });
+      const ldCell = leader(root, 332, 268, 432, 322);
+      const labLnp = lab(root, { x: 160, y: 640, t: '脂质颗粒' });
+      const ldLnp = leader(root, 332, 658, 572, 652);
+      const labMhc = lab(root, { x: 1190, y: 820, t: 'MHC' });
+      const ldMhc = leader(root, 1256, 814, 1062, 712);
+      const labDna = lab(root, { x: 160, y: 162, t: 'mRNA 不进入 DNA' });
+      const ldDna = leader(root, 396, 180, 530, 456);
+      const labT = lab(root, { x: 1300, y: 268, t: 'T 细胞' });
+      const ldT = leader(root, 1367, 310, 1367, 344);
 
-      // ---- 5. the muscle cell, the particle, and what the cell makes -----------------------------
-      const muscle = Kit.cell(root, { x: 690, y: 510, r: 680, nuc: false });   // 350..1030, 170..850
-      muscle.id = 'mrna-muscle';
-      const small = Kit.strand($('mrna-lnp'), { x: 35, y: 150, w: 230, amp: 70, waves: 3, ticks: 0 });
-      small.path.style.strokeDasharray = '1 1.2';
+      /* ---- 5. the figure plate: the cell as a body ------------------------------------------------
+         Everything in the plate is a pure function of one clock (frame3d below) and is drawn at the
+         end of the tween that carries it, because frames are rendered by seeking: no 3D state may
+         depend on which tween happened to run last. */
+      const eng = Kit3.engine($('mrna-cv'), {
+        bg: '#fbf9f4', ink: '#16181d', fov: 18, far: 240, creaseCut: 0.16, silhouetteCut: 0.008,
+      });
+      /* The film's own rule in three dimensions: --imm and --tum are a 3 px border over a 12% fill,
+         never a slab. So the cell and the T cell — the two things that fill the frame — are washes,
+         and full strength is kept for what is small: a fingerprint, the cradle holding it up. */
+      const R3 = {
+        cell:  ['#faf8f3', '#f2f0e9', '#dcd8cc'],   // the host: paper, with an ink membrane
+        nuc:   ['#f0ece3', '#e5e1d5', '#cbc5b5'],
+        rna:   ['#cf7d24', '#b45309', '#8a3f06'],
+        lipid: ['#f7eadb', '#efe0ca', '#d9c4a5'],
+        pep:   ['#b4293f', '#a3203a', '#7d172c'],   // small: full strength
+        mhc:   ['#2a8d84', '#157e76', '#0a554f'],   // small: full strength
+        tcell: ['#dcecea', '#cbe2de', '#a7c8c3'],   // large: --imm as a wash
+      };
+      const V3 = THREE.Vector3, M4 = new THREE.Matrix4(), QT = new THREE.Quaternion();
+      const SC3 = new V3(1, 1, 1), TMP = new V3(), YAX = new V3(0, 1, 0);
 
-      // three peptides: born in the cytosol beside the particle, seated in a cradle on the membrane
-      const SEAT = [[1023, 340, 480, 440], [1069, 510, 800, 300], [1023, 680, 820, 500]];
-      const MHC = [[1017, 340], [1063, 510], [1017, 680]];
-      const peps = SEAT.map(([x, y]) => Kit.pep(root, { x, y, s: 1.8 }));
-      const mhcs = MHC.map(([x, y]) => {
-        const d = document.createElement('div');
-        d.className = 'mhc';
-        d.style.cssText = 'left:' + (x - 75) + 'px;top:' + (y - 33) + 'px;width:150px;height:66px';
-        root.appendChild(d); return d;
+      // the cell: an ellipsoid built at its final proportions, so the normals are the normals of the
+      // shape that is actually drawn (scaling a mesh afterwards shears them and the tone drifts)
+      const CA = 9.1, CB = 6.44, CC = 7.0;
+      const cellGeo = new THREE.SphereGeometry(7, 72, 48);
+      cellGeo.scale(CA / 7, CB / 7, CC / 7);
+      cellGeo.computeVertexNormals();
+      const cell = eng.solid(eng.scene, cellGeo, { ramp: R3.cell, tone: 'lit', opacity: 0.55 });
+      const nucleus = eng.solid(eng.scene, new THREE.SphereGeometry(2.6, 44, 30), { ramp: R3.nuc, tone: 'lo' });
+      nucleus.position.set(-3.6, 2.0, 1.6);
+
+      // a point on that surface, and the direction the surface faces there
+      function surf(x, y, z) {
+        const l = Math.hypot(x, y, z); x /= l; y /= l; z /= l;
+        return { p: new V3(CA * x, CB * y, CC * z), n: new V3(x / CA, y / CB, z / CC).normalize() };
+      }
+
+      // ---- the lipid particle, the same object the film shows being made two scenes later ----
+      const lnpG = eng.part(eng.scene, { name: 'lnp' });
+      const coilCurve = (() => {
+        const r = Kit3.rng(29), pts = [];
+        for (let i = 0; i < 24; i++) {
+          const a = i * 1.37, b = i * 0.79, rr = 0.44 + r() * 0.52;
+          pts.push(new V3(Math.cos(a) * rr, Math.sin(b) * rr * 0.95, Math.sin(a) * rr));
+        }
+        return new THREE.CatmullRomCurve3(pts, true);
+      })();
+      const coil = eng.solid(lnpG, new THREE.TubeGeometry(coilCurve, 300, 0.085, 8, true), { ramp: R3.rna, tone: 'hi' });
+      const HEADS = 96, SHELL = 1.5;
+      const heads = eng.instances(lnpG, new THREE.SphereGeometry(0.17, 12, 8), HEADS, { ramp: R3.lipid, tone: 'faint' });
+      const hdir = [];
+      for (let i = 0; i < HEADS; i++) {
+        const y = 1 - 2 * (i + 0.5) / HEADS, rr = Math.sqrt(Math.max(0, 1 - y * y)), phi = i * 2.399963;
+        hdir.push(new V3(Math.cos(phi) * rr, y, Math.sin(phi) * rr).multiplyScalar(SHELL));
+      }
+      for (let i = 0; i < HEADS; i++) heads.setMatrixAt(i, M4.compose(hdir[i], QT.identity(), SC3));
+      heads.instanceMatrix.needsUpdate = true;
+      heads.count = HEADS;
+      const LNP_IN = new V3(-3.5, -2.2, 1.0), LNP_OUT = new V3(22, 7, 11);
+
+      // what the strand comes apart into, once the cell has read it
+      const BITN = 10, bitDir = [], br = Kit3.rng(77);
+      const bits = eng.instances(eng.scene, new THREE.CapsuleGeometry(0.11, 0.5, 4, 10), BITN, { ramp: R3.rna, tone: 'mid' });
+      for (let i = 0; i < BITN; i++) bitDir.push(new V3(br() - 0.5, br() - 0.5, br() - 0.5).normalize());
+
+      /* ---- the fingerprints, standing on the surface where a T cell can read them ----
+         Each one is a group pinned to a point of the membrane and turned to face out, so "rising to
+         the surface" is one local number: the peptide climbs its own normal from deep inside. */
+      const DIRS = [
+        [-0.45, 0.80, 0.40], [0.05, 0.72, 0.69], [0.58, 0.46, 0.67], [-0.78, 0.10, 0.62],
+        [0.02, -0.10, 1.00], [0.32, 0.08, 0.94], [0.80, 0.18, 0.57], [-0.62, -0.38, 0.69],
+        [-0.10, -0.46, 0.88], [0.44, -0.42, 0.79], [0.86, -0.22, 0.46], [0.18, -0.70, 0.69],
+      ];
+      const DOCK = 6;                                   // the one the T cell reads
+      // a stem and a dish: a cradle holding something up. A solid cone of signal colour reads as a
+      // mushroom, and twelve of them read as decoration.
+      const stemGeo = new THREE.CylinderGeometry(0.11, 0.15, 0.58, 16);
+      stemGeo.translate(0, 0.29, 0);
+      const dishGeo = new THREE.CylinderGeometry(0.40, 0.32, 0.09, 28);
+      dishGeo.translate(0, 0.625, 0);
+      const pepGeo = Kit3.slab(0.72, 0.22, 0.46, 0.09, 0.045);
+      const sites = DIRS.map(([x, y, z], i) => {
+        const { p, n } = surf(x, y, z);
+        const g3 = eng.part(eng.scene, { at: [p.x, p.y, p.z], name: 'mhc' + i });
+        g3.quaternion.setFromUnitVectors(YAX, n);
+        const stem = eng.solid(g3, stemGeo, { ramp: R3.mhc, tone: 'mid' });
+        const dish = eng.solid(g3, dishGeo, { ramp: R3.mhc, tone: 'hi' });
+        const pep = eng.solid(g3, pepGeo, { ramp: R3.pep, tone: 'lit' });
+        return { g: g3, plinth: [stem, dish], pep, n, p };
       });
-      // the strand comes apart into four ochre pieces
-      const BITS = [[570, 366, -16], [630, 334, 12], [700, 368, -8], [752, 338, 18]];
-      const bits = BITS.map(([x, y]) => {
-        const d = document.createElement('div');
-        d.className = 'mrna-bit';
-        d.style.cssText = 'left:' + (x - 35) + 'px;top:' + (y - 4) + 'px';
-        root.appendChild(d); return d;
-      });
+
+      // ---- the T cell: it comes down its own normal onto that one site ----
+      const tG = eng.part(eng.scene, { at: [sites[DOCK].p.x, sites[DOCK].p.y, sites[DOCK].p.z], name: 'tcell' });
+      tG.quaternion.setFromUnitVectors(YAX, sites[DOCK].n);
+      const tBody = eng.solid(tG, new THREE.SphereGeometry(2.4, 44, 30), { ramp: R3.tcell, tone: 'lit', opacity: 0.94 });
+      const tcrGeo = new THREE.ConeGeometry(0.36, 0.86, 22);
+      tcrGeo.rotateX(Math.PI);                          // apex down, towards the membrane
+      const tcr3 = eng.solid(tG, tcrGeo, { ramp: R3.mhc, tone: 'lit' });
 
       // ---- 6. the timeline -----------------------------------------------------------------------
       const t0 = S.at(0), t1 = S.at(1), t2 = S.at(2), t3 = S.at(3), t4 = S.at(4);
@@ -244,7 +308,7 @@
       // Kit.lead's line carries an inline transform: rotate(), so it is drawn on by its width,
       // never by a GSAP scaleX (that would hand GSAP the whole transform and lose the angle).
       const draw = (l, at, d = 0.45) => {
-        const w = parseFloat(l.line.style.width) || 0;
+        const w = l.len ?? (parseFloat(l.line.style.width) || 0);
         tl.fromTo(l.line, { opacity: 0, width: 0 }, { opacity: 0.8, width: w, duration: d, ease: IN }, at);
         tl.fromTo(l.anchor, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: IN }, at + d * 0.6);
       };
@@ -284,68 +348,115 @@
       show(labFrom, t3 + 2.35, 0.5);
       tl.fromTo('#mrna-credit', { opacity: 0 }, { opacity: 1, duration: 0.5 }, t3 + 0.5);
 
-      // S.at(4) "打进肌肉以后，" — packed into a lipid particle, along a track, into the muscle
+      // S.at(4) "打进肌肉以后，" — the flat half closes and the plate opens on the cell
       hide('#mrna-rna', t4, 0.55);
       tl.fromTo('#mrna-rna', { scale: 1, x: 0, y: 0 }, { scale: 0.14, x: 540, y: -240, duration: 0.6, ease: 'power2.in' }, t4);
       hide(labRna, t4, 0.35); hideLead(ldRna, t4, 0.35);
       [labMost, '#mrna-n34', labSeg, labFrom].forEach((e) => hide(e, t4, 0.35));
       hideLead(ld34, t4, 0.35);
-      tl.fromTo(muscle, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.6, ease: IN }, t4 + 0.2);
-      tl.fromTo('#mrna-nuc', { opacity: 0 }, { opacity: 1, duration: 0.5 }, t4 + 0.4);
-      tl.fromTo('#mrna-lnp', { opacity: 0, scale: 0.5, x: 860, y: -120 },
-        { opacity: 1, scale: 1, x: 860, y: -120, duration: 0.4, ease: IN }, t4 + 0.35);
-      tl.fromTo(small.path, { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.4, ease: 'power1.out', autoRound: false }, t4 + 0.45);
-      tl.fromTo('#mrna-track', { opacity: 0 }, { opacity: 1, duration: 0.3 }, t4 + 0.55);
-      tl.fromTo('#mrna-lnp', { x: 860, y: -120 }, { x: 0, y: 0, duration: 0.8, ease: 'power2.inOut' }, t4 + 0.75);
-      show(labCell, t4 + 0.55); draw(ldCell, t4 + 0.6);
-      show(labDose, t4 + 1.0, 0.55);
+      hide(g, t4, 0.3);                                   // the flat T cell from scene 3 does not come back
+      show(labCell, t4 + 0.9); draw(ldCell, t4 + 0.95);
+      show(labDose, t4 + 1.3, 0.55);
 
-      // the receptor grows to match the bigger cradles while the T cell is off screen
-      tl.fromTo(tcr, { rotation: -90, x: 0, y: 0, borderLeftWidth: 17, borderRightWidth: 17, borderBottomWidth: 26 },
-        { rotation: -90, x: -33, y: -7, borderLeftWidth: 26, borderRightWidth: 26, borderBottomWidth: 40, duration: 0.3 }, t4);
+      // S.at(5) "你的细胞照着它把这些片段造出来，" — the particle is in, the fingerprints rise
+      show(labLnp, t5 + 0.1); draw(ldLnp, t5 + 0.15);
 
-      // S.at(5) "你的细胞照着它把这些片段造出来，" — peptides come off the strand
-      hide('#mrna-track', t5, 0.4);
-      show(labLnp, t5 + 0.2); draw(ldLnp, t5 + 0.25);
-      peps.forEach((p, i) => {
-        const [sx, sy, bx, by] = SEAT[i];
-        tl.fromTo(p, { opacity: 0, scale: 0.3, rotation: 0, x: bx - sx, y: by - sy },
-          { opacity: 1, scale: 1, rotation: 0, x: bx - sx, y: by - sy, duration: 0.5, ease: 'back.out(1.6)' }, t5 + 0.5 + i * 0.6);
-      });
+      // S.at(6) "摆到表面给 T 细胞看。" — cradles come up all over the membrane, and a T cell arrives
+      show(labMhc, t6 + 0.3); draw(ldMhc, t6 + 0.35);
+      show(labT, t6 + 0.9); draw(ldT, t6 + 0.95);
+      hide(labLnp, t6 + 1.95, 0.35); hideLead(ldLnp, t6 + 1.95, 0.35);
+      [labCell, labDose, labT, labMhc].forEach((e) => hide(e, t6 + 1.95, 0.35));
+      [ldCell, ldT, ldMhc].forEach((l) => hideLead(l, t6 + 1.95, 0.35));
 
-      // S.at(6) "摆到表面给 T 细胞看。" — MHC cradles hold them up on the membrane
-      tl.fromTo('#mrna-lnp', { borderColor: 'rgba(180,83,9,1)', backgroundColor: 'rgba(180,83,9,0.12)' },
-        { borderColor: 'rgba(180,83,9,0)', backgroundColor: 'rgba(180,83,9,0)', duration: 0.5 }, t6 + 0.1);
-      hide(labLnp, t6 + 0.1, 0.35); hideLead(ldLnp, t6 + 0.1, 0.35);
-      mhcs.forEach((m, i) => tl.fromTo(m, { opacity: 0, scale: 0.3, rotation: 90 },
-        { opacity: 1, scale: 1, rotation: 90, duration: 0.5, ease: IN }, t6 + 0.1 + i * 0.12));
-      peps.forEach((p, i) => tl.fromTo(p, { x: SEAT[i][2] - SEAT[i][0], y: SEAT[i][3] - SEAT[i][1], rotation: 0 },
-        { x: 0, y: 0, rotation: -90, duration: 0.75, ease: IN }, t6 + 0.2 + i * 0.12));
-      show(labMhc, t6 + 0.95); draw(ldMhc, t6 + 1.0);
-      tl.fromTo(g, { x: 1000, y: -50 }, { x: 130, y: 0, duration: 0.9, ease: IN }, t6 + 0.5);
-      show(labT, t6 + 1.15); draw(ldT, t6 + 1.2);
+      // S.at(7) "相当于一张通缉令。" — in on the one fit: a fingerprint held up, a receptor in it
+      tl.fromTo('#mrna-frame', { opacity: 0, scaleX: 0.7 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: IN }, t7 + 0.6);
+      tl.fromTo('#mrna-wanted', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: IN }, t7 + 0.8);
 
-      // S.at(7) "相当于一张通缉令。" — the poster is framed, and the receptor drops into the notch
-      tl.fromTo('#mrna-frame', { opacity: 0, scaleX: 0.7 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: IN }, t7 + 0.1);
-      tl.fromTo('#mrna-wanted', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: IN }, t7 + 0.3);
-      draw(ldWanted, t7 + 0.55, 0.35);
-      tl.fromTo(g, { x: 130 }, { x: -24, duration: 0.75, ease: IN }, t7 + 1.0);
-
-      // S.at(8) "mRNA 本身很快就降解了，" — the strand comes apart and goes
-      tl.fromTo(small.path, { opacity: 1 }, { opacity: 0, duration: 0.4 }, t8 + 0.25);
-      bits.forEach((b, i) => tl.fromTo(b, { opacity: 0, rotation: BITS[i][2], x: 0, y: 0 },
-        { opacity: 1, rotation: BITS[i][2], x: 0, y: 0, duration: 0.3 }, t8 + 0.2 + i * 0.08));
-      const DRIFT = [[-70, -58], [-30, 70], [54, -64], [82, 50]];
-      bits.forEach((b, i) => {
-        tl.fromTo(b, { x: 0, y: 0 }, { x: DRIFT[i][0], y: DRIFT[i][1], duration: 1.3, ease: 'power1.out' }, t8 + 0.85);
-        tl.fromTo(b, { opacity: 1 }, { opacity: 0, duration: 0.8, ease: 'power2.in' }, t8 + 1.35 + i * 0.1);
-      });
+      // S.at(8) "mRNA 本身很快就降解了，" — back out, and the strand inside comes apart
+      hide('#mrna-frame', t8 + 0.2, 0.35); hide('#mrna-wanted', t8 + 0.2, 0.35);
 
       // S.at(9) "不会进到你的 DNA 里。" — ink DNA in the nucleus, and no ochre anywhere near it
       tl.fromTo('#mrna-dna', { opacity: 0 }, { opacity: 1, duration: 0.3 }, t9 + 0.1);
       tl.fromTo('.mrna-helix', { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: 0.85, ease: 'power1.inOut', autoRound: false }, t9 + 0.12);
       tl.fromTo('#mrna-rungs', { opacity: 0 }, { opacity: 0.7, duration: 0.4 }, t9 + 0.75);
       show(labDna, t9 + 0.5); draw(ldDna, t9 + 0.55);
+
+      /* ---- the plate's own clock -------------------------------------------------------------- */
+      const cl = (u) => (u < 0 ? 0 : u > 1 ? 1 : u);
+      const seg3 = (t, a, b) => cl((t - a) / (b - a));
+      const io3 = (u) => (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2);
+      const oo3 = (u) => 1 - (1 - u) * (1 - u);
+      const mix3 = (a, b, u) => a + (b - a) * u;
+
+      const DOCKP = sites[DOCK].p.clone().addScaledVector(sites[DOCK].n, 1.5);
+      const CAM = [
+        { t: t4,        tg: [0, 0, 0],                   az: -0.42, el: 0.180, dist: 78, sh: 4.6 },
+        { t: t6 + 2.0,  tg: [0, 0, 0],                   az: -0.42, el: 0.180, dist: 78, sh: 4.6 },
+        { t: t7 + 0.5,  tg: [DOCKP.x, DOCKP.y, DOCKP.z], az: -0.73, el: 0.245, dist: 38, sh: 0.0 },
+        { t: t8 + 0.3,  tg: [DOCKP.x, DOCKP.y, DOCKP.z], az: -0.73, el: 0.245, dist: 38, sh: 0.0 },
+        { t: t8 + 1.4,  tg: [0, 0, 0],                   az: -0.42, el: 0.180, dist: 78, sh: 4.6 },
+      ];
+      function camAt(t) {
+        let i = 0;
+        while (i < CAM.length - 2 && t >= CAM[i + 1].t) i++;
+        const a = CAM[i], b = CAM[i + 1], u = io3(seg3(t, a.t, b.t));
+        return { target: [mix3(a.tg[0], b.tg[0], u), mix3(a.tg[1], b.tg[1], u), mix3(a.tg[2], b.tg[2], u)],
+          az: mix3(a.az, b.az, u), el: mix3(a.el, b.el, u), dist: mix3(a.dist, b.dist, u), shift: mix3(a.sh, b.sh, u) };
+      }
+
+      let lastBits = -1;
+      function frame3d(t) {
+        // the body, and the particle that gets in
+        const open = seg3(t, t4 + 0.25, t4 + 1.05);
+        eng.fade(cell, 0.55 * open);
+        eng.fade(nucleus, oo3(seg3(t, t4 + 0.55, t4 + 1.25)));
+        const travel = io3(seg3(t, t4 + 0.45, t4 + 1.65));
+        lnpG.position.lerpVectors(LNP_OUT, LNP_IN, travel);
+        const gone = seg3(t, t8 + 0.3, t8 + 1.1);
+        eng.fade(coil, open * (1 - gone));
+        eng.fade(heads, open * (1 - seg3(t, t8 + 0.6, t8 + 1.4)));
+
+        // the fingerprints: up through the cell, then up onto a cradle on the outside
+        for (let i = 0; i < sites.length; i++) {
+          const st = sites[i], lag = i * 0.11;
+          const rise = io3(seg3(t, t5 + 0.40 + lag, t5 + 1.50 + lag));
+          const up = io3(seg3(t, t6 + 0.10 + lag * 0.6, t6 + 1.00 + lag * 0.6));
+          const seat = io3(seg3(t, t6 + 0.25 + lag * 0.6, t6 + 1.15 + lag * 0.6));
+          for (const m of st.plinth) { m.position.y = -1.1 + 1.1 * up; eng.fade(m, up > 0.015 ? 1 : 0); }
+          st.pep.position.y = mix3(-6.5, 0.10, rise) + 0.57 * seat;
+          eng.fade(st.pep, rise > 0.015 ? 1 : 0);
+        }
+
+        // the T cell comes down its own normal, hovers, and seats in the close-up
+        const L = mix3(7.5, 2.2, io3(seg3(t, t6 + 0.5, t6 + 1.6))) - 1.26 * io3(seg3(t, t7 + 0.55, t7 + 1.15));
+        tBody.position.y = L + 3.26;
+        tcr3.position.y = L + 0.43;
+        const tIn = seg3(t, t6 + 0.5, t6 + 0.9);
+        eng.fade(tBody, 0.94 * tIn);
+        eng.fade(tcr3, tIn);
+
+        // and the strand it read comes apart
+        const spread = oo3(seg3(t, t8 + 0.5, t8 + 2.4)), fade = 1 - seg3(t, t8 + 1.4, t8 + 2.6);
+        bits.count = spread > 0 ? BITN : 0;
+        if (spread !== lastBits) {
+          for (let i = 0; i < BITN; i++) {
+            QT.setFromUnitVectors(new V3(0, 1, 0), bitDir[i]);
+            M4.compose(TMP.copy(bitDir[i]).multiplyScalar(0.6 + 4.2 * spread).add(LNP_IN), QT, SC3);
+            bits.setMatrixAt(i, M4);
+          }
+          bits.instanceMatrix.needsUpdate = true;
+          lastBits = spread;
+        }
+        eng.fade(bits, spread > 0.01 ? fade : 0);
+
+        eng.look(camAt(t));
+      }
+
+      const P = { t: 0 };
+      tl.fromTo(P, { t: 0 }, { t: S.duration, duration: S.duration, ease: 'none',
+        onUpdate() { frame3d(P.t); eng.render(); } }, 0);
+      frame3d(0);
+      eng.render();
 
       window.__timelines['mrna'] = tl;
     })();

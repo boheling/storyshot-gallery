@@ -1,0 +1,174 @@
+<template>
+  <style>
+    /* Scene 1, kids' cut — the act itself, and the question the film answers.
+       The Lucayan figures stand on the beach at frame 0, before the boat
+       arrives, because that is the argument of the whole film: the ceremony
+       was performed in front of people who were already there.
+
+       Against the grown-up scene 1 this cut drops the notarial sheet, the wax
+       seal and every small-caps annotation, and spends the freed right third
+       on the people. Everything that is left is drawn half again as big: this
+       has to read from the back of a classroom.
+
+       Positions are passed to the Kit builders, not set here: the builders
+       write inline left/top, and an inline style beats a rule in this block. */
+    #beach { position: absolute; inset: 0; overflow: hidden; }
+  </style>
+
+  <div id="beach" class="chart" data-composition-id="beach" data-width="1920" data-height="1080">
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const R = Kit.root('beach');    // the mount host shares this id; Kit.root finds the .chart
+      /* the rose sits in the empty sky left of the flag: it is the only thing
+         holding that corner before the boat arrives, the speech panel covers
+         it while it is up, and the rhumbs it throws run down into the sand on
+         the right, which is otherwise bare */
+      Kit.paper(R, { rose: [430, 300] });
+
+      const SHORE_Y = 760;            // every figure in this scene stands on this line
+
+      /* ── the shore ─────────────────────────────────────────────────────── */
+      const shore = Kit.shore(R, 0, SHORE_Y - 150, 1920, 11);
+      shore.fig.style.opacity = 0;
+
+      /* ── the people already on the beach ───────────────────────────────── */
+      const LUC = [[1250, 292, 0], [1420, 268, 0.22], [1570, 300, 0]];
+      const lucFigs = LUC.map(([x, h, arm]) => Kit.person(R, x, SHORE_Y - h, { h, face: -1, arm }));
+      lucFigs.forEach(p => { p.fig.style.opacity = 0; });
+
+      /* ── the boat, and the man who wades ashore ─────────────────────────
+         The grown-up cut draws a hull and a bare mast. At this size and for
+         this audience that silhouette reads as a bowl, so this one is rigged:
+         a caravel's lateen main bellied towards the shore it is running onto,
+         and a small headsail, which is the shape a ten-year-old reads as a
+         boat. Mast first and hull last, so the fill-paper shapes cover the
+         spar they hang on and the mast foot sits inside the hull. */
+      const boat = Kit.div('fig', { left: '56px', top: '417px', opacity: 0 }, R);
+      const bs = Kit.el('svg', { viewBox: '0 -130 300 250', width: 470, height: 392 }, boat);
+      Kit.el('path', { class: 'ln2', d: 'M 150 58 V -112' }, bs);
+      Kit.el('path', { class: 'ln2 fill-paper', d: 'M 150 -104 C 212 -44 246 2 260 38 L 150 38 Z' }, bs);
+      Kit.el('path', { class: 'ln2 fill-paper', d: 'M 150 -62 C 124 -24 110 4 100 32 L 150 32 Z' }, bs);
+      Kit.el('path', { class: 'ln fill-paper', d: 'M 10 54 q 60 44 140 44 q 80 0 140 -44 Z' }, bs);
+      const wader = Kit.person(R, 512, SHORE_Y - 290, { h: 290, face: 1, arm: 0 });
+      wader.fig.style.opacity = 0;
+
+      /* ── the pole and its banner: the biggest thing in the frame ───────── */
+      const POLE_H = 610;
+      const ban = Kit.banner(R, 720, SHORE_Y - 40 - POLE_H, {
+        w: 440, h: 290, poleH: POLE_H, cloth: 'var(--paper-2)',
+      });
+      /* Kit.banner's poleW option is dead — `.chart .fig .ln` sets stroke-width
+         and a rule beats a presentation attribute. An inline style does not. */
+      ban.pole.querySelector('path').style.strokeWidth = '14px';
+      ban.fig.style.opacity = 0;
+      /* the green cross, so scene 2 can open on this same object */
+      const greenCross = Kit.el('path', {
+        d: 'M 145 24 V 267 M 39 146 H 256', stroke: 'var(--spain)',
+        'stroke-width': 25, fill: 'none', opacity: 0,
+      }, ban.cloth);
+
+      /* ── what he said out loud — in words a ten-year-old can read ──────── */
+      const says = Kit.scroll(R, 120, 210, 600, 200, { lines: 0, tail: [590, 478] });
+      says.wrap.style.opacity = 0;
+      const claim = Kit.lead(R, 152, 239, 'This island<br>belongs to Spain.', 536);
+      claim.style.fontSize = '56px';
+      claim.style.lineHeight = '1.28';
+      claim.style.opacity = 0;
+
+      /* ── type ──────────────────────────────────────────────────────────── */
+      const yr = Kit.year(R, 120, 56, '1492');
+      yr.style.opacity = 0; yr.style.fontSize = '88px'; yr.style.color = 'var(--ink-2)';
+
+      const q = Kit.title(R, 120, 812, 'So why did anyone<br>believe him?', 1000);
+      q.style.opacity = 0; q.style.fontSize = '92px';
+
+      const who = Kit.label(R, 1230, 266, 'the Lucayan people,<br>who already lived here', true);
+      who.style.opacity = 0; who.style.fontSize = '34px'; who.style.lineHeight = '1.22';
+      /* the leader lands on the middle figure, so the sight line at S.at(6)
+         has the near one's head to itself */
+      const ldWho = Kit.leader(R, 1430, 366, 1511, 496, true);
+      ldWho.wrap.style.opacity = 0;
+
+      /* they were standing right there: a mark in the sand under their own feet */
+      const mark = Kit.underline(R, 1250, SHORE_Y + 26, 540);
+      mark.style.opacity = 0;
+
+      /* watching him: a line of sight from the nearest of them, past the flag */
+      const look = Kit.leader(R, 1316, 514, 652, 506);
+      look.wrap.style.opacity = 0;
+      look.path.style.strokeWidth = '3px';   // 660px of hairline reads as a crease
+
+      Kit.schem(R, 1664, 1040, 'reconstruction');
+      Kit.credit(R, 120, 1040, 'Columbus’s log, 12 Oct 1492 · the island’s own name was Guanahaní');
+
+      /* ── timeline ──────────────────────────────────────────────────────── */
+      const tl = gsap.timeline({ paused: true });
+
+      /* the place comes up before the voice: the first frame is the thumbnail */
+      tl.fromTo(shore.fig, { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0);
+      tl.fromTo(lucFigs.map(p => p.fig), { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.10, ease: 'power2.out' }, 0.2);
+
+      /* 0 — the year */
+      tl.fromTo(yr, { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, S.at(0));
+
+      /* 1 — the boat arrives, the man wades in */
+      tl.fromTo(boat, { opacity: 0, x: -190 }, { opacity: 1, x: 0, duration: 1.1, ease: 'power2.out' }, S.at(1));
+      tl.fromTo(wader.fig, { opacity: 0, x: -90 }, { opacity: 1, x: 0, duration: 0.9, ease: 'power2.out' }, S.at(1, 0.7));
+
+      /* 2 — the pole goes in and the cloth drops open */
+      tl.fromTo(ban.fig, { opacity: 0, y: -56 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, S.at(2));
+      tl.fromTo(ban.st, { fly: 0.04 }, { fly: 1, duration: 0.9, ease: 'expo.out', onUpdate: ban.redraw }, S.at(2, 0.18));
+      tl.fromTo(greenCross, { opacity: 0 }, { opacity: 1, duration: 0.5 }, S.at(2, 0.8));
+      tl.fromTo(wader, { arm: 0 }, {
+        arm: 1, duration: 0.5, ease: 'power2.out',
+        onUpdate() { wader.setArm(this.targets()[0].arm); },
+      }, S.at(2, 0.1));
+      /* the cloth keeps moving to the end: one number, so seeking is exact */
+      tl.fromTo(ban.st, { phase: 0 }, {
+        phase: Math.PI * 2 * 2.4, duration: S.duration - S.at(2), ease: 'none', onUpdate: ban.redraw,
+      }, S.at(2));
+
+      /* 3 — what he said, in real words */
+      tl.fromTo(says.wrap, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, S.at(3));
+      tl.fromTo(claim, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, S.at(3, 0.1));
+
+      /* 4 — the people who were already there. The claim clears out of the way */
+      tl.fromTo(says.wrap, { opacity: 1 }, { opacity: 0, duration: 0.5 }, S.at(4));
+      tl.fromTo(claim, { opacity: 1 }, { opacity: 0, duration: 0.5 }, S.at(4));
+      tl.fromTo(ldWho.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(4, 0.3));
+      tl.fromTo(ldWho.path, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.5, ease: 'none', autoRound: false,
+      }, S.at(4, 0.3));
+      /* the leader's dot lives at the far end, so it pops in before the line
+         gets there. Grow it on arrival — attr r, never a scale on a circle. */
+      tl.fromTo(ldWho.dot, { attr: { r: 0 } }, { attr: { r: 5 }, duration: 0.18 }, S.at(4, 0.72));
+      tl.fromTo(who, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(4, 0.55));
+
+      /* 5 — standing right there: a mark in the sand under their own feet */
+      tl.fromTo(mark, { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: 'power2.out' }, S.at(5));
+
+      /* 6 — watching him: the sight line draws itself, straight past the flag */
+      tl.fromTo(look.wrap, { opacity: 0 }, { opacity: 1, duration: 0.01 }, S.at(6));
+      tl.fromTo(look.path, { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, duration: 0.7, ease: 'none', autoRound: false,
+      }, S.at(6));
+      tl.fromTo(look.dot, { attr: { r: 0 } }, { attr: { r: 5 }, duration: 0.18 }, S.at(6, 0.62));
+
+      /* 7 — nobody asked them anything: his arm comes down, he never turns */
+      tl.fromTo(wader, { arm: 1 }, {
+        arm: 0.1, duration: 0.7, ease: 'power2.inOut',
+        onUpdate() { wader.setArm(this.targets()[0].arm); },
+      }, S.at(7, 0.2));
+
+      /* 8 — the question, and it holds to the end */
+      tl.fromTo(yr, { opacity: 1 }, { opacity: 0, duration: 0.4 }, S.at(8));
+      tl.fromTo(q, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.85, ease: 'expo.out' }, S.at(8));
+
+      window.__timelines['beach'] = tl;
+    })();
+  </script>
+</template>
