@@ -1,0 +1,338 @@
+<template>
+  <style>
+    /* Scene 7, kids' cut — England was late, and tobacco is why it stayed.
+       Three movements on one sheet:
+
+         late   a rule with three marks on it. The content is the empty run
+                between 1534 and 1607: a child reads "late" off the gap.
+         carved the Cape Henry beach, a modest cross, and the two words cut
+                into its crossbar — enlarged as a detail of the timber, with
+                what they MEAN set straight underneath, and scene 2's F-and-Y
+                banner beside them. Then the colour drains out of both: a name
+                on a cross feeds nobody.
+         fed    the drained half leaves and one tobacco leaf grows in its
+                place, gold, more than half the frame tall. No numbers here.
+
+       Every drawn object lives in a holder that may overlap itself (a cross
+       stands on a shore, a leaf stands in a bed). Text sits on the root so the
+       layout check still judges it, except the incised words, which must sit
+       on their own plank.
+
+       kit.css sets `fill: none` AND a stroke-width on .ln / .ln2 / .hair, and a
+       CSS rule beats an SVG presentation attribute — so fills and weights go in
+       inline styles (sw(), style:), never in attributes. */
+    #england { position: absolute; inset: 0; overflow: hidden; }
+    #england .holder { position: absolute; inset: 0; }
+  </style>
+
+  <div id="england" class="chart" data-composition-id="england" data-width="1920" data-height="1080">
+  </div>
+
+  <script>
+    (function () {
+      const S = window.__storyshot;
+      const R = Kit.root('england');     // the mount host shares this id
+      Kit.paper(R, { rose: [1480, 300] });
+
+      const layer = (overlap) => {
+        const g = Kit.div('holder', null, R);
+        if (overlap) g.setAttribute('data-layout-allow-overlap', '');
+        return g;
+      };
+      /* centred on a page x by a fixed box, so the centring does not depend on
+         how wide the font turns out to be */
+      const cen = (n, cx, y, w) => {
+        Object.assign(n.style, { left: (cx - w / 2) + 'px', top: y + 'px', width: w + 'px', textAlign: 'center' });
+        return n;
+      };
+      const hide = (n) => { n.style.opacity = 0; return n; };
+      const sw = (n, w) => { n.style.strokeWidth = w; return n; };
+      const col = (n, c) => { n.style.color = c; return n; };
+      const stroke = (parent, d, colour, w) => Kit.el('path', {
+        d, fill: 'none', stroke: colour, 'stroke-width': w, 'stroke-linecap': 'round',
+        pathLength: 1, style: 'stroke-dasharray:1;stroke-dashoffset:1',
+      }, parent);
+
+      const WOOD = '#d8c09a', WOOD_GREY = '#c9c4ba';
+      const CLOTH = '#f2e9d6', CLOTH_GREY = '#dcd8cf';
+
+      /* ── Spain's cloth ──────────────────────────────────────────────────────
+         The banner from scene 2, as ratios of its own cloth, so the little one
+         on the timeline and the big one at the end are the same object. The two
+         crowned letters only go on when the cloth is big enough to read them. */
+      const spainCloth = (ban, w, h, letters) => {
+        const g = Kit.el('g', {}, ban.cloth);
+        Kit.el('path', {
+          d: `M ${(0.330 * w).toFixed(1)} ${(0.090 * h).toFixed(1)} V ${(0.930 * h).toFixed(1)}`
+           + ` M ${(0.088 * w).toFixed(1)} ${(0.510 * h).toFixed(1)} H ${(0.583 * w).toFixed(1)}`,
+          stroke: 'var(--spain)', 'stroke-width': (0.056 * w).toFixed(1), fill: 'none',
+        }, g);
+        if (letters) {
+          for (const [fx, ch] of [[0.209, 'F'], [0.456, 'Y']]) {
+            const cx = fx * w, a = 0.0478 * w;
+            Kit.el('path', {                           // a little crown over each letter
+              fill: 'var(--spain)',
+              d: `M ${(cx - a).toFixed(1)} ${(0.671 * h).toFixed(1)} V ${(0.612 * h).toFixed(1)}`
+               + ` L ${(cx - a / 2).toFixed(1)} ${(0.642 * h).toFixed(1)} L ${cx.toFixed(1)} ${(0.586 * h).toFixed(1)}`
+               + ` L ${(cx + a / 2).toFixed(1)} ${(0.642 * h).toFixed(1)} L ${(cx + a).toFixed(1)} ${(0.612 * h).toFixed(1)}`
+               + ` V ${(0.671 * h).toFixed(1)} Z`,
+            }, g);
+            Kit.el('text', {
+              x: cx.toFixed(1), y: (0.895 * h).toFixed(1), 'text-anchor': 'middle', fill: 'var(--spain)',
+              'font-size': (0.263 * h).toFixed(1), 'font-family': 'var(--serif)', 'font-weight': 600,
+            }, g).textContent = ch;
+          }
+        }
+        return g;
+      };
+
+      /* ══ 1 · LATE ═══════════════════════════════════════════════════════════
+         1492, 1534, 1607 placed by their real distance apart, so the run after
+         France is drawn to scale: seventy-three of the hundred and fifteen
+         years on this rule have nothing in them. */
+      const TL = layer(true);
+      const tsvg = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 },
+        Kit.div('fig', { left: '0px', top: '0px' }, TL));
+
+      const RULE_Y = 480;
+      const X_SP = 300, X_FR = 782, X_EN = 1620;     // 1492 · 1534 · 1607, to scale
+      const rule = stroke(tsvg, `M 210 ${RULE_Y} H 1710`, 'var(--ink-2)', 2.8);
+
+      /* Spain: the banner. France, then England: both planted a cross, and
+         England's was the plainer and shorter of the two. */
+      const tSp = Kit.banner(TL, X_SP - 40, RULE_Y - 40 - 250, { w: 110, h: 72, poleH: 250 });
+      tSp.svg.setAttribute('viewBox', '-40 -40 190 330');
+      tSp.svg.setAttribute('width', 190);
+      spainCloth(tSp, 110, 72, false);
+      const tFr = Kit.cross(TL, X_FR - 72 - 50, RULE_Y - 120 - 250, { h: 250, arm: 72, board: false });
+      const tEn = Kit.cross(TL, X_EN - 58 - 50, RULE_Y - 120 - 200, { h: 200, arm: 58, board: false });
+
+      const marks = [[X_SP, '1492', 'Spain', 'var(--spain)'], [X_FR, '1534', 'France', 'var(--france)'],
+        [X_EN, '1607', 'England', 'var(--england)']].map(([cx, yr, nm, c]) => {
+        const y = col(cen(Kit.year(TL, 0, 0, yr), cx, 560, 300), c);
+        Object.assign(y.style, { fontSize: '92px', lineHeight: '1', letterSpacing: '.02em' });
+        const n = col(cen(Kit.label(TL, 0, 0, nm), cx, 672, 300), c);
+        n.style.fontSize = '36px';
+        return [y, n];
+      });
+
+      /* the empty run, measured under the marks where nothing else is */
+      const brace = stroke(tsvg, 'M 850 766 V 794 M 850 780 H 1560 M 1560 766 V 794', 'var(--accent)', 2.8);
+      const gap = cen(Kit.label(TL, 0, 0, 'almost 100 years', true), 1205, 810, 640);
+      gap.style.fontSize = '46px';
+
+      const kick = Kit.kicker(R, 120, 56, 'Who landed, and when');
+
+      /* ══ 2 · CARVED ═════════════════════════════════════════════════════════ */
+      const SHORE_Y = 850;
+      const BEACH = layer(true);
+      const shore = hide(Kit.shore(BEACH, 0, SHORE_Y - 150, 1920, 23).fig);
+
+      /* Kit.cross: local 0,0 sits at (x + arm + 50, y + 120), the foot at local H.
+         Modest: England's was a plain cross, not Cartier's thirty-foot one. */
+      const CR_H = 470, CR_A = 165, CR_X = 380;
+      const cross = Kit.cross(BEACH, CR_X - CR_A - 50, SHORE_Y - 120 - CR_H, { h: CR_H, arm: CR_A, board: false });
+      hide(cross.fig);
+      const crossWood = cross.g.querySelectorAll('.fill-wood');
+
+      /* the cut, on the crossbar: a strip, and two words written in it as
+         strokes — at this size the words are a mark, not reading matter */
+      const cut = hide(Kit.el('g', {}, cross.g));
+      const cutBox = Kit.el('rect', {
+        x: -118, y: 105, width: 236, height: 34, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 3.2,
+      }, cut);
+      Kit.el('path', {
+        d: 'M -100 123 h 80 M -8 123 h 54', fill: 'none', opacity: 0.8,
+        stroke: 'var(--ink)', 'stroke-width': 3.8, 'stroke-linecap': 'round',
+      }, cut);
+
+      const man = Kit.person(BEACH, 562, SHORE_Y - 230, { h: 230, face: -1 });
+      hide(man.fig);
+
+      /* the two marks that enlarge the timber into a plank you can read */
+      const MARKS = Kit.div('fig', { left: '0px', top: '0px' }, R);
+      const msvg = Kit.el('svg', { viewBox: '0 0 1920 1080', width: 1920, height: 1080 }, MARKS);
+      const wedge1 = stroke(msvg, 'M 552 490 L 800 240', 'var(--ink-2)', 1.8);
+      const wedge2 = stroke(msvg, 'M 552 516 L 800 440', 'var(--ink-2)', 1.8);
+      hide(wedge1); hide(wedge2);
+
+      /* the words, as a detail of the plank they were cut into */
+      const PANEL = layer(true);
+      const plank = hide(Kit.div('fig', { left: '800px', top: '240px' }, PANEL));
+      const psvg = Kit.el('svg', { viewBox: '0 0 1010 200', width: 1010, height: 200 }, plank);
+      const plankWood = Kit.el('rect', { class: 'ln2 fill-wood', x: 1.5, y: 1.5, width: 1007, height: 197 }, psvg);
+      sw(Kit.el('path', { class: 'hair', d: 'M 26 30 H 984', opacity: 0.5 }, psvg), 2.6);
+      sw(Kit.el('path', { class: 'hair', d: 'M 26 172 H 984', opacity: 0.42 }, psvg), 2.6);
+      sw(Kit.el('path', { class: 'hair', d: 'M 300 184 H 860', opacity: 0.3 }, psvg), 2.4);
+
+      const insc = Kit.div('', {
+        position: 'absolute', left: '800px', top: '286px', width: '1010px', textAlign: 'center',
+        fontFamily: 'var(--serif)', fontSize: '100px', fontWeight: '600', letterSpacing: '.045em',
+        lineHeight: '1', color: 'var(--ink)', whiteSpace: 'nowrap',
+        textShadow: '-2px -2px 0 rgba(242,233,214,.85)',
+      }, PANEL);
+      insc.innerHTML = '<span>JACOBUS</span> <span>REX</span>';
+      const words = insc.querySelectorAll('span');
+      for (const w of words) hide(w);
+
+      /* what it means, straight underneath, in plain type — the Latin only
+         earns its place if the meaning sits with it */
+      const gloss = cen(Kit.lead(R, 0, 0, 'James, the King', 620), 1305, 470, 620);
+      Object.assign(gloss.style, { fontFamily: 'var(--sans)', fontSize: '52px', color: 'var(--ink-2)' });
+      hide(gloss);
+
+      /* scene 2's banner, small, beside the carved name — the same move, one
+         empire and a hundred and fifteen years earlier */
+      const BN_W = 220, BN_H = 145, BN_POLE = 250;
+      const ban = Kit.banner(BEACH, 1510, SHORE_Y - 40 - BN_POLE, { w: BN_W, h: BN_H, poleH: BN_POLE, cloth: CLOTH });
+      ban.svg.setAttribute('viewBox', `-40 -40 ${BN_W + 80} ${BN_POLE + 80}`);
+      ban.svg.setAttribute('width', BN_W + 80);
+      const fy = spainCloth(ban, BN_W, BN_H, true);
+      hide(ban.fig); hide(fy);
+
+      const again = hide(Kit.lead(R, 820, 650, 'A ruler’s name, again.', 620));
+      again.style.fontSize = '48px';
+
+      const yr = col(hide(Kit.year(R, 120, 120, '1607')), 'var(--england)');
+      yr.style.fontSize = '78px';
+
+      /* ══ 3 · FED ════════════════════════════════════════════════════════════
+         one leaf, gold, 720 px tall — two thirds of the frame */
+      const BED_X = 1110, BED_W = 600, BED_Y = 850;
+      const bed = hide(Kit.div('fig', { left: BED_X + 'px', top: (BED_Y - 14) + 'px' }, BEACH));
+      const bsvg = Kit.el('svg', { viewBox: `0 0 ${BED_W} 60`, width: BED_W, height: 60 }, bed);
+      const brnd = Kit.rnd(31);
+      let bd = 'M 0 14', bd2 = 'M 0 30';
+      for (let i = 1; i <= 22; i++) {
+        const px = ((i / 22) * BED_W).toFixed(1);
+        bd += ` L ${px} ${(14 + (brnd() - 0.5) * 5).toFixed(1)}`;
+        bd2 += ` L ${px} ${(30 + (brnd() - 0.5) * 6).toFixed(1)}`;
+      }
+      const bedLine = Kit.el('path', { class: 'ln', d: bd, pathLength: 1, style: 'stroke-dasharray:1;stroke-dashoffset:1' }, bsvg);
+      sw(Kit.el('path', { class: 'hair', d: bd2 }, bsvg), 2.4);
+      for (let i = 0; i < 20; i++) {                   // a hoed bed, drawn as soil ticks
+        const tx = 10 + i * 30 + brnd() * 12, ty = 36 + brnd() * 14;
+        sw(Kit.el('path', { class: 'hair', d: `M ${tx.toFixed(1)} ${ty.toFixed(1)} l 14 9` }, bsvg), 2.4);
+      }
+
+      const LW = 360, LH = 720, LCX = 1400;
+      const leaf = Kit.leaf(BEACH, LCX - LW * 0.6, BED_Y - 20 - LH, { w: LW, h: LH });
+      const blade = leaf.g.querySelector('path');
+      blade.style.fill = 'var(--england)';             // .ln's fill:none would win otherwise
+      blade.style.fillOpacity = 0.28;
+      sw(blade, 5.5);
+      leaf.g.querySelectorAll('.ln2').forEach((n) => sw(n, 4));
+      leaf.g.querySelectorAll('.hair').forEach((n) => sw(n, 2.4));
+      leaf.fig.style.transformOrigin = '50% 97.37%';   // the stem, where it grows from
+      hide(leaf.fig);
+
+      /* why they stayed, and what that cost — level, one plain line each.
+         The parent stays visible: only the two lines are tweened in. */
+      const why = Kit.lead(R, 150, 340, '<span>It grew here, and it sold in England.</span>'
+        + '<span>So they wanted more land to grow it.</span>', 980);
+      why.style.fontSize = '52px';
+      const whyLines = why.querySelectorAll('span');
+      for (const n of whyLines) { n.style.display = 'block'; hide(n); }
+      whyLines[1].style.marginTop = '26px';
+
+      /* the word lands under its own two lines, not floating between them and
+         the leaf: one left column, one object on the right */
+      const name = col(hide(Kit.label(R, 150, 664, 'Tobacco')), 'var(--england)');
+      name.style.fontSize = '56px';
+      const nameRule = Kit.underline(R, 150, 752, 340);
+      nameRule.style.transform = 'scaleX(0)';
+
+      /* ── one credit, two lines, and the schematic mark ───────────────────── */
+      Kit.credit(R, 120, 1000,
+        'Cape Henry, Virginia, 1607 — a wooden cross cut with “Jacobus Rex” · tobacco grown at Jamestown from 1612'
+        + '<br>No English flag is recorded at Jamestown; the crosses are what the records give');
+      Kit.schem(R, 1660, 1040, 'reconstruction');
+
+      /* ══ timeline ═══════════════════════════════════════════════════════════ */
+      const tl = gsap.timeline({ paused: true });
+      const draw = (p, d, at) => {
+        tl.fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.01 }, at);
+        tl.fromTo(p, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d, ease: 'none', autoRound: false }, at);
+      };
+
+      /* the rule is the first frame: a chart with nothing planted on it yet */
+      tl.fromTo(rule, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.9, ease: 'none', autoRound: false }, 0);
+      tl.fromTo(kick, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.1);
+
+      /* 0 — Spain, France … and then England, arriving from far to the right */
+      tl.fromTo(tSp.fig, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, S.at(0));
+      tl.fromTo(marks[0], { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'expo.out' }, S.at(0, 0.2));
+      tl.fromTo(tFr.fig, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, S.at(0, 0.45));
+      tl.fromTo(marks[1], { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'expo.out' }, S.at(0, 0.62));
+      tl.fromTo([tEn.fig, marks[2][0], marks[2][1]], { opacity: 0, x: 150 },
+        { opacity: 1, x: 0, duration: 0.8, stagger: 0.07, ease: 'expo.out' }, S.at(0, 0.88));
+
+      /* and the run with nothing in it, measured */
+      draw(brace, 0.6, S.at(0, 1.2));
+      tl.fromTo(gap, { opacity: 0 }, { opacity: 1, duration: 0.45 }, S.at(0, 1.55));
+
+      /* 1 — the chart clears; one year, and a beach */
+      tl.fromTo([TL, kick], { opacity: 1 }, { opacity: 0, duration: 0.45, ease: 'power2.in' }, S.at(1));
+      tl.fromTo(yr, { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, S.at(1, 0.12));
+      tl.fromTo(shore, { opacity: 0 }, { opacity: 1, duration: 0.65, ease: 'power2.out' }, S.at(1, 0.2));
+
+      /* 2 — somebody is standing there first, then a modest cross goes in, and
+         the name is cut into its crossbar */
+      tl.fromTo(man.fig, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, S.at(1, 0.45));
+      tl.fromTo(cross.fig, { opacity: 0, y: -80 }, { opacity: 1, y: 0, duration: 0.66, ease: 'power3.out' }, S.at(1, 0.85));
+      tl.fromTo(man, { arm: 0 }, { arm: 0.85, duration: 0.55, ease: 'power2.out',
+        onUpdate() { man.setArm(this.targets()[0].arm); } }, S.at(2));
+      tl.fromTo(cut, { opacity: 0 }, { opacity: 1, duration: 0.4 }, S.at(2, 0.85));
+
+      /* 3 — that timber, enlarged, and the two words in it */
+      draw(wedge1, 0.45, S.at(3, 0.02));
+      draw(wedge2, 0.45, S.at(3, 0.1));
+      tl.fromTo(plank, { opacity: 0, scaleX: 0.9 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'expo.out', transformOrigin: '0% 50%' }, S.at(3, 0.2));
+      tl.fromTo(words[0], { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, S.at(3, 0.5));
+      tl.fromTo(words[1], { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out' }, S.at(3, 0.95));
+
+      /* 4 — and what they mean, straight underneath */
+      tl.fromTo(gloss, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, S.at(4, 0.55));
+
+      /* 5a — the same idea as F and Y */
+      tl.fromTo(ban.fig, { opacity: 0, y: -26 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, S.at(5, 0.15));
+      tl.fromTo(ban.st, { fly: 0.08 }, { fly: 1, duration: 0.7, ease: 'expo.out', onUpdate: ban.redraw }, S.at(5, 0.2));
+      tl.fromTo(ban.st, { phase: 0 }, { phase: Math.PI * 2 * 0.8, duration: 2.9, ease: 'none', onUpdate: ban.redraw }, S.at(5, 0.2));
+      tl.fromTo(fy, { opacity: 0 }, { opacity: 1, duration: 0.45 }, S.at(5, 0.8));
+      tl.fromTo(again, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, S.at(5, 1.15));
+
+      /* 5b — "does not feed anybody": the colour goes out of both objects */
+      const DRAIN = S.at(5, 3.1);
+      tl.fromTo(cross.fig, { opacity: 1 }, { opacity: 0.44, duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(man.fig, { opacity: 1 }, { opacity: 0.44, duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(crossWood, { fill: WOOD }, { fill: WOOD_GREY, duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(cutBox, { stroke: 'var(--accent)' }, { stroke: '#9a8a72', duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(ban.fig, { opacity: 1 }, { opacity: 0.44, duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(ban.body, { fill: CLOTH }, { fill: CLOTH_GREY, duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(fy, { opacity: 1 }, { opacity: 0.5, duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(plank, { opacity: 1 }, { opacity: 0.62, duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(plankWood, { fill: WOOD }, { fill: WOOD_GREY, duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+      tl.fromTo(insc, { color: '#241c15' }, { color: '#6b5a45', duration: 0.9, ease: 'power2.inOut' }, DRAIN);
+
+      /* 6 — the drained half goes, and something that grows takes its place */
+      /* each one leaves from whatever the drain left it at, so nothing pops */
+      for (const [n, from] of [[cross.fig, 0.44], [man.fig, 0.44], [ban.fig, 0.44], [plank, 0.62],
+        [shore, 1], [insc, 1], [gloss, 1], [again, 1], [yr, 1], [MARKS, 1]]) {
+        tl.fromTo(n, { opacity: from }, { opacity: 0, duration: 0.5, ease: 'power2.in' }, S.at(6));
+      }
+      tl.fromTo(bed, { opacity: 0 }, { opacity: 1, duration: 0.22 }, S.at(6, 0.15));
+      tl.fromTo(bedLine, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.6, ease: 'none', autoRound: false }, S.at(6, 0.15));
+      tl.fromTo(leaf.fig, { opacity: 0, scale: 0.05 }, { opacity: 1, scale: 0.78, duration: 0.75, ease: 'power2.out' }, S.at(6, 0.22));
+      tl.fromTo(whyLines[0], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, S.at(6, 0.45));
+      tl.fromTo(whyLines[1], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: 'expo.out' }, S.at(6, 1.15));
+      tl.fromTo(leaf.fig, { scale: 0.78 }, { scale: 1, duration: 1.38, ease: 'expo.out' }, S.at(6, 1.1));
+
+      /* 7 — "Tobacco." lands on the full leaf */
+      tl.fromTo(blade, { fillOpacity: 0.28 }, { fillOpacity: 0.48, duration: 0.8, ease: 'power2.out' }, S.at(7));
+      tl.fromTo(name, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, S.at(7, 0.1));
+      tl.fromTo(nameRule, { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: 'expo.out' }, S.at(7, 0.35));
+
+      window.__timelines['england'] = tl;
+    })();
+  </script>
+</template>
