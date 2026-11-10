@@ -2,3 +2,9 @@
 node_modules/
 .storyshot/
 .qa/
+
+# The films are release assets (tag `media`), not repository files — see
+# assets/gallery.mjs (filmURL) and scripts/build-index.mjs. Keeping every re-render
+# in git took the history past 400 MB; a film revised twice stayed in it three times.
+# To publish or replace one:  gh release upload media <flat-name>.mp4 --clobber
+*.mp4

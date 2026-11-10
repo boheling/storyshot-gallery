@@ -1,5 +1,13 @@
 // Scan <type>/<example>/ folders and write gallery.json for index.html.
-// Each example folder: video.mp4, poster.jpg, storyboard.yaml, notes.md, optional meta.json
+//
+// The MP4s are NOT in this repository any more — they are release assets (tag `media`),
+// because keeping every re-render in git had taken the history to 400 MB and it only grew.
+// So a film is identified by its storyboard.yaml AND its poster.jpg — both small, both in
+// the repo — rather than by a video file that may not be on disk, and its duration is
+// remembered from the previous gallery.json when ffprobe has nothing local to measure.
+// Running this on a fresh clone must not empty the gallery, and a half-finished folder
+// with a storyboard but no poster must not walk into it either.
+// Each example folder: poster.jpg, storyboard.yaml, notes.md, optional meta.json
 // ({ title, site, url }), steps/ (docs: GIFs, PNGs, README.md) and scenes/ (explainers: the scene files).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,6 +22,16 @@ const TYPES = [
   { id: 'docs', label: 'Help-center docs', blurb: 'Per-step GIFs and screenshots cropped to the action, plus a ready-to-paste article.' },
 ];
 const seconds = (f) => { try { return Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f]).toString().trim()); } catch { return null; } };
+// what the last build recorded, so a clone without the media keeps every film's length
+const PREV = (() => {
+  try {
+    const seen = new Map();
+    for (const t of JSON.parse(fs.readFileSync(path.join(ROOT, 'gallery.json'), 'utf8'))) {
+      for (const i of t.items) seen.set(i.id, i.seconds);
+    }
+    return seen;
+  } catch { return new Map(); }
+})();
 const firstLine = (f, re) => { try { return (fs.readFileSync(f, 'utf8').match(re) ?? [])[1]?.trim() ?? null; } catch { return null; } };
 // the request in notes.md: a "**Request:** …" line, or the first paragraph under a "## (User) request" heading
 const requestOf = (f) => {
@@ -24,7 +42,8 @@ const requestOf = (f) => {
 
 const gallery = TYPES.map((t) => {
   const dir = path.join(ROOT, t.id);
-  const items = !fs.existsSync(dir) ? [] : fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, 'video.mp4'))).sort().map((d) => {
+  const items = !fs.existsSync(dir) ? [] : fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, 'storyboard.yaml'))
+      && fs.existsSync(path.join(dir, d, 'poster.jpg'))).sort().map((d) => {
     const rel = `${t.id}/${d}`, abs = path.join(dir, d);
     const meta = fs.existsSync(path.join(abs, 'meta.json')) ? JSON.parse(fs.readFileSync(path.join(abs, 'meta.json'), 'utf8')) : {};
     const yaml = path.join(abs, 'storyboard.yaml');
@@ -35,7 +54,7 @@ const gallery = TYPES.map((t) => {
       lang: meta.lang ?? 'en',
       url: meta.url ?? firstLine(yaml, /^url:\s*(\S+)/m),
       request: meta.request ?? requestOf(path.join(abs, 'notes.md')),
-      seconds: seconds(path.join(abs, 'video.mp4')),
+      seconds: seconds(path.join(abs, 'video.mp4')) ?? PREV.get(rel) ?? null,
       video: `${rel}/video.mp4`, poster: `${rel}/poster.jpg`, storyboard: `${rel}/storyboard.yaml`, notes: `${rel}/notes.md`,
       article: fs.existsSync(path.join(abs, 'steps', 'README.md')) ? `${rel}/steps/README.md` : null,
     };

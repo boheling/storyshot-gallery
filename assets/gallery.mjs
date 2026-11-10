@@ -64,6 +64,20 @@ const categoryOf = (item) =>
 const playIcon =
   '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5 11 6 3 10.5z" fill="currentColor"/></svg>';
 
+// The films themselves are release assets, not files in this repository: keeping every
+// re-rendered MP4 in git had taken the history past 400 MB and it only ever grew — a film
+// revised twice sits in there three times, forever. Posters, storyboards, subtitles and the
+// production notes all stay local, where localAsset()'s same-origin guard still applies.
+// `explainer/mrna-cancer-vaccine/video.mp4` → `explainer-mrna-cancer-vaccine.mp4`.
+// GitHub serves these as application/octet-stream with an attachment disposition; browsers
+// play and seek them anyway (checked in a real browser, including seeking, before the
+// history was rewritten).
+const FILM_BASE =
+  "https://github.com/boheling/storyshot-gallery/releases/download/media/";
+function filmURL(value) {
+  if (!value) return null;
+  return `${FILM_BASE}${value.replace(/\/video\.mp4$/, "").replace(/\//g, "-")}.mp4`;
+}
 function localAsset(value) {
   if (!value) return null;
   const resolved = new URL(value, document.baseURI);
@@ -317,7 +331,7 @@ async function renderTab(tab, autoplay = false) {
     video.controls = true;
     video.playsInline = true;
     video.preload = "metadata";
-    video.src = localAsset(activeFilm.video);
+    video.src = filmURL(activeFilm.video);
     video.poster = localAsset(stills[activeFilm.id] || activeFilm.poster);
     video.setAttribute("aria-label", titleOf(activeFilm));
     video.addEventListener(
@@ -333,7 +347,7 @@ async function renderTab(tab, autoplay = false) {
         const error = document.createElement("div");
         error.className = "document-error";
         error.setAttribute("role", "alert");
-        error.innerHTML = `<p>${esc(t("videoError"))}</p><a href="${esc(localAsset(activeFilm.video))}" target="_blank" rel="noopener">${esc(t("openVideo"))}</a>`;
+        error.innerHTML = `<p>${esc(t("videoError"))}</p><a href="${esc(filmURL(activeFilm.video))}" target="_blank" rel="noopener">${esc(t("openVideo"))}</a>`;
         video.replaceWith(error);
       },
       { once: true },
